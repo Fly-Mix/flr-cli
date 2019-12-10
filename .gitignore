@@ -1,0 +1,34 @@
+# General
+*.swp
+*.swo
+*.rbo
+*.gem
+.DS_Store
+.rbenv-version
+.rbx/
+/concatenated.*
+
+# Yardoc
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+
+# Specs
+/spec/reports/
+/tmp/
+
+# RVM files
+/.rvmrc
+/.ruby-version
+/.ruby-gemset
+
+# Bundler files
+/.bundle
+
+# rspec failure tracking
+.rspec_status
+
+# IDEs
+.idea/
