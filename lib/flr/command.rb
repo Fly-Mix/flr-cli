@@ -146,7 +146,7 @@ assets:
       r_dart_path = "#{flutter_project_root_dir}/lib/R.dart"
       r_dart_file = File.open(r_dart_path,"w")
 
-      # 生成"class R"的代码
+      # 生成 `class R` 的代码
       r_declaration = <<-HEREDOC
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -162,7 +162,7 @@ class R {
       HEREDOC
       r_dart_file.puts(r_declaration)
 
-      # 生成"class R_Image"的代码
+      # 生成 `class R_Image` 的代码
       r_image_declaration_header = <<-HEREDOC
 /// Because dart does not support nested class, so use class `R_Image` to replace nested class `R.Image`
 // ignore: camel_case_types
@@ -173,7 +173,7 @@ class R_Image {
 
 
       supported_asset_images = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".icon", ".bmp", ".wbmp"]
-      # 根据遍历得到的静态资源数组，生成对应变量声明，写入到“R.dart”中
+      # 根据遍历得到的静态资源数组，生成对应变量声明，写入到 `R.dart` 中
       uniq_flutter_assets.each do |asset|
         # asset example: packages/flutter_demo/assets/images/hot_foot_N.png
         # file_basename example: hot_foot_N.png
@@ -223,7 +223,7 @@ class R_Image {
       r_dart_file.puts(r_image_declaration_footer)
 
 
-      # 生成"class R_Svg"的代码
+      # 生成 `class R_Svg` 的代码
       r_svg_declaration_header = <<-HEREDOC
 /// Because dart does not support nested class, so use class `R_Svg` to replace nested class `R.Svg`
 // ignore: camel_case_types
@@ -274,7 +274,7 @@ class R_Svg {
       HEREDOC
       r_dart_file.puts(r_svg_declaration_footer)
 
-      # 生成"class R_Text"的代码
+      # 生成 `class R_Text` 的代码
       r_text_declaration_header = <<-HEREDOC
 /// Because dart does not support nested class, so use class `R_Json` to replace nested class `R.Json`
 // ignore: camel_case_types
