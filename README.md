@@ -8,19 +8,16 @@ To install or update Flr run `sudo gem install flr`
 
 ## Usage
 
-1. Create `Flrfile` in your flutter project directory:
+1. Create `Flrfile.yaml` in your flutter project directory:
     
     ```
     cd flutter_project_dir
     flr init
     ```
  
-2. Edit `Flrfile` to config the asset directories that needs to be searched:
+2. Edit `Flrfile.yaml` to config the asset directories that needs to be searched in current flutter project directory:
 
    ```
-    # Flrfile is a YAML file, 
-    #   and is used to config the asset directories that needs to be searched.
-    
     assets:
     
       # config the image asset directories that needs to be searched
