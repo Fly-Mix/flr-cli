@@ -11,7 +11,7 @@ module Flr
       Command.version
     end
 
-    desc "init", "Generate a `Flrfile` and Add `r_dart_library` declaration into `pubspec.yaml`"
+    desc "init", "Generate a `Flrfile.yaml` and Add `r_dart_library` declaration into `pubspec.yaml`"
     long_desc <<-LONGDESC
       Create a `Flrfile` for the current directory if none currently exists, 
       and add the dependency declaration of `r_dart_library`(https://github.com/YK-Unit/r_dart_library)  into `pubspec.yaml`.

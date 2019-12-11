@@ -11,7 +11,7 @@ module Flr
       puts(version_desc)
     end
 
-    # Create a `Flrfile` for the current directory if none currently exists,
+    # Create a `Flrfile.yaml` for the current directory if none currently exists,
     #       and add the dependency declaration of `r_dart_library`(https://github.com/YK-Unit/r_dart_library)  into `pubspec.yaml`.
     #
     def self.init()
@@ -19,7 +19,7 @@ module Flr
 
       puts("init #{flutter_project_root_dir} now...")
 
-      flrfile_path = flutter_project_root_dir + "/Flrfile"
+      flrfile_path = flutter_project_root_dir + "/Flrfile.yaml"
       pubspec_path = flutter_project_root_dir + "/pubspec.yaml"
 
       # 检测当前目录是否存在 pubspec.yaml；若不存在，说明不是一个flutter工程，然后直接终止初始化
@@ -32,8 +32,7 @@ module Flr
         flrfile_file = File.open(flrfile_path, "w")
 
         flrfile_content = <<-HEREDO
-# Flrfile is a YAML file, 
-#   and is used to config the asset directories that needs to be searched in current flutter project directory.
+# Flrfile.yaml is used to config the asset directories that needs to be searched in current flutter project directory.
 
 assets:
 
