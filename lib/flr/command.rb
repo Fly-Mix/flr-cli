@@ -91,7 +91,7 @@ assets:
       flutter_project_root_dir = "#{Pathname.pwd}"
 
       # 读取 Flrfile，获取要搜索的资源目录
-      flrfile_path = "#{flutter_project_root_dir}/Flrfile"
+      flrfile_path = "#{flutter_project_root_dir}/Flrfile.yaml"
       flrfile = File.open(flrfile_path, "r")
       flrfile_yaml = YAML.load(flrfile)
       flrfile.close
