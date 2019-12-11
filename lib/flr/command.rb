@@ -53,7 +53,7 @@ assets:
         flrfile_file.puts(flrfile_content)
         flrfile_file.close
 
-        puts("create Flrfile done !!!")
+        puts("create Flrfile.yaml done !!!")
       end
 
       # 更新 pubspec.yaml，添加和获取依赖包 `r_dart_library`(https://github.com/YK-Unit/r_dart_library)
