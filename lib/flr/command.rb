@@ -29,11 +29,11 @@ module Flr
 
       # 若不存在 Flrfile，则创建一个 Flrfile
       if File.exist?(flrfile_path) == false
-        flrfile = File.open(flrfile_path, "w")
+        flrfile_file = File.open(flrfile_path, "w")
 
         flrfile_content = <<-HEREDO
 # Flrfile is a YAML file, 
-#   and is used to config the asset directories that needs to be searched.
+#   and is used to config the asset directories that needs to be searched in current flutter project directory.
 
 assets:
 
@@ -51,8 +51,8 @@ assets:
 
         HEREDO
 
-        flrfile.puts(flrfile_content)
-        flrfile.close
+        flrfile_file.puts(flrfile_content)
+        flrfile_file.close
 
         puts("create Flrfile done !!!")
       end
