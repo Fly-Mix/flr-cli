@@ -17,8 +17,6 @@ module Flr
     def self.init()
       flutter_project_root_dir = "#{Pathname.pwd}"
 
-      puts("init #{flutter_project_root_dir} now...")
-
       flrfile_path = flutter_project_root_dir + "/Flrfile.yaml"
       pubspec_path = flutter_project_root_dir + "/pubspec.yaml"
 
@@ -26,6 +24,8 @@ module Flr
       unless File.exist?(pubspec_path)
         abort("[✕]: #{pubspec_path} not found")
       end
+
+      puts("init #{flutter_project_root_dir} now...")
 
       # 若不存在 Flrfile，则创建一个 Flrfile
       if File.exist?(flrfile_path) == false
