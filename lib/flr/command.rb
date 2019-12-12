@@ -24,7 +24,7 @@ module Flr
 
       # 检测当前目录是否存在 pubspec.yaml；若不存在，说明不是一个flutter工程，然后直接终止初始化
       unless File.exist?(pubspec_path)
-        #abort("[✕]: #{pubspec_path} not found")
+        abort("[✕]: #{pubspec_path} not found")
       end
 
       # 若不存在 Flrfile，则创建一个 Flrfile
