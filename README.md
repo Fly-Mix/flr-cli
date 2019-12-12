@@ -6,6 +6,8 @@ Flr: Flutter-R, a CLI tool like AAPT(Android Asset Packaging Tool) to update pub
 
 To install or update Flr run `sudo gem install flr`
 
+> If you want to use Flr tool on the Windows system, it is strongly recommended that you run it on [WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) environment !!! 
+
 ## Usage
 
 1. Create `Flrfile.yaml` in your flutter project directory:
