@@ -42,6 +42,9 @@ To install or update Flr run `sudo gem install flr`
      
 4. After each the assets of your flutter project change, just run `flr generate` again.
 
+## Example
+
+Here is a [demo](https://github.com/YK-Unit/flutter_r_demo) to show how to use flr in flutter project.
 
 ## License
 
