@@ -1,12 +1,12 @@
 # Flr
 
-Flr: Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool) for flutter developer to fast update pubspec.yaml and auto generate R.dart after developer did update the flutter project asserts.
+Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool) for flutter developer to fast update pubspec.yaml and auto generate R.dart after developer did update the flutter project asserts.
 
 ## Installation & Update
 
 To install or update Flr run `sudo gem install flr`
 
-> If you want to use Flr tool on the Windows system, it is strongly recommended that you run it on [WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) environment !!! 
+> If you want to use Flr tool on the Windows system, it is strongly recommended that you should run it on [WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) environment !!! 
 
 ## Usage
 
