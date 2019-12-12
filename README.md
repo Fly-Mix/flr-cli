@@ -42,7 +42,7 @@ To install or update Flr run `sudo gem install flr`
      flr generate
      ```
      
-4. After each the assets of your flutter project change, just run `flr generate` again.
+4. After each you updates the assets of your flutter project, just run `flr generate` again.
 
 ## Example
 
