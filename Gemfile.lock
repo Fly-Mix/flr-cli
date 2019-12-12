@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    flr (0.1.5)
+    flr (0.1.6)
       bundler (~> 2.0.2)
       thor (~> 0.20.3)
 
