@@ -23,7 +23,11 @@ module Flr
       # 检测当前目录是否存在 pubspec.yaml；
       # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印错误提示；
       unless File.exist?(pubspec_path)
-        abort("[✕]: #{pubspec_path} not found.\n[*]: please make sure current directory is a flutter project directory.")
+        message = <<-HEREDO
+[✕]: #{pubspec_path} not found
+[*]: please make sure current directory is a flutter project directory
+        HEREDO
+        abort(message)
       end
 
       puts("init #{flutter_project_root_dir} now...")
@@ -97,7 +101,11 @@ assets:
       # 检测当前目录是否存在 Flrfile.yaml；
       # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
       unless File.exist?(flrfile_path)
-        abort("[✕]: #{flrfile_path} not found.\n[*]: please run `flr init` to fix it.")
+        message = <<-HEREDO
+[✕]: #{flrfile_path} not found
+[*]: please run `flr init` to fix it
+        HEREDO
+        abort(message)
       end
 
       flrfile = File.open(flrfile_path, "r")
