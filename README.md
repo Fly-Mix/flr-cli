@@ -46,7 +46,7 @@ To install or update Flr run `sudo gem install flr`
 
 ## Example
 
-Here is a [demo](https://github.com/YK-Unit/flutter_r_demo) to show how to use flr in flutter project.
+Here is a [Flutter-R Demo](https://github.com/YK-Unit/flutter_r_demo) to show how to use `flr` tool in flutter project and show how to use `R.dart` in your code.
 
 ## License
 
