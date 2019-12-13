@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    flr (0.1.7)
-      bundler (~> 2.0.2)
-      thor (~> 0.20.3)
+    flr (0.1.8)
+      bundler (~> 2.0, >= 2.0.2)
+      thor (~> 0.20, >= 0.20.3)
 
 GEM
   remote: https://rubygems.org/
@@ -14,9 +14,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 2.0.2)
   flr!
-  thor (~> 0.20.3)
 
 BUNDLED WITH
    2.0.2
