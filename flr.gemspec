@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["York"]
   spec.email         = ["yorkzhang520@gmail.com"]
 
-  spec.summary       = "Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool) for flutter developer to fast update pubspec.yaml and auto generate R.dart."
-  spec.description   = "Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool) for flutter developer to fast update pubspec.yaml and auto generate R.dart after developer did update the flutter project asserts."
+  spec.summary       = "Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool), which can help flutter developer to fast update pubspec.yaml and auto generate R.dart."
+  spec.description   = "Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool), which can help flutter developer to fast update pubspec.yaml and auto generate R.dart after he updates the flutter project asserts."
   spec.homepage      = "https://github.com/YK-Unit/flr"
   spec.license       = "MIT"
 
