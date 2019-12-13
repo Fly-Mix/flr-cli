@@ -20,9 +20,10 @@ module Flr
       flrfile_path = flutter_project_root_dir + "/Flrfile.yaml"
       pubspec_path = flutter_project_root_dir + "/pubspec.yaml"
 
-      # 检测当前目录是否存在 pubspec.yaml；若不存在，说明不是一个flutter工程，然后直接终止初始化
+      # 检测当前目录是否存在 pubspec.yaml；
+      # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印错误提示；
       unless File.exist?(pubspec_path)
-        abort("[✕]: #{pubspec_path} not found")
+        abort("[✕]: #{pubspec_path} not found.\n[*]: please make sure current directory is a flutter project directory.")
       end
 
       puts("init #{flutter_project_root_dir} now...")
@@ -92,6 +93,13 @@ assets:
 
       # 读取 Flrfile，获取要搜索的资源目录
       flrfile_path = "#{flutter_project_root_dir}/Flrfile.yaml"
+
+      # 检测当前目录是否存在 Flrfile.yaml；
+      # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
+      unless File.exist?(flrfile_path)
+        abort("[✕]: #{flrfile_path} not found.\n[*]: please run `flr init` to fix it.")
+      end
+
       flrfile = File.open(flrfile_path, "r")
       flrfile_yaml = YAML.load(flrfile)
       flrfile.close
