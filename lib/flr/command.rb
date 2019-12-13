@@ -24,7 +24,7 @@ module Flr
       # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印错误提示；
       unless File.exist?(pubspec_path)
         message = <<-HEREDO
-[✕]: #{pubspec_path} not found
+[x]: #{pubspec_path} not found
 [*]: please make sure current directory is a flutter project directory
         HEREDO
         abort(message)
@@ -102,7 +102,7 @@ assets:
       # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
       unless File.exist?(flrfile_path)
         message = <<-HEREDO
-[✕]: #{flrfile_path} not found
+[x]: #{flrfile_path} not found
 [*]: please run `flr init` to fix it
         HEREDO
         abort(message)
