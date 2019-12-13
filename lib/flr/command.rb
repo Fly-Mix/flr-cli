@@ -37,17 +37,17 @@ module Flr
         flrfile_file = File.open(flrfile_path, "w")
 
         flrfile_content = <<-HEREDO
-# Flrfile.yaml is used to config the asset directories that needs to be searched in current flutter project directory.
+# Flrfile.yaml is used to config the asset directories that needs to be scanned in current flutter project directory.
 
 assets:
 
-  # config the image asset directories that needs to be searched
+  # config the image asset directories that need to be scanned
   # supported image assets: [".png", ".jpg", ".jpeg", ".gif", ".webp", ".icon", ".bmp", ".wbmp", ".svg"]
   # config example: - lib/assets/images
   images:
     #- lib/assets/images
 
-  # config the text asset directories that needs to be searched
+  # config the text asset directories that need to be scanned
   # supported text assets: [".txt", ".json", ".yaml", ".xml"]
   # config example: - lib/assets/texts
   texts:

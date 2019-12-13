@@ -11,31 +11,31 @@ To install or update Flr run `sudo gem install flr`
 ## Usage
 
 1. Create `Flrfile.yaml` in your flutter project directory:
-    
+   
     ```
     cd flutter_project_dir
     flr init
     ```
- 
-2. Edit `Flrfile.yaml` to config the asset directories that needs to be searched in current flutter project directory:
+
+2. Edit `Flrfile.yaml` to config the asset directories that needs to be scanned in current flutter project directory:
 
    ```
     assets:
     
-      # config the image asset directories that needs to be searched
+      # config the image asset directories that need to be scanned
       # supported image assets: [".png", ".jpg", ".jpeg", ".gif", ".webp", ".icon", ".bmp", ".wbmp", ".svg"]
       # config example: - lib/assets/images
       images:
         - lib/assets/images
     
-      # config the text asset directories that needs to be searched
+      # config the text asset directories that need to be scanned
       # supported text assets: [".txt", ".json", ".yaml", ".xml"]
       # config example: - lib/assets/texts
       texts:
         - lib/assets/jsons
         - lib/assets/yamls
-    ```
-    
+   ```
+   
 3. Generate `R.dart` for your flutter project directory:
 
      ```
@@ -43,6 +43,37 @@ To install or update Flr run `sudo gem install flr`
      ```
      
 4. After each you updates the assets of your flutter project, just run `flr generate` again.
+
+## R.dart
+
+After you run `flr generate`, `flr` will scan the asserts  based on the configs in `Flrfile.yaml`, and then generates `R.dart`.
+
+`R.dart` allows you to  apply the assert in code by referencing its assert ID. All assert IDs are defined in `R_X` class (such as `R_Image`, `R_Svg`, `R_Text`). Here are some simple examples:
+
+```dart
+import 'package:flutter_r_demo/R.dart';
+
+var normalImageWidget = Image(
+  width: 113,
+  height: 128,
+  image: R_Image.sameName,
+);
+
+var gifImageWidget = Image(
+  image: R_Image.sameName_gif,
+);
+
+var svgImageWidget = Image(
+  width: 100,
+  height: 100,
+  image: R_Svg.a$$test$(width: 100, height: 100),
+);
+
+var jsonString = await R_Text.a$$test$_json();
+
+var yamlString = await R_Text.a$$test$_yaml();
+
+```
 
 ## Example
 
