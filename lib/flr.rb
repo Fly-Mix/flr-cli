@@ -7,6 +7,10 @@ module Flr
   class CLI < Thor
 
     desc "version", "Show flr version"
+    long_desc <<-LONGDESC
+      show the version of flr
+
+    LONGDESC
     def version
       Command.version
     end
