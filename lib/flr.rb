@@ -6,12 +6,12 @@ module Flr
 
   class CLI < Thor
 
-    desc "version", "show flr version"
+    desc "version", "Show flr version"
     def version
       Command.version
     end
 
-    desc "init", "generate `Flrfile.yaml` file and auto specify package `r_dart_library` in `pubspec.yaml`"
+    desc "init", "Generate `Flrfile.yaml` file and auto specify package `r_dart_library` in `pubspec.yaml`"
     long_desc <<-LONGDESC
       create a `Flrfile.yaml` file for the current directory if none currently exists,
       and auto specify package `r_dart_library`(https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml`.
@@ -21,7 +21,7 @@ module Flr
       Command.init
     end
 
-    desc "generate", "scan asserts, then auto specify asserts in `pubspec.yaml` and generate `R.dart` file"
+    desc "generate", "Scan asserts, then auto specify asserts in `pubspec.yaml` and generate `R.dart` file"
     long_desc <<-LONGDESC
       scan the asserts based on the configs in `Flrfile.yaml`,
       then auto specify asserts in `pubspec.yaml`,
