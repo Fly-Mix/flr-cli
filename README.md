@@ -1,23 +1,30 @@
 # Flr
 
-Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool) , which can help flutter developer to fast update `pubspec.yaml` and auto generate `R.dart` after he updates the flutter project asserts.
+Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify asserts in `pubspec.yaml` and generate  `R.dart` file after he updates the flutter project asserts. Then flutter developer can apply the assert in code by referencing it's assert ID which defined in `R.dart`.
 
-## Installation & Update
+## Feature
+- auto specify assets in `pubspec.yaml` and generate  `R.dart` file after scanned assets
+- support for processing image asserts( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
+- support for processing text asserts( `.txt`, `.json`, `.yaml`, `.xml` ) 
+- support for processing [image assert variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
+- support for processing assert which’s filename has special character(such as  `blank`,  `~`, `@`, `#`,  `$` )
 
-To install or update Flr run `sudo gem install flr`
+## Installation & Update Flr
 
-> If you want to use Flr tool on the Windows system, it is strongly recommended that you should run it on [WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) environment !!! 
+To install or update Flr, run `sudo gem install flr`
+
+> If you want to use Flr tool on the Windows system, you are strongly recommended to run it on [WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) environment !!! 
 
 ## Usage
 
-1. Create `Flrfile.yaml` in your flutter project directory:
-   
+1. Run `flr init`  in your flutter project directory to generate `Flrfile.yaml` file for current flutter project:
+
     ```
     cd flutter_project_dir
     flr init
     ```
-
-2. Edit `Flrfile.yaml` to config the asset directories that needs to be scanned in current flutter project directory:
+    
+2. Open `Flrfile.yaml`, and and edit it to config the asset directories that needs to be scanned in current flutter project directory:
 
    ```
     assets:
@@ -35,20 +42,19 @@ To install or update Flr run `sudo gem install flr`
         - lib/assets/jsons
         - lib/assets/yamls
    ```
-   
-3. Generate `R.dart` for your flutter project directory:
+4. Run `flr generate` to generate `R.dart` file for curent flutter project:
 
      ```
      flr generate
      ```
-     
-4. After each you updates the assets of your flutter project, just run `flr generate` again.
+
+5. After each you updates the assets of current flutter project, just run `flr generate` again.
 
 ## R.dart
 
-After you run `flr generate`, `flr` will scan the asserts  based on the configs in `Flrfile.yaml`, and then generates `R.dart`.
+After you run `flr generate`, `flr` will scan the asserts based on the configs in `Flrfile.yaml`, and then generates `R.dart` file and generate assert ID codes in `R.dart`.
 
-`R.dart` allows you to  apply the assert in code by referencing its assert ID. All assert IDs are defined in `R_X` class (such as `R_Image`, `R_Svg`, `R_Text`). Here are some simple examples:
+`R.dart` allows you to  apply the assert in code by referencing it's assert ID. All assert IDs are defined in `R_X` class (such as `R_Image`, `R_Svg`, `R_Text`). Here are some simple examples:
 
 ```dart
 import 'package:flutter_r_demo/R.dart';
