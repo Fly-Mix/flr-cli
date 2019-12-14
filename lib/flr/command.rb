@@ -5,15 +5,14 @@ require 'flr/version'
 module Flr
   class Command
 
-    # Shwo version of flr
+    # show the version of flr
     def self.version()
       version_desc = "flr version #{Flr::VERSION}"
       puts(version_desc)
     end
 
-    # Create a `Flrfile.yaml` for the current directory if none currently exists,
-    #       and add the dependency declaration of `r_dart_library`(https://github.com/YK-Unit/r_dart_library)  into `pubspec.yaml`.
-    #
+    # create a `Flrfile.yaml` file for the current directory if none currently exists,
+    # and auto specify package `r_dart_library`(https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml`.
     def self.init()
       flutter_project_root_dir = "#{Pathname.pwd}"
 
@@ -88,10 +87,10 @@ assets:
       puts("[√]: init done !!!")
     end
 
-    # Search the asserts based on the assert directory settings in `Flrfile`,
-    #       and then add the assert declarations into `pubspec.yaml`,
-    #       and then generate `R.dart`.
-    #
+    # scan the asserts based on the configs in `Flrfile.yaml`,
+    # then auto specify asserts in `pubspec.yaml`,
+    # and then generate `R.dart` file,
+    # and generate assert ID codes in `R.dart`.
     def self.generate()
       flutter_project_root_dir = "#{Pathname.pwd}"
 

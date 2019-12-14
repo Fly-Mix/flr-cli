@@ -1,6 +1,6 @@
 # Flr
 
-Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool) for flutter developer to fast update pubspec.yaml and auto generate R.dart after developer did update the flutter project asserts.
+Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool) , which can help flutter developer to fast update `pubspec.yaml` and auto generate `R.dart` after he updates the flutter project asserts.
 
 ## Installation & Update
 
