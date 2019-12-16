@@ -7,8 +7,8 @@ Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can
 - support for processing image asserts( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
 - support for processing text asserts( `.txt`, `.json`, `.yaml`, `.xml` ) 
 - support for processing [image assert variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
-- support for processing assert which’s filename has special character(such as  `blank`,  `~`, `@`, `#`,  `$` )
-- support for processing assert which’s filename begins with a number
+- support for processing assert which’s filename has illegal character(such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters(`0-9`, `A-Z`, `a-z`, `_`,  `$`)
+- support for processing assert which’s filename begins with a number or character `_`  or character`$`
 
 ## Installation & Update Flr
 
