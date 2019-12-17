@@ -60,25 +60,30 @@ After you run `flr generate`, `flr` will scan the assets based on the configs in
 ```dart
 import 'package:flutter_r_demo/R.dart';
 
+// sameName.png
 var normalImageWidget = Image(
   width: 113,
   height: 128,
   image: R_Image.sameName,
 );
 
+// sameName.gif
 var gifImageWidget = Image(
   image: R_Image.sameName_gif,
 );
 
+// $$test$.svg
 var svgImageWidget = Image(
   width: 100,
   height: 100,
   image: R_Svg.a$$test$(width: 100, height: 100),
 );
 
-var jsonString = await R_Text.a$$test$_json();
+// $%^&test.json
+var jsonString = await R_Text.a$___test_json();
 
-var yamlString = await R_Text.a$$test$_yaml();
+// ~!@*test.yaml
+var yamlString = await R_Text.a____test_yaml();
 
 ```
 
