@@ -1,14 +1,14 @@
 # Flr
 
-Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify asserts in `pubspec.yaml` and generate  `R.dart` file after he updates the flutter project asserts. Then flutter developer can apply the assert in code by referencing it's assert ID which defined in `R.dart`.
+Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in `pubspec.yaml` and generate  `R.dart` file after he updates the flutter project assets. Then flutter developer can apply the asset in code by referencing it's asset ID which defined in `R.dart`.
 
 ## Feature
 - auto specify assets in `pubspec.yaml` and generate  `R.dart` file after scanned assets
-- support for processing image asserts( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
-- support for processing text asserts( `.txt`, `.json`, `.yaml`, `.xml` ) 
-- support for processing [image assert variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
-- support for processing assert which’s filename has illegal character(such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters(`0-9`, `A-Z`, `a-z`, `_`,  `$`)
-- support for processing assert which’s filename begins with a number or character `_`  or character`$`
+- support for processing image assets( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
+- support for processing text assets( `.txt`, `.json`, `.yaml`, `.xml` ) 
+- support for processing [image asset variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
+- support for processing asset which’s filename has illegal character(such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters(`0-9`, `A-Z`, `a-z`, `_`,  `$`)
+- support for processing asset which’s filename begins with a number or character `_`  or character`$`
 
 ## Installation & Update Flr
 
@@ -53,9 +53,9 @@ To install or update Flr, run `sudo gem install flr`
 
 ## R.dart
 
-After you run `flr generate`, `flr` will scan the asserts based on the configs in `Flrfile.yaml`, and then generates `R.dart` file and generate assert ID codes in `R.dart`.
+After you run `flr generate`, `flr` will scan the assets based on the configs in `Flrfile.yaml`, and then generates `R.dart` file and generate asset ID codes in `R.dart`.
 
-`R.dart` allows you to  apply the assert in code by referencing it's assert ID. All assert IDs are defined in `R_X` class (such as `R_Image`, `R_Svg`, `R_Text`). Here are some simple examples:
+`R.dart` allows you to  apply the asset in code by referencing it's asset ID. All asset IDs are defined in `R_X` class (such as `R_Image`, `R_Svg`, `R_Text`). Here are some simple examples:
 
 ```dart
 import 'package:flutter_r_demo/R.dart';
