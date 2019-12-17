@@ -25,12 +25,12 @@ module Flr
       Command.init
     end
 
-    desc "generate", "Scan asserts, then auto specify asserts in `pubspec.yaml` and generate `R.dart` file"
+    desc "generate", "Scan assets, then auto specify assets in `pubspec.yaml` and generate `R.dart` file"
     long_desc <<-LONGDESC
-      scan the asserts based on the configs in `Flrfile.yaml`,
-      then auto specify asserts in `pubspec.yaml`,
+      scan the assets based on the configs in `Flrfile.yaml`,
+      then auto specify assets in `pubspec.yaml`,
       and then generate `R.dart` file,
-      and generate assert ID codes in `R.dart`.
+      and generate asset ID codes in `R.dart`.
 
     LONGDESC
     def generate

@@ -87,10 +87,10 @@ assets:
       puts("[√]: init done !!!")
     end
 
-    # scan the asserts based on the configs in `Flrfile.yaml`,
-    # then auto specify asserts in `pubspec.yaml`,
+    # scan the assets based on the configs in `Flrfile.yaml`,
+    # then auto specify assets in `pubspec.yaml`,
     # and then generate `R.dart` file,
-    # and generate assert ID codes in `R.dart`.
+    # and generate asset ID codes in `R.dart`.
     def self.generate()
       flutter_project_root_dir = "#{Pathname.pwd}"
 
@@ -111,26 +111,26 @@ assets:
       flrfile_yaml = YAML.load(flrfile)
       flrfile.close
 
-      image_assert_dir_paths = flrfile_yaml["assets"]["images"]
-      text_assert_dir_paths = flrfile_yaml["assets"]["texts"]
-      all_assert_dir_paths = []
+      image_asset_dir_paths = flrfile_yaml["assets"]["images"]
+      text_asset_dir_paths = flrfile_yaml["assets"]["texts"]
+      all_asset_dir_paths = []
 
-      if image_assert_dir_paths.is_a?(Array)
-        all_assert_dir_paths = all_assert_dir_paths + image_assert_dir_paths
+      if image_asset_dir_paths.is_a?(Array)
+        all_asset_dir_paths = all_asset_dir_paths + image_asset_dir_paths
       end
 
-      if text_assert_dir_paths.is_a?(Array)
-        all_assert_dir_paths = all_assert_dir_paths + text_assert_dir_paths
+      if text_asset_dir_paths.is_a?(Array)
+        all_asset_dir_paths = all_asset_dir_paths + text_asset_dir_paths
       end
 
-      all_assert_dir_paths = all_assert_dir_paths.uniq
+      all_asset_dir_paths = all_asset_dir_paths.uniq
 
       # 需要过滤的资源
       # .DS_Store 是 macOS 下文件夹里默认自带的的隐藏文件
       ignored_asset_basenames = [".DS_Store"]
 
       # 添加资源声明到 `pubspec.yaml`
-      puts("add the assert declarations into `pubspec.yaml` now ...")
+      puts("add the asset declarations into `pubspec.yaml` now ...")
 
       pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
       pubspec_file = File.open(pubspec_path, 'r')
@@ -139,8 +139,8 @@ assets:
 
       package_name = pubspec_yaml["name"]
       flutter_assets = []
-      all_assert_dir_paths.each do |assert_dir_path|
-        specified_assets = FlutterAssertTool.get_asserts_in_dir(assert_dir_path, ignored_asset_basenames, package_name)
+      all_asset_dir_paths.each do |asset_dir_path|
+        specified_assets = FlutterAssetTool.get_assets_in_dir(asset_dir_path, ignored_asset_basenames, package_name)
         flutter_assets = flutter_assets + specified_assets
       end
 
@@ -151,7 +151,7 @@ assets:
       pubspec_file.write(pubspec_yaml.to_yaml)
       pubspec_file.close
 
-      puts("add the assert declarations into `pubspec.yaml` done !!!")
+      puts("add the asset declarations into `pubspec.yaml` done !!!")
 
       # 创建生成 `R.dart`
 
@@ -165,7 +165,7 @@ assets:
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:r_dart_library/assert_svg.dart';
+import 'package:r_dart_library/asset_svg.dart';
 
 /// This `R` class is generated and contains references to static resources.
 class R {
@@ -192,7 +192,7 @@ class R_Image {
         # asset example: packages/flutter_demo/assets/images/hot_foot_N.png
         # file_basename example: hot_foot_N.png
         # asset_basename example: hot_foot_N
-        # assert_dir_name example: assets/images
+        # asset_dir_name example: assets/images
 
         file_extname = File.extname(asset).downcase
 
@@ -209,24 +209,24 @@ class R_Image {
           extinfo[0] = "_"
           asset_basename = asset_basename + extinfo
         end
-        asset_basename = FlutterAssertTool.get_legalize_asset_basename(asset_basename)
+        asset_basename = FlutterAssetTool.get_legalize_asset_basename(asset_basename)
 
 
-        assert_dir_name = asset.dup
-        assert_dir_name["packages/#{package_name}/"] = ""
-        assert_dir_name["/#{file_basename}"] = ""
+        asset_dir_name = asset.dup
+        asset_dir_name["packages/#{package_name}/"] = ""
+        asset_dir_name["/#{file_basename}"] = ""
 
         param_file_basename = file_basename.gsub(/[$]/, "\\$")
-        param_assetName = "#{assert_dir_name}/#{param_file_basename}"
+        param_assetName = "#{asset_dir_name}/#{param_file_basename}"
 
-        assert_declaration = <<-HEREDOC
-  /// assert: "#{assert_dir_name}/#{file_basename}"
+        asset_declaration = <<-HEREDOC
+  /// asset: "#{asset_dir_name}/#{file_basename}"
   // ignore: non_constant_identifier_names
   static const #{asset_basename} = AssetImage("#{param_assetName}", package: R.package);
 
         HEREDOC
 
-        r_dart_file.puts(assert_declaration)
+        r_dart_file.puts(asset_declaration)
 
       end
 
@@ -259,27 +259,27 @@ class R_Svg {
         file_basename = File.basename(asset)
 
         asset_basename = File.basename(asset, ".*")
-        asset_basename = FlutterAssertTool.get_legalize_asset_basename(asset_basename)
+        asset_basename = FlutterAssetTool.get_legalize_asset_basename(asset_basename)
 
-        assert_dir_name = asset.dup
-        assert_dir_name["packages/#{package_name}/"] = ""
-        assert_dir_name["/#{file_basename}"] = ""
+        asset_dir_name = asset.dup
+        asset_dir_name["packages/#{package_name}/"] = ""
+        asset_dir_name["/#{file_basename}"] = ""
 
         param_asset = asset.dup
         param_asset = param_asset.gsub(/[$]/, "\\$")
 
-        assert_declaration = <<-HEREDOC
-  /// assert: #{assert_dir_name}/#{file_basename}
+        asset_declaration = <<-HEREDOC
+  /// asset: #{asset_dir_name}/#{file_basename}
   // ignore: non_constant_identifier_names
-  static AssertSvg #{asset_basename}({@required double width, @required double height}) {
-    var assertFullPath = "#{param_asset}";
-    var imageProvider = AssertSvg(assertFullPath, width: width, height: height);
+  static AssetSvg #{asset_basename}({@required double width, @required double height}) {
+    var assetFullPath = "#{param_asset}";
+    var imageProvider = AssetSvg(assetFullPath, width: width, height: height);
     return imageProvider;
   }
 
         HEREDOC
 
-        r_dart_file.puts(assert_declaration)
+        r_dart_file.puts(asset_declaration)
 
       end
 
@@ -314,27 +314,27 @@ class R_Text {
         extinfo = file_extname
         extinfo[0] = "_"
         asset_basename = asset_basename + extinfo
-        asset_basename = FlutterAssertTool.get_legalize_asset_basename(asset_basename)
+        asset_basename = FlutterAssetTool.get_legalize_asset_basename(asset_basename)
 
-        assert_dir_name = asset.dup
-        assert_dir_name["packages/#{package_name}/"] = ""
-        assert_dir_name["/#{file_basename}"] = ""
+        asset_dir_name = asset.dup
+        asset_dir_name["packages/#{package_name}/"] = ""
+        asset_dir_name["/#{file_basename}"] = ""
 
         param_asset = asset.dup
         param_asset = param_asset.gsub(/[$]/, "\\$")
 
-        assert_declaration = <<-HEREDOC
-  /// assert: #{assert_dir_name}/#{file_basename}
+        asset_declaration = <<-HEREDOC
+  /// asset: #{asset_dir_name}/#{file_basename}
   // ignore: non_constant_identifier_names
   static Future<String> #{asset_basename}() {
-    var assertFullPath = "#{param_asset}";
-    var str = rootBundle.loadString(assertFullPath);
+    var assetFullPath = "#{param_asset}";
+    var str = rootBundle.loadString(assetFullPath);
     return str;
   }
 
         HEREDOC
 
-        r_dart_file.puts(assert_declaration)
+        r_dart_file.puts(asset_declaration)
 
       end
 
@@ -361,13 +361,13 @@ class R_Text {
 
   end
 
-  class FlutterAssertTool
+  class FlutterAssetTool
     # 历指定资源文件夹下所有文件（包括子文件夹），返回资源的依赖说明数组，如
     # ["packages/flutter_demo/assets/images/hot_foot_N.png", "packages/flutter_demo/assets/images/hot_foot_S.png"]
-    def self.get_asserts_in_dir (assert_dir_path, ignored_asset_basenames, package_name)
-      assert_dir_name = assert_dir_path.split("lib/")[1]
+    def self.get_assets_in_dir (asset_dir_path, ignored_asset_basenames, package_name)
+      asset_dir_name = asset_dir_path.split("lib/")[1]
       assets = []
-      Find.find(assert_dir_path) do |path|
+      Find.find(asset_dir_path) do |path|
         if File.file?(path)
           file_basename = File.basename(path)
 
@@ -375,8 +375,8 @@ class R_Text {
             next
           end
 
-          assert = "packages/#{package_name}/#{assert_dir_name}/#{file_basename}"
-          assets << assert
+          asset = "packages/#{package_name}/#{asset_dir_name}/#{file_basename}"
+          assets << asset
         end
       end
       uniq_assets = assets.uniq
@@ -388,7 +388,7 @@ class R_Text {
     # file_basename example: hot_foot_N.png
     # asset_basename example: hot_foot_N
     # file_extname example: .png
-    # assert_dir_name example: assets/images
+    # asset_dir_name example: assets/images
     #
     # 生成合法的asset_basename
     def self.get_legalize_asset_basename (illegal_asset_basename)
