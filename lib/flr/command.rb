@@ -362,7 +362,9 @@ class R_Text {
       puts("[√]: generate done !!!")
     end
 
-    # keep monitoring the asset changes and generating `R.dart` file,
+    # keep monitoring the asset changes,
+    # and then auto specify assets in `pubspec.yaml`,
+    # and generate `R.dart` file,
     # until you manually press Ctrl-C to stop it.
     def self.start_assert_watch()
       flutter_project_root_dir = "#{Pathname.pwd}"
@@ -415,11 +417,11 @@ class R_Text {
         puts("added absolute paths: #{added}")
         puts("removed absolute paths: #{removed}")
         puts("\n")
-        puts("generating `R.dart` now ...")
+        puts("specify assets and generate `R.dart` now ...")
         generate
-        puts("generate `R.dart` done !!!")
+        puts("specify assets and generate `R.dart` done !!!")
         puts("\n")
-        puts("[!]: it's keeping monitoring the asset changes and generating `R.dart` ...")
+        puts("[!]: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
         puts("[*]: you can press Ctrl-C to stop it")
         puts("\n")
       end
@@ -428,7 +430,7 @@ class R_Text {
 
       # https://ruby-doc.org/core-2.5.0/Interrupt.html
       begin
-        puts("[!]: it's keeping monitoring the asset changes and generating `R.dart` ...")
+        puts("[!]: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
         puts("[*]: you can press Ctrl-C to stop it")
         puts("\n")
         loop {}
@@ -440,7 +442,7 @@ class R_Text {
 
     end
 
-    # stop keeping monitoring the asset changes and generating `R.dart` file
+    # stop assert watch task
     def self.stop_assert_watch()
       if @@listener.nil? == false
         @@listener.stop

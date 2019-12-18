@@ -25,9 +25,9 @@ module Flr
       Command.init
     end
 
-    desc "generate", "Scan assets, then auto specify assets in `pubspec.yaml` and generate `R.dart`"
+    desc "generate", "Once scan assets, then auto specify assets in `pubspec.yaml` and generate `R.dart`"
     long_desc <<-LONGDESC
-      scan the assets based on the configs in `Flrfile.yaml`,
+      once scan the assets based on the configs in `Flrfile.yaml`,
       then auto specify assets in `pubspec.yaml`,
       and then generate `R.dart` file,
       and generate asset ID codes in `R.dart`.
@@ -37,9 +37,11 @@ module Flr
       Command.generate
     end
 
-    desc "watch", "Keep monitoring the asset changes and generating `R.dart` until you manually press Ctrl-C"
+    desc "watch", "Keep monitoring the asset changes, and then auto specify assets and generate `R.dart`, until you manually press Ctrl-C"
     long_desc <<-LONGDESC
-      keep monitoring the asset changes and generating `R.dart` file,
+      keep monitoring the asset changes,
+      and then auto specify assets in `pubspec.yaml`,
+      and generate `R.dart` file,
       until you manually press Ctrl-C to stop it.
 
     LONGDESC
