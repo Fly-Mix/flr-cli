@@ -2,15 +2,23 @@
 
 Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in `pubspec.yaml` and generate `R.dart` file after he changes the flutter project assets. Then flutter developer can apply the asset in code by referencing it's asset ID which defined in `R.dart`.
 
+![flr monitor](README_Assets/flr-monitor.gif)
+
 ## Feature
 - Support for two way(once way and monitor way) to auto specify assets in `pubspec.yaml` and generate  `R.dart` file
+
 - Support for monitoring the asset changes
+
 - Support for processing image assets( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
+
 - Support for processing text assets( `.txt`, `.json`, `.yaml`, `.xml` ) 
+
 - Support for processing [image asset variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
+
 - Support for processing asset which’s filename is bad:
    - filename has illegal character(such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters(`0-9`, `A-Z`, `a-z`, `_`,  `$`)
    - filename begins with a number or character `_`  or character`$`
+   
 
 ## Installation & Update Flr
 
