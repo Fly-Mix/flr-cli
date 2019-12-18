@@ -421,7 +421,7 @@ class R_Text {
         generate
         puts("specify assets and generate `R.dart` done !!!")
         puts("\n")
-        puts("[!]: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
+        puts("[!]: the monitor service is runing: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
         puts("[*]: you can press Ctrl-C to stop it")
         puts("\n")
       end
@@ -430,14 +430,14 @@ class R_Text {
 
       # https://ruby-doc.org/core-2.5.0/Interrupt.html
       begin
-        puts("[!]: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
+        puts("[!]: the monitor service is runing: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
         puts("[*]: you can press Ctrl-C to stop it")
         puts("\n")
         loop {}
       rescue Interrupt => e
         stop_assert_monitor
         puts("")
-        puts("[√]: stop watch task done !!!")
+        puts("[√]: stop monitor service done !!!")
       end
 
     end
