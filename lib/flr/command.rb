@@ -1,9 +1,13 @@
 require 'yaml'
 require 'find'
+require 'listen'
 require 'flr/version'
 
 module Flr
   class Command
+
+    # Listen Class Instance
+    @@listener = nil
 
     # show the version of flr
     def self.version()
@@ -358,8 +362,93 @@ class R_Text {
       puts("[√]: generate done !!!")
     end
 
+    # keep monitoring the asset changes and generating `R.dart` file,
+    # until you manually press Ctrl-C to stop it.
+    def self.start_assert_watch()
+      flutter_project_root_dir = "#{Pathname.pwd}"
 
-  end
+      # 读取 Flrfile，获取要搜索的资源目录
+      flrfile_path = "#{flutter_project_root_dir}/Flrfile.yaml"
+
+      # 检测当前目录是否存在 Flrfile.yaml；
+      # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
+      unless File.exist?(flrfile_path)
+        message = <<-HEREDO
+[x]: #{flrfile_path} not found
+[*]: please run `flr init` to fix it
+        HEREDO
+        abort(message)
+      end
+
+      flrfile = File.open(flrfile_path, "r")
+      flrfile_yaml = YAML.load(flrfile)
+      flrfile.close
+
+      image_asset_dir_paths = flrfile_yaml["assets"]["images"]
+      text_asset_dir_paths = flrfile_yaml["assets"]["texts"]
+      all_asset_dir_paths = []
+
+      if image_asset_dir_paths.is_a?(Array)
+        all_asset_dir_paths = all_asset_dir_paths + image_asset_dir_paths
+      end
+
+      if text_asset_dir_paths.is_a?(Array)
+        all_asset_dir_paths = all_asset_dir_paths + text_asset_dir_paths
+      end
+
+      all_asset_dir_paths = all_asset_dir_paths.uniq
+      puts("start monitoring these asset directories:")
+      all_asset_dir_paths.each do |dir_path|
+        puts("- #{dir_path}")
+      end
+      puts("\n")
+
+      stop_assert_watch
+
+      # Allow array of directories as input #92
+      # https://github.com/guard/listen/pull/92
+      @@listener = Listen.to(*all_asset_dir_paths, ignore: [/\.DS_Store/], latency: 0.5, wait_for_delay: 5, relative: true) do |modified, added, removed|
+        # for example: 2013-03-30 03:13:14 +0900
+        now_str = Time.now.to_s
+        puts("-------------------- #{now_str} --------------------")
+        puts("modified absolute paths: #{modified}")
+        puts("added absolute paths: #{added}")
+        puts("removed absolute paths: #{removed}")
+        puts("\n")
+        puts("generating `R.dart` now ...")
+        generate
+        puts("generate `R.dart` done !!!")
+        puts("\n")
+        puts("[!]: it's keeping monitoring the asset changes and generating `R.dart` ...")
+        puts("[*]: you can press Ctrl-C to stop it")
+        puts("\n")
+      end
+      # not blocking
+      @@listener.start
+
+      # https://ruby-doc.org/core-2.5.0/Interrupt.html
+      begin
+        puts("[!]: it's keeping monitoring the asset changes and generating `R.dart` ...")
+        puts("[*]: you can press Ctrl-C to stop it")
+        puts("\n")
+        loop {}
+      rescue Interrupt => e
+        stop_assert_watch
+        puts("")
+        puts("[√]: stop watch task done !!!")
+      end
+
+    end
+
+    # stop keeping monitoring the asset changes and generating `R.dart` file
+    def self.stop_assert_watch()
+      if @@listener.nil? == false
+        @@listener.stop
+        @@listener = nil
+      end
+    end
+
+    end
 
   class FlutterAssetTool
     # 历指定资源文件夹下所有文件（包括子文件夹），返回资源的依赖说明数组，如
