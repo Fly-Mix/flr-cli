@@ -1,14 +1,16 @@
 # Flr
 
-Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in `pubspec.yaml` and generate  `R.dart` file after he updates the flutter project assets. Then flutter developer can apply the asset in code by referencing it's asset ID which defined in `R.dart`.
+Flr(Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in `pubspec.yaml` and generate `R.dart` file after he changes the flutter project assets. Then flutter developer can apply the asset in code by referencing it's asset ID which defined in `R.dart`.
 
 ## Feature
-- auto specify assets in `pubspec.yaml` and generate  `R.dart` file after scanned assets
-- support for processing image assets( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
-- support for processing text assets( `.txt`, `.json`, `.yaml`, `.xml` ) 
-- support for processing [image asset variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
-- support for processing asset which’s filename has illegal character(such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters(`0-9`, `A-Z`, `a-z`, `_`,  `$`)
-- support for processing asset which’s filename begins with a number or character `_`  or character`$`
+- Support for two way(once way and monitor way) to auto specify assets in `pubspec.yaml` and generate  `R.dart` file
+- Support for monitoring the asset changes
+- Support for processing image assets( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
+- Support for processing text assets( `.txt`, `.json`, `.yaml`, `.xml` ) 
+- Support for processing [image asset variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
+- Support for processing asset which’s filename is bad:
+   - filename has illegal character(such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters(`0-9`, `A-Z`, `a-z`, `_`,  `$`)
+   - filename begins with a number or character `_`  or character`$`
 
 ## Installation & Update Flr
 
@@ -18,14 +20,16 @@ To install or update Flr, run `sudo gem install flr`
 
 ## Usage
 
-1. Run `flr init`  in your flutter project directory to generate `Flrfile.yaml` file for current flutter project:
+1. Init your flutter project:
 
     ```
     cd flutter_project_dir
     flr init
     ```
     
-2. Open `Flrfile.yaml`, and and edit it to config the asset directories that needs to be scanned in current flutter project directory:
+    > The `flr init` command generates `Flrfile.yaml` file for project.
+    
+2. Open `Flrfile.yaml`, and edit it to config the asset directories that need to be scanned in your flutter project directory:
 
    ```
     assets:
@@ -43,17 +47,32 @@ To install or update Flr, run `sudo gem install flr`
         - lib/assets/jsons
         - lib/assets/yamls
    ```
-4. Run `flr generate` to generate `R.dart` file for curent flutter project:
 
-     ```
-     flr generate
-     ```
+3. Specify assets and generate `R.dart` for your flutter project, here provides two way for you:
 
-5. After each you updates the assets of current flutter project, just run `flr generate` again.
+     - Once Way：
+
+       ```
+       flr generate
+       ```
+
+       > The `flr generate`  command once specifies assets in `pubspec.yaml` and generates  `R.dart` file for your flutter project.
+
+     - Monitor Way：
+       
+     	```
+     	flr monitor
+     	```
+     	
+     	> The `flr monitor` command runs a monitor service to keep monitoring the asset changes, and then specifies assets in `pubspec.yaml` and generates `R.dart` file for your flutter project, until you manually press Ctrl-C.
+
+4. If you choose the once way to specify assets and generate `R.dart`  , then after each you updates the assets of your flutter project, just run `flr generate` again.
+
+**Attention:**  all commands should be runned in your flutter project root directory.
 
 ## R.dart
 
-After you run `flr generate`, `flr` will scan the assets based on the configs in `Flrfile.yaml`, and then generates `R.dart` file and generate asset ID codes in `R.dart`.
+After you run `flr generate` or `flr monitor`, `flr` will scan the assets based on the configs in `Flrfile.yaml`, and then generates `R.dart` file and generates asset ID codes in `R.dart`.
 
 `R.dart` allows you to  apply the asset in code by referencing it's asset ID. All asset IDs are defined in `R_X` class (such as `R_Image`, `R_Svg`, `R_Text`). Here are some simple examples:
 
