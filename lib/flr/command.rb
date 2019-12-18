@@ -420,6 +420,7 @@ class R_Text {
         puts("specify assets and generate `R.dart` now ...")
         generate
         puts("specify assets and generate `R.dart` done !!!")
+        puts("-------------------------------------------------------------------")
         puts("\n")
         puts("[!]: the monitor service is runing: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
         puts("[*]: you can press Ctrl-C to stop it")
