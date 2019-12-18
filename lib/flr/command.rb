@@ -92,8 +92,8 @@ assets:
     end
 
     # scan the assets based on the configs in `Flrfile.yaml`,
-    # then auto specify assets in `pubspec.yaml`,
-    # and then generate `R.dart` file,
+    # and then auto specify assets in `pubspec.yaml`,
+    # and generate `R.dart` file,
     # and generate asset ID codes in `R.dart`.
     def self.generate()
       flutter_project_root_dir = "#{Pathname.pwd}"
@@ -362,11 +362,11 @@ class R_Text {
       puts("[√]: generate done !!!")
     end
 
-    # keep monitoring the asset changes,
+    # run a monitor service to keep monitoring the asset changes,
     # and then auto specify assets in `pubspec.yaml`,
     # and generate `R.dart` file,
     # until you manually press Ctrl-C to stop it.
-    def self.start_assert_watch()
+    def self.start_assert_monitor()
       flutter_project_root_dir = "#{Pathname.pwd}"
 
       # 读取 Flrfile，获取要搜索的资源目录
@@ -405,7 +405,7 @@ class R_Text {
       end
       puts("\n")
 
-      stop_assert_watch
+      stop_assert_monitor
 
       # Allow array of directories as input #92
       # https://github.com/guard/listen/pull/92
@@ -435,15 +435,15 @@ class R_Text {
         puts("\n")
         loop {}
       rescue Interrupt => e
-        stop_assert_watch
+        stop_assert_monitor
         puts("")
         puts("[√]: stop watch task done !!!")
       end
 
     end
 
-    # stop assert watch task
-    def self.stop_assert_watch()
+    # stop assert monitor task
+    def self.stop_assert_monitor()
       if @@listener.nil? == false
         @@listener.stop
         @@listener = nil
