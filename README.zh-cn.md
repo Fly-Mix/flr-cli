@@ -26,7 +26,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 ## Installation & Update Flr
 
 安装或者更新Flr，只需要在终端执行 `sudo gem install flr`即可。
-> 若你希望在Windows系统下使用Flr，强烈建议你在[WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 环境下安装运行Flr。
+> 若你希望在Windows系统下使用Flr，强烈建议你在[WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 环境下安装和运行。
 
 
 ## Usage
@@ -38,7 +38,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
     flr init
     ```
 
-    >`flr init`命令将会当前项目创建一个`Flrfile.yaml`文件。
+    >`flr init`命令将会为当前项目创建一个`Flrfile.yaml`文件。
     
 2. 打开`Flrfile.yaml`文件，然后按照文件内的提示进行编辑，配置需要Flr扫描的资源目录路径，如：
 
