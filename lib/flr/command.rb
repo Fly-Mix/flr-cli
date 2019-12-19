@@ -289,6 +289,7 @@ class R_Svg {
 
       r_svg_declaration_footer = <<-HEREDOC
 }
+
       HEREDOC
       r_dart_file.puts(r_svg_declaration_footer)
 
