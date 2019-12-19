@@ -14,7 +14,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 📖 *其他语言版本：[English](README.md)、 [简体中文](README.zh-cn.md)*
 
 ## Feature
-- 支持2种方式（一次性方式或者监控方式）来为资源自动添加声明到 `pubspec.yaml` 和生成`R.dart`文件
+- 支持2种触发方式（手动触发和监控触发）来为资源自动添加声明到 `pubspec.yaml` 和生成`R.dart`文件
 - 支持监控资源变化
 - 支持处理图片资源（ `.png`、 `.jpg`、 `.jpeg`、`.gif`、 `.webp`、`.icon`、`.bmp`、`.wbmp`、`.svg` ）
 - 支持处理文本资源（`.txt`、`.json`、`.yaml`、`.xml`）
@@ -59,19 +59,19 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
         - lib/assets/yamls
    ```
 
-3. 为你的项目自动声明资源和创建`R.dart`，此处提供了2种方式：
+3. 自动地为你的项目声明资源和创建`R.dart`——Flr提供了2种触发命令给你去实现它：
 
-     - 一次性方式：
+     - 手动触发：
 
-       ```
+       ```shell
        flr generate
        ```
 
        > `flr generate`命令会为你的项目进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。
      
-     - 监控方式：
+     - 监控触发：
        
-     	```
+     	```shell
      	flr monitor
      	```
      	

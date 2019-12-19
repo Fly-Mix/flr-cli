@@ -15,7 +15,7 @@ Flr (Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which ca
 
 ## Feature
 
-- Support for two way(once way and monitor way) to auto specify assets in `pubspec.yaml` and generate  `R.dart` file
+- Support for two triggers (manual trigger and monitor trigger) to auto specify assets in `pubspec.yaml` and generate  `R.dart` file
 
 - Support for monitoring the asset changes
 
@@ -66,19 +66,19 @@ To install or update Flr, run `sudo gem install flr`
         - lib/assets/yamls
    ```
 
-3. Specify assets and generate `R.dart` for your flutter project, here provides two way for you:
+3. Auto specify assets and generate `R.dart` for your flutter project——Flr provides two trigger commands for you to do it:
 
-     - Once Way：
+     - Manual trigger command:
 
-       ```
+       ```shell
        flr generate
        ```
 
-       > The `flr generate` command does once a assets scan for your project, then specifies scanned assets in `pubspec.yaml`, and generates `R.dart` file.
+       > The `flr generate` command does once a assets scan for your project, then automatically specifies scanned assets in `pubspec.yaml`, and generates `R.dart` file.
 
-     - Monitor Way：
+     - Monitor trigger command:
        
-     	```
+     	```shell
      	flr monitor
      	```
      	
