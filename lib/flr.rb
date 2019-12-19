@@ -36,7 +36,7 @@ module Flr
       Command.generate
     end
 
-    desc "monitor", "Launch a monitoring service, and when detects asset changes, will auto run `generate` task. Press `Ctrl-C` can terminate the service"
+    desc "monitor", "Launch a monitoring service. When detects asset changes, the service will auto run `generate` task. Press `Ctrl-C` can terminate it"
     long_desc <<-LONGDESC
        Launch a monitoring service that continuously monitors asset changes for your project. 
 
