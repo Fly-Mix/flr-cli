@@ -16,7 +16,7 @@ module Flr
     end
 
     # create a `Flrfile.yaml` file for the current directory if none currently exists,
-    # and auto specify package `r_dart_library`(https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml`.
+    # and automatically specify package `r_dart_library`(https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml`.
     def self.init()
       flutter_project_root_dir = "#{Pathname.pwd}"
 
@@ -91,10 +91,9 @@ assets:
       puts("[√]: init done !!!")
     end
 
-    # scan the assets based on the configs in `Flrfile.yaml`,
-    # and then auto specify assets in `pubspec.yaml`,
-    # and generate `R.dart` file,
-    # and generate asset ID codes in `R.dart`.
+    # scan assets,
+    # then automatically specify scanned assets in `pubspec.yaml`,
+    # and generate `R.dart` file.
     def self.generate()
       flutter_project_root_dir = "#{Pathname.pwd}"
 
@@ -363,10 +362,9 @@ class R_Text {
       puts("[√]: generate done !!!")
     end
 
-    # run a monitor service to keep monitoring the asset changes,
-    # and then auto specify assets in `pubspec.yaml`,
-    # and generate `R.dart` file,
-    # until you manually press Ctrl-C to stop it.
+    # Launch a monitoring service that continuously monitors asset changes for your project.
+    # If there are any changes, it will automatically run `generate` task.
+    # You can terminate the service by manually pressing `Ctrl-C`.
     def self.start_assert_monitor()
       flutter_project_root_dir = "#{Pathname.pwd}"
 
