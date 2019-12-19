@@ -84,7 +84,7 @@ To install or update Flr, run `sudo gem install flr`
      	
      	> The `flr monitor` command launches a monitoring service that continuously monitors asset changes for your project. If there are any changes, it will automatically perform a asset scan, then specify scanned assets in `pubspec.yaml`, and generate the `R.dart` file. You can terminate this service by manually pressing `Ctrl-C`.
 
-4. If you choose the "once way" to specify assets and generate `R.dart`, you will need to run `flr generate` every time you change assets.
+4. If you choose the "Manual trigger command" to specify assets and generate `R.dart`, you will need to run `flr generate` every time you change assets.
 
 **Attention:**  all commands MUST be runned in your flutter project root directory.
 
