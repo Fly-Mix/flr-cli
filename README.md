@@ -1,12 +1,20 @@
 # Flr
 
+![ruby](https://img.shields.io/badge/language-ruby-orange.svg) [![Gem Version](https://badge.fury.io/rb/flr.svg)](http://badge.fury.io/rb/flr) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 Flr (Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in `pubspec.yaml` and generate `R.dart` file after he changes the flutter project assets. With `R.dart`,  flutter developer can apply the asset in code by referencing it's asset ID..
 
 ![flr generate](README_Assets/flr-generate.gif)
 
 ![flr monitor](README_Assets/flr-monitor.gif)
 
+
+
+📖 *Read this in other languages: [English](README.md),  [简体中文](README.zh-cn.md)*
+
 ## Feature
+
 - Support for two way(once way and monitor way) to auto specify assets in `pubspec.yaml` and generate  `R.dart` file
 
 - Support for monitoring the asset changes
