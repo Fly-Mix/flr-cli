@@ -14,8 +14,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 📖 *其他语言版本：[English](README.md)、 [简体中文](README.zh-cn.md)*
 
 ## Feature
-- 支持2种触发方式（手动触发和监控触发）来为资源自动添加声明到 `pubspec.yaml` 和生成`R.dart`文件
-- 支持监控资源变化
+- 支持“自动添加资源声明到 `pubspec.yaml` 和自动生成`R.dart`文件”的自动化服务，该服务可以通过手动触发，也可以通过监控资源变化触发
 - 支持处理图片资源（ `.png`、 `.jpg`、 `.jpeg`、`.gif`、 `.webp`、`.icon`、`.bmp`、`.wbmp`、`.svg` ）
 - 支持处理文本资源（`.txt`、`.json`、`.yaml`、`.xml`）
 - 支持处理[图片资源变体](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
@@ -59,25 +58,26 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
         - lib/assets/yamls
    ```
 
-3. 自动地为你的项目声明资源和创建`R.dart`——Flr提供了2种触发命令给你去实现它：
+3. 监控资源变化，然后自动为你的项目声明资源和创建`R.dart`：
 
-     - 手动触发：
+	```shell
+    flr monitor
+	```
+   
+	> `flr monitor`命令会启动运行一个监控服务，这个服务会为你的项目持续监控资源变化，若资源有变化，就会自动进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。你可以通过手动输入`Ctrl-C`来终止这个服务。
 
-       ```shell
-       flr generate
-       ```
+4. 输入`Ctrl-C`终止监控服务
 
-       > `flr generate`命令会为你的项目进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。
-     
-     - 监控触发：
-       
-     	```shell
-     	flr monitor
-     	```
-     	
-     	> `flr monitor`命令会启动运行一个监控服务，这个服务会为你的项目持续监控资源变化，若资源有变化，就会自动进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。你可以通过手动输入`Ctrl-C`来终止这个服务。
 
-4. 如果你选择了“手动触发命令”来为资源添加声明和生成`R.dart`，那么每次你更新资源后，都需要执行一次`flr generate`。
+
+若你希望手动触发自动化服务为你的项目自动声明资源和创建`R.dart`，你可以运行这个命令：*
+
+```shell
+flr generate
+```
+> *`flr generate`命令会为你的项目进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。*
+
+
 
 **注意：** 以上所有命令都必须在你的flutter项目的根目录下执行。
 

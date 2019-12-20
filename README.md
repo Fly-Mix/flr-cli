@@ -15,16 +15,13 @@ Flr (Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which ca
 
 ## Feature
 
-- Support for two triggers (manual trigger and monitor trigger) to auto specify assets in `pubspec.yaml` and generate  `R.dart` file
-
+- Support auto service that automatically specify assets in `pubspec.yaml` and generate  `R.dart` file,  which can be triggered manually or by monitoring asset changes
+- Support for auto specify assets in `pubspec.yaml` and generate  `R.dart` file by manually or monitoring asset changes
+-  two triggers (manual trigger and monitor trigger) to trigger the auto service which can automatically specify assets in `pubspec.yaml` and generate  `R.dart` file
 - Support for monitoring the asset changes
-
 - Support for processing image assets ( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
-
 - Support for processing text assets ( `.txt`, `.json`, `.yaml`, `.xml` ) 
-
 - Support for processing [image asset variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
-
 - Support for processing asset which’s filename is bad:
    - filename has illegal character (such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters (`0-9`, `A-Z`, `a-z`, `_`,  `$`)
    - filename begins with a number or character `_`  or character`$`
@@ -66,25 +63,26 @@ To install or update Flr, run `sudo gem install flr`
         - lib/assets/yamls
    ```
 
-3. Auto specify assets and generate `R.dart` for your flutter project——Flr provides two trigger commands for you to do it:
+3. Monitor the asset changes and auto specify assets and generate `R.dart` for your flutter project:
 
-     - Manual trigger command:
+     ```shell
+     flr monitor
+     ```
 
-       ```shell
-       flr generate
-       ```
+     > The `flr monitor` command launches a monitoring service that continuously monitors asset changes for your project. If there are any changes, it will automatically perform a asset scan, then specify scanned assets in `pubspec.yaml`, and generate the `R.dart` file. You can terminate this service by manually pressing `Ctrl-C`.
 
-       > The `flr generate` command does once a assets scan for your project, then automatically specifies scanned assets in `pubspec.yaml`, and generates `R.dart` file.
+4. Press `Ctrl-C` to terminate the monitoring service if you want. 
 
-     - Monitor trigger command:
-       
-     	```shell
-     	flr monitor
-     	```
-     	
-     	> The `flr monitor` command launches a monitoring service that continuously monitors asset changes for your project. If there are any changes, it will automatically perform a asset scan, then specify scanned assets in `pubspec.yaml`, and generate the `R.dart` file. You can terminate this service by manually pressing `Ctrl-C`.
 
-4. If you choose the "Manual trigger command" to specify assets and generate `R.dart`, you will need to run `flr generate` every time you change assets.
+
+If you want to manually trigger the auto service which can automatically specify assets and generate `R.dart ` for your flutter project, you can run this command:*  
+
+```shell
+flr generate
+```
+> *The `flr generate` command does once a assets scan for your project, then automatically specifies scanned assets in `pubspec.yaml`, and generates `R.dart` file.*
+
+
 
 **Attention:**  all commands MUST be runned in your flutter project root directory.
 
