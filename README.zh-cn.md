@@ -70,7 +70,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 
 
 
-若你希望手动触发自动化服务为你的项目自动声明资源和创建`R.dart`，你可以运行这个命令：*
+*若你希望手动触发自动化服务为你的项目自动声明资源和创建`R.dart`，你可以运行这个命令：*
 
 ```shell
 flr generate

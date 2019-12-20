@@ -75,7 +75,7 @@ To install or update Flr, run `sudo gem install flr`
 
 
 
-If you want to manually trigger the auto service which can automatically specify assets and generate `R.dart ` for your flutter project, you can run this command:*  
+*If you want to manually trigger the auto service which can automatically specify assets and generate `R.dart ` for your flutter project, you can run this command:*  
 
 ```shell
 flr generate
