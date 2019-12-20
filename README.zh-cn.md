@@ -79,7 +79,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 
 4. 如果你选择了“手动触发命令”来为资源添加声明和生成`R.dart`，那么每次你更新资源后，都需要执行一次`flr generate`。
 
-**注意：**以上所有命令都必须在你的flutter项目的根目录下执行。
+**注意：** 以上所有命令都必须在你的flutter项目的根目录下执行。
 
 ## R.dart
 
