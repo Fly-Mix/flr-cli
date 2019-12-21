@@ -5,10 +5,7 @@
 
 Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具，用于帮助flutter开发者在修改项目资源后，可以自动为资源添加声明到 `pubspec.yaml` 以及生成`R.dart`文件。借助`R.dart`，flutter开发者可以在代码中通过资源ID的方式应用资源。
 
-![flr generate](README_Assets/flr-generate.gif)
-
-![flr monitor](README_Assets/flr-monitor.gif)
-
+![Flr Usage Example](README_Assets/flr-usage-example.gif)
 
 
 📖 *其他语言版本：[English](README.md)、 [简体中文](README.zh-cn.md)*
@@ -60,11 +57,15 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 
 3. 监控资源变化，然后自动为你的项目声明资源和创建`R.dart`：
 
-	```shell
-    flr monitor
-	```
-   
-	> `flr monitor`命令会启动运行一个监控服务，这个服务会为你的项目持续监控资源变化，若资源有变化，就会自动进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。你可以通过手动输入`Ctrl-C`来终止这个服务。
+  ```shell
+   flr monitor
+  ```
+
+  > `flr monitor`命令会启动一个持续监控资源变化的服务。
+  >
+  > 若该服务发现资源有变化，就会自动执行`flr generate`命令。`flr generate`会为你的项目进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。
+  >
+  > 你可以通过手动输入`Ctrl-C`来终止这个监控服务。
 
 4. 输入`Ctrl-C`终止监控服务
 

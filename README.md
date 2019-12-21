@@ -5,10 +5,7 @@
 
 Flr (Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in `pubspec.yaml` and generate `R.dart` file after he changes the flutter project assets. With `R.dart`,  flutter developer can apply the asset in code by referencing it's asset ID..
 
-![flr generate](README_Assets/flr-generate.gif)
-
-![flr monitor](README_Assets/flr-monitor.gif)
-
+![Flr Usage Example](README_Assets/flr-usage-example.gif)
 
 
 📖 *Read this in other languages: [English](README.md),  [简体中文](README.zh-cn.md)*
@@ -69,7 +66,11 @@ To install or update Flr, run `sudo gem install flr`
      flr monitor
      ```
 
-     > The `flr monitor` command launches a monitoring service that continuously monitors asset changes for your project. If there are any changes, it will automatically perform a asset scan, then specify scanned assets in `pubspec.yaml`, and generate the `R.dart` file. You can terminate this service by manually pressing `Ctrl-C`.
+     > The `flr monitor` command launches a monitoring service that continuously monitors asset changes for your project. 
+     >
+     > If there are any changes, it will automatically execute `flr generate` command which will perform a asset scan, then automatically specify scanned assets in `pubspec.yaml`, and generate the `R.dart` file. 
+     >
+     > You can terminate this monitoring service by manually pressing `Ctrl-C`.
 
 4. Press `Ctrl-C` to terminate the monitoring service if you want. 
 
