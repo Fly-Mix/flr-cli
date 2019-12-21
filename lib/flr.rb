@@ -36,12 +36,13 @@ module Flr
       Command.generate
     end
 
-    desc "monitor", "Launch a monitoring service. When detects asset changes, the service will auto run `generate` task. Press `Ctrl-C` can terminate it"
+    desc "monitor", "Launch a monitoring service. When detects asset changes, the service will auto execute `flr generate`. Press `Ctrl-C` can terminate it"
     long_desc <<-LONGDESC
        Launch a monitoring service that continuously monitors asset changes for your project. 
 
-       If there are any changes, it will automatically perform a assets scan,
-       then specify scanned assets in `pubspec.yaml`,
+       If there are any changes, it will automatically execute `flr generate` command which 
+       will perform a assets scan,
+       then automatically specify scanned assets in `pubspec.yaml`,
        and generate the `R.dart` file.
 
        You can terminate the service by manually pressing `Ctrl-C`.

@@ -81,7 +81,7 @@ assets:
 
       puts("add dependency `r_dart_library`(https://github.com/YK-Unit/r_dart_library) into pubspec.yaml done!")
 
-      puts "get dependency `r_dart_library` via run `flutter pub get` now ..."
+      puts "get dependency `r_dart_library` via execute `flutter pub get` now ..."
 
       get_flutter_pub_cmd = "flutter pub get"
       system(get_flutter_pub_cmd)
@@ -352,18 +352,18 @@ class R_Text {
       r_dart_file.close
       puts "generate R.dart done !!!"
 
-      puts "run `flutter pub get` now ..."
+      puts "execute `flutter pub get` now ..."
 
       get_flutter_pub_cmd = "flutter pub get"
       system(get_flutter_pub_cmd)
 
-      puts "run `flutter pub get` done !!!"
+      puts "execute `flutter pub get` done !!!"
 
       puts("[√]: generate done !!!")
     end
 
     # Launch a monitoring service that continuously monitors asset changes for your project.
-    # If there are any changes, it will automatically run `generate` task.
+    # If there are any changes, it will automatically execute `flr generate`.
     # You can terminate the service by manually pressing `Ctrl-C`.
     def self.start_assert_monitor()
       flutter_project_root_dir = "#{Pathname.pwd}"
@@ -381,6 +381,20 @@ class R_Text {
         abort(message)
       end
 
+      puts("execute `fly generate` and launch a monitoring service")
+      puts("\n")
+
+      now_str = Time.now.to_s
+      puts("-------------------- #{now_str} --------------------")
+      puts("execute `fly generate` now ...")
+      puts("\n")
+      generate
+      puts("\n")
+      puts("execute `fly generate` done !!!")
+      puts("specify assets and generate `R.dart` done !!!")
+      puts("-------------------------------------------------------------------")
+      puts("\n")
+
       flrfile = File.open(flrfile_path, "r")
       flrfile_yaml = YAML.load(flrfile)
       flrfile.close
@@ -397,14 +411,20 @@ class R_Text {
         all_asset_dir_paths = all_asset_dir_paths + text_asset_dir_paths
       end
 
+      now_str = Time.now.to_s
+      puts("-------------------- #{now_str} --------------------")
+      puts("launch a monitoring service now ...")
+      puts("launching ...")
+      # stop the monitoring service if exists
+      stop_assert_monitor
+      puts("launch a monitoring service done !!!")
       all_asset_dir_paths = all_asset_dir_paths.uniq
-      puts("start monitoring these asset directories:")
+      puts("the monitoring service is monitoring these asset directories:")
       all_asset_dir_paths.each do |dir_path|
         puts("- #{dir_path}")
       end
+      puts("-------------------------------------------------------------------")
       puts("\n")
-
-      stop_assert_monitor
 
       # Allow array of directories as input #92
       # https://github.com/guard/listen/pull/92
@@ -415,14 +435,16 @@ class R_Text {
         puts("modified absolute paths: #{modified}")
         puts("added absolute paths: #{added}")
         puts("removed absolute paths: #{removed}")
+        puts("execute `fly generate` now ...")
         puts("\n")
-        puts("specify assets and generate `R.dart` now ...")
         generate
+        puts("\n")
+        puts("execute `fly generate` done !!!")
         puts("specify assets and generate `R.dart` done !!!")
         puts("-------------------------------------------------------------------")
         puts("\n")
-        puts("[!]: the monitor service is runing: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
-        puts("[*]: you can press Ctrl-C to stop it")
+        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `R.dart` ...")
+        puts("[*]: you can press `Ctrl-C` to terminate it")
         puts("\n")
       end
       # not blocking
@@ -430,14 +452,14 @@ class R_Text {
 
       # https://ruby-doc.org/core-2.5.0/Interrupt.html
       begin
-        puts("[!]: the monitor service is runing: it's keeping monitoring the asset changes, and then auto specify assets and generate `R.dart` ...")
-        puts("[*]: you can press Ctrl-C to stop it")
+        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `R.dart` ...")
+        puts("[*]: you can press `Ctrl-C` to terminate it")
         puts("\n")
         loop {}
       rescue Interrupt => e
         stop_assert_monitor
         puts("")
-        puts("[√]: stop monitor service done !!!")
+        puts("[√]: terminate monitor service done !!!")
       end
 
     end
