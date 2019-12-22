@@ -39,7 +39,7 @@ To install or update Flr, run `sudo gem install flr`
     flr init
     ```
     
-    > The `flr init` command generates `Flrfile.yaml` file for project.
+    > The `flr init` command generates `Flrfile.yaml` file and specifies package [r_dart_library](https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml` for project.
     
 2. Open `Flrfile.yaml` file, and edit it according to the prompts in the file to configure the asset directory paths that needs to be scanned by Flr, such as:
 

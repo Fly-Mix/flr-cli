@@ -34,7 +34,7 @@
     flr init
     ```
 
-    >`flr init`命令将会为当前项目创建一个`Flrfile.yaml`文件。
+    >`flr init`命令将会为当前项目创建一个`Flrfile.yaml`文件，以及在`pubspec.yaml`中添加 [r_dart_library](https://github.com/YK-Unit/r_dart_library) 依赖库的声明。
     
 2. 打开`Flrfile.yaml`文件，然后按照文件内的提示进行编辑，配置需要`Flr`扫描的资源目录路径，如：
 
