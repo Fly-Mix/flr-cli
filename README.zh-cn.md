@@ -63,7 +63,7 @@
 
     > `flr monitor`命令会启动一个持续监控资源变化的服务。
     >
-    > 若该服务发现资源有变化，就会自动执行`flr generate`命令。`flr generate`会为你的项目进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。
+    > 该监控服务会对`Flrfile.yaml`中配置的资源目录进行监控，若发现这些目录下的资源有变化，就会自动执行`flr generate`命令。`flr generate`命令会对`Flrfile.yaml`中配置的资源目录进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。
     >
     > 你可以通过手动输入`Ctrl-C`来终止这个监控服务。
 
@@ -76,7 +76,7 @@
 ```shell
 flr generate
 ```
-> *`flr generate`命令会为你的项目进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。*
+> *`flr generate`命令会对`Flrfile.yaml`中配置的资源目录进行一次资源扫描，然后为扫描到的资源添加声明到`pubspec.yaml`，并生成`R.dart`文件。*
 
 
 

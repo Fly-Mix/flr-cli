@@ -68,7 +68,7 @@ To install or update Flr, run `sudo gem install flr`
 
      > The `flr monitor` command launches a monitoring service that continuously monitors asset changes for your project. 
      >
-     > If there are any changes, it will automatically execute `flr generate` command which will perform a asset scan, then automatically specify scanned assets in `pubspec.yaml`, and generate the `R.dart` file. 
+     > The monitoring service monitors the asset directories configured in `Flrfile.yaml`, and if it detects any asset changes, it will automatically execute `flr generate` command which will perform a assets scan for the asset directories configured in `Flrfile.yaml`, then automatically specifies scanned assets in `pubspec.yaml`, and generates `R.dart` file. 
      >
      > You can terminate this monitoring service by manually pressing `Ctrl-C`.
 
@@ -81,7 +81,7 @@ To install or update Flr, run `sudo gem install flr`
 ```shell
 flr generate
 ```
-> *The `flr generate` command does once a assets scan for your project, then automatically specifies scanned assets in `pubspec.yaml`, and generates `R.dart` file.*
+> *The `flr generate` command does once a assets scan for the asset directories configured in `Flrfile.yaml`, then automatically specifies scanned assets in `pubspec.yaml`, and generates `R.dart` file.*
 
 
 
