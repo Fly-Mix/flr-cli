@@ -84,7 +84,7 @@ flr generate
 
 ## R.dart
 
-在你执行`flr generate`或者`flr monitor`命令后，`Flr`会根据`Flrfile.yaml`中的资源目录配置，自动扫描资源，并为扫描到的资源添加声明到`pubspec.yaml`，以及生成`R.dart`。
+在你运行`flr generate`或者`flr monitor`命令后，`Flr`会根据`Flrfile.yaml`中的资源目录配置，自动扫描资源，并为扫描到的资源添加声明到`pubspec.yaml`，以及生成`R.dart`。
 
 `R.dart`中定义了几个`R_X`资源管理类：`R_Image`、`R_Svg`、`R_Text`。这些资源管理类用于管理各自资源类型的资源ID：
 
