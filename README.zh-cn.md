@@ -21,7 +21,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 
 ## Installation & Update Flr
 
-安装或者更新Flr，只需要在终端执行 `sudo gem install flr`即可。
+安装或者更新Flr，只需要在终端运行一句命令即可： `sudo gem install flr`。
 > 若你希望在Windows系统下使用Flr，强烈建议你在[WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 环境下安装和运行。
 
 
