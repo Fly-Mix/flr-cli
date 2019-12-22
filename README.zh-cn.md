@@ -3,7 +3,7 @@
 ![ruby](https://img.shields.io/badge/language-ruby-orange.svg) [![Gem Version](https://badge.fury.io/rb/flr.svg)](http://badge.fury.io/rb/flr) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具，用于帮助flutter开发者在修改项目资源后，可以自动为资源添加声明到 `pubspec.yaml` 以及生成`R.dart`文件。借助`R.dart`，flutter开发者可以在代码中通过资源ID的方式应用资源。
+Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具，用于帮助Flutter开发者在修改项目资源后，可以自动为资源添加声明到 `pubspec.yaml` 以及生成`R.dart`文件。借助`R.dart`，Flutter开发者可以在代码中通过资源ID的方式应用资源。
 
 ![Flr Usage Example](README_Assets/flr-usage-example.gif)
 
@@ -27,7 +27,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 
 ## Usage
 
-1. 初始化你的flutter项目：
+1. 初始化你的Flutter项目：
 
     ```
     cd flutter_project_dir
@@ -80,7 +80,7 @@ flr generate
 
 
 
-**注意：** 以上所有命令都必须在你的flutter项目的根目录下执行。
+**注意：** 以上所有命令都必须在你的Flutter项目的根目录下执行。
 
 ## R.dart
 
@@ -92,7 +92,7 @@ flr generate
 - `R_Svg`：管理SVG类图片资源的资源ID
 - `R_Text`：管理文本资源类（`.txt`、`.json`、`.yaml`、`.xml`）的资源ID
 
-`R.dart`可以让flutter开发者在代码中通过资源ID的方式应用资源，以下是一些简单示例：
+`R.dart`可以让Flutter开发者在代码中通过资源ID的方式应用资源，以下是一些简单示例：
 
 ```dart
 import 'package:flutter_r_demo/R.dart';
@@ -126,7 +126,7 @@ var yamlString = await R_Text.a____test_yaml();
 
 ## Example
 
-这里提供了一个[Flutter-R Demo](https://github.com/YK-Unit/flutter_r_demo)来展示如何在flutter项目中使用Flr工具和在代码中如何使用`R.dart`。
+这里提供了一个[Flutter-R Demo](https://github.com/YK-Unit/flutter_r_demo)来展示如何在Flutter项目中使用Flr工具和在代码中如何使用`R.dart`。
 
 ## License
 
