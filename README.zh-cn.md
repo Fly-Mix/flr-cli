@@ -3,7 +3,7 @@
 ![ruby](https://img.shields.io/badge/language-ruby-orange.svg) [![Gem Version](https://badge.fury.io/rb/flr.svg)](http://badge.fury.io/rb/flr) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具，用于帮助Flutter开发者在修改项目资源后，可以自动为资源添加声明到 `pubspec.yaml` 以及生成`R.dart`文件。借助`R.dart`，Flutter开发者可以在代码中通过资源ID的方式应用资源。
+`Flr`（Flutter-R）：一个类似 `AAPT`（Android Asset Packaging Tool）的`CLI`工具，用于帮助Flutter开发者在修改项目资源后，可以自动为资源添加声明到 `pubspec.yaml` 以及生成`R.dart`文件。借助`R.dart`，Flutter开发者可以在代码中通过资源ID的方式应用资源。
 
 ![Flr Usage Example](README_Assets/flr-usage-example.gif)
 
@@ -21,7 +21,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 
 ## Installation & Update Flr
 
-安装或者更新Flr，只需要在终端运行一句命令即可： `sudo gem install flr`。
+安装或者更新`Flr`，只需要在终端运行一句命令即可： `sudo gem install flr`。
 > 若你希望在Windows系统下使用Flr，强烈建议你在[WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 环境下安装和运行。
 
 
@@ -36,7 +36,7 @@ Flr(Flutter-R)：一个类似 `AAPT`(Android Asset Packaging Tool)的CLI工具�
 
     >`flr init`命令将会为当前项目创建一个`Flrfile.yaml`文件。
     
-2. 打开`Flrfile.yaml`文件，然后按照文件内的提示进行编辑，配置需要Flr扫描的资源目录路径，如：
+2. 打开`Flrfile.yaml`文件，然后按照文件内的提示进行编辑，配置需要`Flr`扫描的资源目录路径，如：
 
    ```
     assets:
@@ -84,7 +84,7 @@ flr generate
 
 ## R.dart
 
-在你执行`flr generate`或者`flr monitor`命令后，Flr会根据`Flrfile.yaml`中的资源目录配置，自动扫描资源，并为扫描到的资源添加声明到`pubspec.yaml`，以及生成`R.dart`。
+在你执行`flr generate`或者`flr monitor`命令后，`Flr`会根据`Flrfile.yaml`中的资源目录配置，自动扫描资源，并为扫描到的资源添加声明到`pubspec.yaml`，以及生成`R.dart`。
 
 `R.dart`中定义了几个`R_X`资源管理类：`R_Image`、`R_Svg`、`R_Text`。这些资源管理类用于管理各自资源类型的资源ID：
 
@@ -126,7 +126,7 @@ var yamlString = await R_Text.a____test_yaml();
 
 ## Example
 
-这里提供了一个[Flutter-R Demo](https://github.com/YK-Unit/flutter_r_demo)来展示如何在Flutter项目中使用Flr工具和在代码中如何使用`R.dart`。
+这里提供了一个[Flutter-R Demo](https://github.com/YK-Unit/flutter_r_demo)来展示如何在Flutter项目中使用`Flr`工具和在代码中如何使用`R.dart`。
 
 ## License
 
