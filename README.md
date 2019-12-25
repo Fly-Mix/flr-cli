@@ -40,6 +40,12 @@ To install or update Flr, run `sudo gem install flr`
     ```
     
     > The `flr init` command generates `Flrfile.yaml` file and specifies package [r_dart_library](https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml` for project.
+    >
+    > **Attention:**
+    >
+    > The Flutter SDK is currently in an unstable state, so if you get a build error of `r_dart_library` , you can fix it by modify the dependent version of `r_dart_library`.
+    >
+    > You can select the correct version of `r_dart_library` based on this [dependency relationship table](https://github.com/YK-Unit/r_dart_library#dependency-relationship-table).
     
 2. Open `Flrfile.yaml` file, and edit it according to the prompts in the file to configure the asset directory paths that needs to be scanned by Flr, such as:
 

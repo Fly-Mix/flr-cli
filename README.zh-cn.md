@@ -35,6 +35,12 @@
     ```
 
     >`flr init`命令将会为当前项目创建一个`Flrfile.yaml`文件，以及在`pubspec.yaml`中添加 [r_dart_library](https://github.com/YK-Unit/r_dart_library) 依赖库的声明。
+    >
+    >**注意：**
+    >
+    >Flutter SDK目前处于不稳定的状态，因此若你遇到`r_dart_library`的编译错误，你可以尝试通过修改`r_dart_library`的依赖版本来修复它。
+    >
+    >你可以根据这个[依赖版本关系表](https://github.com/YK-Unit/r_dart_library#dependency-relationship-table)来选择`r_dart_library`的正确版本。
     
 2. 打开`Flrfile.yaml`文件，然后按照文件内的提示进行编辑，配置需要`Flr`扫描的资源目录路径，如：
 
