@@ -70,7 +70,7 @@ assets:
       pubspec_file.close
       dependencies = pubspec_yaml["dependencies"]
 
-      r_dart_library = Hash["git" => Hash["url"  => "git@github.com:YK-Unit/r_dart_library.git"]]
+      r_dart_library = Hash["git" => Hash["url"  => "https://github.com/YK-Unit/r_dart_library.git"]]
       dependencies["r_dart_library"] = r_dart_library
 
       pubspec_yaml["dependencies"] = dependencies
