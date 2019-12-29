@@ -30,6 +30,10 @@ To install or update Flr, run `sudo gem install flr`
 
 > If you want to use Flr tool on the Windows system, you are strongly recommended to run it on [WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) environment !!! 
 
+## Uninstall Flr
+
+To uninstall  Flr run `sudo gem uninstall flr`
+
 ## Usage
 
 1. Init your flutter project:
