@@ -10,14 +10,14 @@ module Flr
     @@listener = nil
 
     # show the version of flr
-    def self.version()
+    def self.version
       version_desc = "flr version #{Flr::VERSION}"
       puts(version_desc)
     end
 
     # create a `Flrfile.yaml` file for the current directory if none currently exists,
     # and automatically specify package `r_dart_library`(https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml`.
-    def self.init()
+    def self.init
       flutter_project_root_dir = "#{Pathname.pwd}"
 
       flrfile_path = flutter_project_root_dir + "/Flrfile.yaml"
@@ -93,8 +93,8 @@ assets:
 
     # scan assets,
     # then automatically specify scanned assets in `pubspec.yaml`,
-    # and generate `R.dart` file.
-    def self.generate()
+    # and generate `r.g.dart` file.
+    def self.generate
       flutter_project_root_dir = "#{Pathname.pwd}"
 
       # 读取 Flrfile，获取要搜索的资源目录
@@ -110,9 +110,9 @@ assets:
         abort(message)
       end
 
-      flrfile = File.open(flrfile_path, "r")
-      flrfile_yaml = YAML.load(flrfile)
-      flrfile.close
+      flrfile_file = File.open(flrfile_path, "r")
+      flrfile_yaml = YAML.load(flrfile_file)
+      flrfile_file.close
 
       image_asset_dir_paths = flrfile_yaml["assets"]["images"]
       text_asset_dir_paths = flrfile_yaml["assets"]["texts"]
@@ -156,41 +156,182 @@ assets:
 
       puts("add the asset declarations into `pubspec.yaml` done !!!")
 
-      # 创建生成 `R.dart`
+      # 创建生成 `r.g.dart`
 
-      puts("generate R.dart now ...")
+      puts("generate r.g.dart now ...")
 
-      r_dart_path = "#{flutter_project_root_dir}/lib/R.dart"
+      r_dart_path = "#{flutter_project_root_dir}/lib/r.g.dart"
       r_dart_file = File.open(r_dart_path,"w")
 
+      # ----- R Begin -----
+
       # 生成 `class R` 的代码
-      r_declaration = <<-CODE
+      r_code = <<-CODE
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// Flr CLI: https://github.com/Fly-Mix/flr-cli
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:r_dart_library/asset_svg.dart';
 
-/// This `R` class is generated and contains references to static resources.
+/// This `R` class is generated and contains references to static asset resources.
 class R {
   /// package name: #{package_name}
   static const package = "#{package_name}";
+
+  /// This `R.image` struct is generated, and contains static references to static non-svg type image asset resources.
+  static const image = _R_Image();
+
+  /// This `R.svg` struct is generated, and contains static references to static svg type image asset resources.
+  static const svg = _R_Svg();
+
+  /// This `R.text` struct is generated, and contains static references to static text asset resources.
+  static const text = _R_Text();
 }
 
-      CODE
-      r_dart_file.puts(r_declaration)
+class AssetResource {
+  /// Creates an object that fetches an asset resource from an asset bundle.
+  const AssetResource(
+    this.assetName, {
+    this.package,
+  }) : assert(assetName != null);
 
-      # 生成 `class R_Image` 的代码
-      r_image_declaration_header = <<-CODE
-/// Because dart does not support nested class, so use class `R_Image` to replace nested class `R.Image`
+  /// The name of the main asset from the set of asset resources to choose from.
+  final String assetName;
+
+  /// The name used to generate the key to obtain the asset resource. For local assets
+  /// this is [assetName], and for assets from packages the [assetName] is
+  /// prefixed 'packages/<package_name>/'.
+  String get keyName => package == null ? assetName : 'packages/$package/$assetName';
+
+  /// The name of the package from which the asset resource is included.
+  final String package;
+}
+      CODE
+      r_dart_file.puts(r_code)
+
+      # ----- R End -----
+
+      supported_asset_images = %w(.png .jpg .jpeg .gif .webp .icon .bmp .wbmp)
+      supported_asset_texts = %w(.txt .json .yaml .xml)
+
+      # ----- _R_Image_AssetResource Begin -----
+
+      # 生成 `class _R_Image_AssetResource` 的代码
+      r_image_assetResource_code_header = <<-CODE
+      
 // ignore: camel_case_types
-class R_Image {
-
+class _R_Image_AssetResource {
+  const _R_Image_AssetResource();
       CODE
-      r_dart_file.puts(r_image_declaration_header)
+      r_dart_file.puts(r_image_assetResource_code_header)
+
+      uniq_flutter_assets.each do |asset|
+
+        file_extname = File.extname(asset).downcase
+
+        # 如果当前不是支持的图片资源，则跳过
+        unless supported_asset_images.include?(file_extname)
+          next
+        end
+
+        r_dart_file.puts("")
+
+        assetResource_code = FlutterAssetTool.generate_assetResource_code(asset, package_name,".png")
+        r_dart_file.puts(assetResource_code)
+
+      end
+
+      r_image_assetResource_code_footer = <<-CODE
+}
+      CODE
+      r_dart_file.puts(r_image_assetResource_code_footer)
+
+      # ----- _R_Image_AssetResource End -----
 
 
-      supported_asset_images = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".icon", ".bmp", ".wbmp"]
-      # 根据遍历得到的静态资源数组，生成对应变量声明，写入到 `R.dart` 中
+      # ----- _R_Svg_AssetResource Begin -----
+
+      # 生成 `class _R_Svg_AssetResourceg` 的代码
+      r_svg_assetResource_code_header = <<-CODE
+      
+// ignore: camel_case_types
+class _R_Svg_AssetResource {
+  const _R_Svg_AssetResource();
+      CODE
+      r_dart_file.puts(r_svg_assetResource_code_header)
+
+      uniq_flutter_assets.each do |asset|
+
+        file_extname = File.extname(asset).downcase
+
+        # 如果当前不是支持的图片资源，则跳过
+        unless file_extname.eql?(".svg")
+          next
+        end
+
+        r_dart_file.puts("")
+
+        assetResource_code = FlutterAssetTool.generate_assetResource_code(asset, package_name, ".svg")
+        r_dart_file.puts(assetResource_code)
+
+      end
+
+      r_svg_assetResource_code_footer = <<-CODE
+}
+      CODE
+      r_dart_file.puts(r_svg_assetResource_code_footer)
+      # ----- _R_Svg_AssetResource End -----
+
+      # ----- _R_Text_AssetResource Begin -----
+
+      # 生成 `class _R_Text_AssetResource` 的代码
+      r_text_assetResource_code_header = <<-CODE
+      
+// ignore: camel_case_types
+class _R_Text_AssetResource {
+  const _R_Text_AssetResource();
+      CODE
+      r_dart_file.puts(r_text_assetResource_code_header)
+
+      uniq_flutter_assets.each do |asset|
+
+        file_extname = File.extname(asset).downcase
+
+        # 如果当前不是支持的文本资源，则跳过
+        unless supported_asset_texts.include?(file_extname)
+          next
+        end
+
+        r_dart_file.puts("")
+
+        assetResource_code = FlutterAssetTool.generate_assetResource_code(asset, package_name)
+        r_dart_file.puts(assetResource_code)
+
+      end
+
+      r_text_assetResource_code_footer = <<-CODE
+}
+      CODE
+      r_dart_file.puts(r_text_assetResource_code_footer)
+
+      # ----- _R_Text_AssetResource End -----
+
+      # -----  _R_Image Begin -----
+
+      # 生成 `class _R_Image` 的代码
+      r_image_code_header = <<-CODE
+      
+/// This `_R_Image` class is generated and contains references to static non-svg type image asset resources.
+// ignore: camel_case_types
+class _R_Image {
+  const _R_Image();
+
+  final asset = const _R_Image_AssetResource();
+      CODE
+      r_dart_file.puts(r_image_code_header)
+
       uniq_flutter_assets.each do |asset|
         # asset example: packages/flutter_demo/assets/images/hot_foot_N.png
         # file_basename example: hot_foot_N.png
@@ -204,52 +345,45 @@ class R_Image {
           next
         end
 
-        file_basename = File.basename(asset)
+        r_dart_file.puts("")
 
-        asset_basename = File.basename(asset, ".*")
-        if file_extname.eql?(".png") == false
-          extinfo = file_extname
-          extinfo[0] = "_"
-          asset_basename = asset_basename + extinfo
-        end
-        asset_basename = FlutterAssetTool.get_legalize_asset_basename(asset_basename)
+        asset_variable_name = FlutterAssetTool.generate_asset_variable_name(asset, ".png")
+        asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
 
-
-        asset_dir_name = asset.dup
-        asset_dir_name["packages/#{package_name}/"] = ""
-        asset_dir_name["/#{file_basename}"] = ""
-
-        param_file_basename = file_basename.gsub(/[$]/, "\\$")
-        param_assetName = "#{asset_dir_name}/#{param_file_basename}"
-
-        asset_declaration = <<-CODE
-  /// asset: "#{asset_dir_name}/#{file_basename}"
+        assetMethod_code = <<-CODE
+  /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  static const #{asset_basename} = AssetImage("#{param_assetName}", package: R.package);
-
+  AssetImage #{asset_variable_name}() {
+    return AssetImage(asset.#{asset_variable_name}.assetName, package: asset.#{asset_variable_name}.package);
+  }
         CODE
 
-        r_dart_file.puts(asset_declaration)
+        r_dart_file.puts(assetMethod_code)
 
       end
 
-      r_image_declaration_footer = <<-CODE
+      r_image_code_footer = <<-CODE
 }
-
       CODE
-      r_dart_file.puts(r_image_declaration_footer)
+      r_dart_file.puts(r_image_code_footer)
 
+      # -----  _R_Image End -----
 
-      # 生成 `class R_Svg` 的代码
-      r_svg_declaration_header = <<-CODE
-/// Because dart does not support nested class, so use class `R_Svg` to replace nested class `R.Svg`
+      # -----  _R_Svg Begin -----
+
+      # 生成 `class _R_Svg` 的代码
+      r_svg_code_header = <<-CODE
+      
+/// This `_R_Svg` class is generated and contains references to static svg type image asset resources.
 // ignore: camel_case_types
-class R_Svg {
+class _R_Svg {
+  const _R_Svg();
 
+  final asset = const _R_Svg_AssetResource();
       CODE
-      r_dart_file.puts(r_svg_declaration_header)
+      r_dart_file.puts(r_svg_code_header)
 
-      # 根据遍历得到的静态资源数组，生成对应变量声明，写入到“R.dart”中
+
       uniq_flutter_assets.each do |asset|
 
         file_extname = File.extname(asset).downcase
@@ -259,98 +393,81 @@ class R_Svg {
           next
         end
 
-        file_basename = File.basename(asset)
+        r_dart_file.puts("")
 
-        asset_basename = File.basename(asset, ".*")
-        asset_basename = FlutterAssetTool.get_legalize_asset_basename(asset_basename)
+        asset_variable_name = FlutterAssetTool.generate_asset_variable_name(asset, ".svg")
+        asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
 
-        asset_dir_name = asset.dup
-        asset_dir_name["packages/#{package_name}/"] = ""
-        asset_dir_name["/#{file_basename}"] = ""
-
-        param_asset = asset.dup
-        param_asset = param_asset.gsub(/[$]/, "\\$")
-
-        asset_declaration = <<-CODE
-  /// asset: #{asset_dir_name}/#{file_basename}
+        assetMethod_code = <<-CODE
+  /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  static AssetSvg #{asset_basename}({@required double width, @required double height}) {
-    var assetFullPath = "#{param_asset}";
-    var imageProvider = AssetSvg(assetFullPath, width: width, height: height);
+  AssetSvg #{asset_variable_name}({@required double width, @required double height}) {
+    var imageProvider = AssetSvg(asset.#{asset_variable_name}.keyName, width: width, height: height);
     return imageProvider;
   }
-
         CODE
 
-        r_dart_file.puts(asset_declaration)
+        r_dart_file.puts(assetMethod_code)
 
       end
 
-      r_svg_declaration_footer = <<-CODE
+      r_svg_code_footer = <<-CODE
 }
-
       CODE
-      r_dart_file.puts(r_svg_declaration_footer)
+      r_dart_file.puts(r_svg_code_footer)
 
-      # 生成 `class R_Text` 的代码
-      r_text_declaration_header = <<-CODE
-/// Because dart does not support nested class, so use class `R_Json` to replace nested class `R.Json`
+      # -----  _R_Svg End -----
+
+      # -----  _R_Text Begin -----
+
+
+      # 生成 `class _R_Text` 的代码
+      r_text_code_header = <<-CODE
+      
+/// This `_R_Text` class is generated and contains references to static text asset resources.
 // ignore: camel_case_types
-class R_Text {
+class _R_Text {
+  const _R_Text();
 
+  final asset = const _R_Text_AssetResource();
       CODE
-      r_dart_file.puts(r_text_declaration_header)
+      r_dart_file.puts(r_text_code_header)
 
-      supported_asset_txts = [".txt", ".json", ".yaml", ".xml"]
-      # 根据遍历得到的静态资源数组，生成对应变量声明，写入到“R.dart”中
       uniq_flutter_assets.each do |asset|
 
         file_extname = File.extname(asset).downcase
 
         # 如果当前不是支持的文本资源，则跳过
-        unless supported_asset_txts.include?(file_extname)
+        unless supported_asset_texts.include?(file_extname)
           next
         end
 
-        file_basename = File.basename(asset)
+        r_dart_file.puts("")
 
-        asset_basename = File.basename(asset, ".*")
-        extinfo = file_extname
-        extinfo[0] = "_"
-        asset_basename = asset_basename + extinfo
-        asset_basename = FlutterAssetTool.get_legalize_asset_basename(asset_basename)
+        asset_variable_name = FlutterAssetTool.generate_asset_variable_name(asset, ".png")
+        asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
 
-        asset_dir_name = asset.dup
-        asset_dir_name["packages/#{package_name}/"] = ""
-        asset_dir_name["/#{file_basename}"] = ""
-
-        param_asset = asset.dup
-        param_asset = param_asset.gsub(/[$]/, "\\$")
-
-        asset_declaration = <<-CODE
-  /// asset: #{asset_dir_name}/#{file_basename}
+        assetMethod_code = <<-CODE
+  /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  static Future<String> #{asset_basename}() {
-    var assetFullPath = "#{param_asset}";
-    var str = rootBundle.loadString(assetFullPath);
+  Future<String> #{asset_variable_name}() {
+    var str = rootBundle.loadString(asset.#{asset_variable_name}.keyName);
     return str;
   }
-
         CODE
 
-        r_dart_file.puts(asset_declaration)
+        r_dart_file.puts(assetMethod_code)
 
       end
 
-      r_text_declaration_footer = <<-CODE
+      r_text_code_footer = <<-CODE
 }
-
       CODE
-      r_dart_file.puts(r_text_declaration_footer)
+      r_dart_file.puts(r_text_code_footer)
 
 
       r_dart_file.close
-      puts "generate R.dart done !!!"
+      puts "generate r.g.dart done !!!"
 
       puts "execute `flutter pub get` now ..."
 
@@ -386,7 +503,7 @@ class R_Text {
     # Launch a monitoring service that continuously monitors asset changes for your project.
     # If there are any changes, it will automatically execute `flr generate`.
     # You can terminate the service by manually pressing `Ctrl-C`.
-    def self.start_assert_monitor()
+    def self.start_assert_monitor
       flutter_project_root_dir = "#{Pathname.pwd}"
 
       # 读取 Flrfile，获取要搜索的资源目录
@@ -412,7 +529,7 @@ class R_Text {
       generate
       puts("\n")
       puts("execute `fly generate` done !!!")
-      puts("specify assets and generate `R.dart` done !!!")
+      puts("specify assets and generate `r.g.dart` done !!!")
       puts("-------------------------------------------------------------------")
       puts("\n")
 
@@ -461,10 +578,10 @@ class R_Text {
         generate
         puts("\n")
         puts("execute `fly generate` done !!!")
-        puts("specify assets and generate `R.dart` done !!!")
+        puts("specify assets and generate `r.g.dart` done !!!")
         puts("-------------------------------------------------------------------")
         puts("\n")
-        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `R.dart` ...")
+        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `r.g.dart` ...")
         puts("[*]: you can press `Ctrl-C` to terminate it")
         puts("\n")
       end
@@ -473,7 +590,7 @@ class R_Text {
 
       # https://ruby-doc.org/core-2.5.0/Interrupt.html
       begin
-        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `R.dart` ...")
+        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `r.g.dart` ...")
         puts("[*]: you can press `Ctrl-C` to terminate it")
         puts("\n")
         loop {}
@@ -486,7 +603,7 @@ class R_Text {
     end
 
     # stop assert monitor task
-    def self.stop_assert_monitor()
+    def self.stop_assert_monitor
       if @@listener.nil? == false
         @@listener.stop
         @@listener = nil
@@ -517,30 +634,6 @@ class R_Text {
       return uniq_assets
     end
 
-    # 专有名词解释：
-    # asset example: packages/flutter_demo/assets/images/hot_foot_N.png
-    # file_basename example: hot_foot_N.png
-    # asset_basename example: hot_foot_N
-    # file_extname example: .png
-    # asset_dir_name example: assets/images
-    #
-    # 生成合法的asset_basename
-    def self.get_legalize_asset_basename (illegal_asset_basename)
-      # 过滤非法字符
-      asset_basename = illegal_asset_basename.gsub(/[^0-9A-Za-z_$]/, "_")
-
-      # 首字母转化为小写
-      capital = asset_basename[0].downcase
-      asset_basename[0] = capital
-
-      # 检测首字符是不是数字、_、$，若是则添加前缀字符"a"
-      if capital =~ /[0-9_$]/
-        asset_basename = "a" + asset_basename
-      end
-
-      return asset_basename
-    end
-
     # 判断当前asset_basename是不是合法的basename
     # 合法的basename由数字、字母、_、$字符组成
     def self.is_legalize_asset_basename (asset_basename)
@@ -551,6 +644,79 @@ class R_Text {
       else
         return false
       end
+    end
+
+    # 专有名词解释：
+    # asset example: packages/flutter_demo/assets/images/hot_foot_N.png
+    # file_basename example: hot_foot_N.png
+    # asset_basename example: hot_foot_N
+    # file_extname example: .png
+    # asset_dir_name example: assets/images
+
+    # 为当前asset生成合法的asset_variable_name（资产变量名）
+    def self.generate_asset_variable_name (asset, prior_asset_type=".*")
+      file_extname = File.extname(asset).downcase
+
+      file_basename = File.basename(asset)
+
+      asset_basename = File.basename(asset, ".*")
+      asset_variable_name = asset_basename.dup
+      if prior_asset_type.eql?(".*") or file_extname.eql?(prior_asset_type) == false
+        ext_info = file_extname
+        ext_info[0] = "_"
+        asset_variable_name = asset_variable_name + ext_info
+      end
+
+      # 过滤非法字符
+      asset_variable_name = asset_variable_name.gsub(/[^0-9A-Za-z_$]/, "_")
+
+      # 首字母转化为小写
+      capital = asset_variable_name[0].downcase
+      asset_variable_name[0] = capital
+
+      # 检测首字符是不是数字、_、$，若是则添加前缀字符"a"
+      if capital =~ /[0-9_$]/
+        asset_variable_name = "a" + asset_variable_name
+      end
+
+      return asset_variable_name
+    end
+
+    # 为当前asset生成注释
+    def self.generate_asset_comment (asset, package_name)
+
+      asset_digest = asset.dup
+      asset_digest["packages/#{package_name}/"] = ""
+
+      asset_comment = "asset: \"#{asset_digest}\""
+
+      return asset_comment
+    end
+
+
+    # 为当前asset生成AssetResource的代码
+    def self.generate_assetResource_code (asset, package_name, prior_asset_type=".*")
+
+      asset_variable_name = generate_asset_variable_name(asset, prior_asset_type)
+      asset_comment = generate_asset_comment(asset, package_name)
+
+      file_basename = File.basename(asset)
+
+      asset_dir_name = asset.dup
+      asset_dir_name["packages/#{package_name}/"] = ""
+      asset_dir_name["/#{file_basename}"] = ""
+
+      param_file_basename = file_basename.gsub(/[$]/, "\\$")
+      param_assetName = "#{asset_dir_name}/#{param_file_basename}"
+
+      assetResource_code = <<-CODE
+  /// #{asset_comment}
+  // ignore: non_constant_identifier_names
+  final #{asset_variable_name} = const AssetResource("#{param_assetName}", package: R.package);
+
+      CODE
+
+      return assetResource_code
     end
   end
 end
