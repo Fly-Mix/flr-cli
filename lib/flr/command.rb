@@ -359,7 +359,28 @@ class R_Text {
 
       puts "execute `flutter pub get` done !!!"
 
+      illegal_assets = []
+      uniq_flutter_assets.each do |asset|
+        asset_basename = File.basename(asset, ".*")
+
+        if FlutterAssetTool.is_legalize_asset_basename(asset_basename) == false
+          illegal_assets << asset
+        end
+
+      end
+
       puts("[√]: generate done !!!")
+
+      if illegal_assets.length > 0
+        puts ""
+        puts "[!]: warning, find these assets who's asset name contains bad characters: "
+        illegal_assets.each do |asset|
+          puts "  - #{asset}"
+        end
+        puts "[*]: to fix it, you should only use letters (a-z,A-Z), numbers (0-9), and the underscore character (_) to name the asset"
+
+      end
+
     end
 
     # Launch a monitoring service that continuously monitors asset changes for your project.
@@ -518,6 +539,18 @@ class R_Text {
       end
 
       return asset_basename
+    end
+
+    # 判断当前asset_basename是不是合法的basename
+    # 合法的basename由数字、字母、_、$字符组成
+    def self.is_legalize_asset_basename (asset_basename)
+      regx = /^[0-9A-Za-z_]+$/
+
+      if asset_basename =~ regx
+        return true
+      else
+        return false
+      end
     end
   end
 end
