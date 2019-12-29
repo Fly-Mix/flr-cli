@@ -102,7 +102,7 @@ After you run `flr generate` or `flr monitor`, Flr will automatically scan the a
 
 - `R_Image`: manage the asset IDs of non-svg type image assets ( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp` )
 - `R_Svg`: manage the asset IDs of svg type image assets
-- `R_Text`: manage the asset IDs of text type image assets ( `.txt`, `.json`, `.yaml`, `.xml` ) 
+- `R_Text`: manage the asset IDs of text assets ( `.txt`, `.json`, `.yaml`, `.xml` ) 
 
 `R.dart` allows flutter developer to  apply the asset in code by referencing it's asset ID. Here are some simple examples:
 

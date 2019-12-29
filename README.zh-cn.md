@@ -99,7 +99,7 @@ flr generate
 
 - `R_Image`：管理非SVG类的图片资源（ `.png`、 `.jpg`、 `.jpeg`、`.gif`、 `.webp`、`.icon`、`.bmp`、`.wbmp`）的资源ID
 - `R_Svg`：管理SVG类图片资源的资源ID
-- `R_Text`：管理文本资源类（`.txt`、`.json`、`.yaml`、`.xml`）的资源ID
+- `R_Text`：管理文本资源（`.txt`、`.json`、`.yaml`、`.xml`）的资源ID
 
 `R.dart`可以让Flutter开发者在代码中通过资源ID的方式应用资源，以下是一些简单示例：
 
