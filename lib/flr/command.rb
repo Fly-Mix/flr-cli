@@ -203,23 +203,48 @@ class R {
   static const text = _R_Text();
 }
 
+/// Asset resource’s metadata class.
 class AssetResource {
-  /// Creates an object that fetches an asset resource from an asset bundle.
-  const AssetResource(
-    this.assetName, {
-    this.package,
-  }) : assert(assetName != null);
+  /// Creates an object to hold the asset resource’s metadata.
+  /// For example:
+  /// - asset: packages/flutter_demo/assets/images/example.png
+  /// - packageName：flutter_demo
+  /// - assetName：assets/images/example.png
+  /// - fileDirname：assets/images
+  /// - fileBasename：example.png
+  /// - fileBasenameNoExtension：example
+  /// - fileExtname：.png
+  ///
+  const AssetResource(this.assetName,
+      {this.packageName,
+      this.fileDirname,
+      this.fileBasename,
+      this.fileBasenameNoExtension,
+      this.fileExtname})
+      : assert(assetName != null);
 
   /// The name of the main asset from the set of asset resources to choose from.
   final String assetName;
 
+  /// The name of the package from which the asset resource is included.
+  final String packageName;
+
+  /// The path name of the asset resource.
+  final String fileDirname;
+
+  /// The file basename of the asset resource.
+  final String fileBasename;
+
+  /// The no extension file basename of the asset resource.
+  final String fileBasenameNoExtension;
+
+  /// The file extension name of the asset resource.
+  final String fileExtname;
+
   /// The name used to generate the key to obtain the asset resource. For local assets
   /// this is [assetName], and for assets from packages the [assetName] is
   /// prefixed 'packages/<package_name>/'.
-  String get keyName => package == null ? assetName : 'packages/$package/$assetName';
-
-  /// The name of the package from which the asset resource is included.
-  final String package;
+  String get keyName => packageName == null ? assetName : 'packages/$packageName/$assetName';
 }
       CODE
       r_dart_file.puts(r_code)
@@ -363,7 +388,7 @@ class _R_Image {
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   AssetImage #{asset_id}() {
-    return AssetImage(asset.#{asset_id}.assetName, package: asset.#{asset_id}.package);
+    return AssetImage(asset.#{asset_id}.assetName, package: asset.#{asset_id}.packageName);
   }
         CODE
 
@@ -706,17 +731,28 @@ class _R_Text {
 
       file_basename = File.basename(asset)
 
+      file_basename_no_extension = File.basename(asset, ".*")
+
+      file_extname = File.extname(asset).downcase
+
       file_dirname = asset.dup
       file_dirname["packages/#{package_name}/"] = ""
       file_dirname["/#{file_basename}"] = ""
 
       param_file_basename = file_basename.gsub(/[$]/, "\\$")
+      param_file_basename_no_extension = file_basename_no_extension.gsub(/[$]/, "\\$")
+
       param_asset_name = "#{file_dirname}/#{param_file_basename}"
 
       assetResource_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  final #{asset_id} = const AssetResource("#{param_asset_name}", package: R.package);
+  final #{asset_id} = const AssetResource("#{param_asset_name}",
+      packageName: R.package,
+      fileDirname: "#{file_dirname}",
+      fileBasename: "#{param_file_basename}",
+      fileBasenameNoExtension: "#{param_file_basename_no_extension}",
+      fileExtname: "#{file_extname}");
 
       CODE
 
