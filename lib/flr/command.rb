@@ -3,6 +3,19 @@ require 'find'
 require 'listen'
 require 'flr/version'
 
+# 专有名词解释：
+# PS：以下有部分定义（file_dirname、file_basename、file_basename_no_extension、file_extname）参考自 Visual Studio Code
+#
+# asset：flutter工程的资源，其定义是“packages/#{package_name}/#{asset_name}”，例如“packages/flutter_demo/assets/images/hot_foot_N.png”
+# package_name：flutter工程的包名，例如“flutter_demo”
+# asset_name：资源名称，其定义是“#{file_dirname}/#{file_basename}”，例如“assets/images/hot_foot_N.png”
+# file_dirname：资源的目录路径名称，例如“assets/images”
+# file_basename：资源的文件名，其定义是“#{file_basename_no_extension}#{file_extname}”，例如“hot_foot_N.png”
+# file_basename_no_extension：资源的不带扩展名的文件名，例如“hot_foot_N”
+# file_extname：资源的扩展名，例如“.png”
+#
+# asset_id：资源ID，其值一般为 file_basename_no_extension
+
 module Flr
   class Command
 
@@ -128,9 +141,9 @@ assets:
 
       all_asset_dir_paths = all_asset_dir_paths.uniq
 
-      # 需要过滤的资源
+      # 需要过滤的资源类型
       # .DS_Store 是 macOS 下文件夹里默认自带的的隐藏文件
-      ignored_asset_basenames = [".DS_Store"]
+      ignored_asset_types = [".DS_Store"]
 
       # 添加资源声明到 `pubspec.yaml`
       puts("add the asset declarations into `pubspec.yaml` now ...")
@@ -143,7 +156,7 @@ assets:
       package_name = pubspec_yaml["name"]
       flutter_assets = []
       all_asset_dir_paths.each do |asset_dir_path|
-        specified_assets = FlutterAssetTool.get_assets_in_dir(asset_dir_path, ignored_asset_basenames, package_name)
+        specified_assets = FlutterAssetTool.get_assets_in_dir(asset_dir_path, ignored_asset_types, package_name)
         flutter_assets = flutter_assets + specified_assets
       end
 
@@ -333,10 +346,6 @@ class _R_Image {
       r_dart_file.puts(r_image_code_header)
 
       uniq_flutter_assets.each do |asset|
-        # asset example: packages/flutter_demo/assets/images/hot_foot_N.png
-        # file_basename example: hot_foot_N.png
-        # asset_basename example: hot_foot_N
-        # asset_dir_name example: assets/images
 
         file_extname = File.extname(asset).downcase
 
@@ -347,14 +356,14 @@ class _R_Image {
 
         r_dart_file.puts("")
 
-        asset_variable_name = FlutterAssetTool.generate_asset_variable_name(asset, ".png")
+        asset_id = FlutterAssetTool.generate_asset_id(asset, ".png")
         asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
 
         assetMethod_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  AssetImage #{asset_variable_name}() {
-    return AssetImage(asset.#{asset_variable_name}.assetName, package: asset.#{asset_variable_name}.package);
+  AssetImage #{asset_id}() {
+    return AssetImage(asset.#{asset_id}.assetName, package: asset.#{asset_id}.package);
   }
         CODE
 
@@ -395,14 +404,14 @@ class _R_Svg {
 
         r_dart_file.puts("")
 
-        asset_variable_name = FlutterAssetTool.generate_asset_variable_name(asset, ".svg")
+        asset_id = FlutterAssetTool.generate_asset_id(asset, ".svg")
         asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
 
         assetMethod_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  AssetSvg #{asset_variable_name}({@required double width, @required double height}) {
-    var imageProvider = AssetSvg(asset.#{asset_variable_name}.keyName, width: width, height: height);
+  AssetSvg #{asset_id}({@required double width, @required double height}) {
+    var imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
     return imageProvider;
   }
         CODE
@@ -444,14 +453,14 @@ class _R_Text {
 
         r_dart_file.puts("")
 
-        asset_variable_name = FlutterAssetTool.generate_asset_variable_name(asset, ".png")
+        asset_id = FlutterAssetTool.generate_asset_id(asset, ".png")
         asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
 
         assetMethod_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  Future<String> #{asset_variable_name}() {
-    var str = rootBundle.loadString(asset.#{asset_variable_name}.keyName);
+  Future<String> #{asset_id}() {
+    var str = rootBundle.loadString(asset.#{asset_id}.keyName);
     return str;
   }
         CODE
@@ -478,9 +487,9 @@ class _R_Text {
 
       illegal_assets = []
       uniq_flutter_assets.each do |asset|
-        asset_basename = File.basename(asset, ".*")
+        file_basename_no_extension = File.basename(asset, ".*")
 
-        if FlutterAssetTool.is_legalize_asset_basename(asset_basename) == false
+        if FlutterAssetTool.is_legalize_file_basename(file_basename_no_extension) == false
           illegal_assets << asset
         end
 
@@ -613,20 +622,22 @@ class _R_Text {
     end
 
   class FlutterAssetTool
+
     # 历指定资源文件夹下所有文件（包括子文件夹），返回资源的依赖说明数组，如
     # ["packages/flutter_demo/assets/images/hot_foot_N.png", "packages/flutter_demo/assets/images/hot_foot_S.png"]
-    def self.get_assets_in_dir (asset_dir_path, ignored_asset_basenames, package_name)
-      asset_dir_name = asset_dir_path.split("lib/")[1]
+    def self.get_assets_in_dir (asset_dir_path, ignored_asset_types, package_name)
+      file_dirname = asset_dir_path.split("lib/")[1]
       assets = []
       Find.find(asset_dir_path) do |path|
         if File.file?(path)
           file_basename = File.basename(path)
 
-          if ignored_asset_basenames.include?(file_basename)
+          if ignored_asset_types.include?(file_basename)
             next
           end
 
-          asset = "packages/#{package_name}/#{asset_dir_name}/#{file_basename}"
+          asset_name = "#{file_dirname}/#{file_basename}"
+          asset = "packages/#{package_name}/#{asset_name}"
           assets << asset
         end
       end
@@ -634,52 +645,45 @@ class _R_Text {
       return uniq_assets
     end
 
-    # 判断当前asset_basename是不是合法的basename
-    # 合法的basename由数字、字母、_、$字符组成
-    def self.is_legalize_asset_basename (asset_basename)
+    # 判断当前file_basename（无拓展名）是不是合法的文件名
+    # 合法的文件名应该由数字、字母、_字符组成
+    def self.is_legalize_file_basename (file_basename_no_extension)
       regx = /^[0-9A-Za-z_]+$/
 
-      if asset_basename =~ regx
+      if file_basename_no_extension =~ regx
         return true
       else
         return false
       end
     end
 
-    # 专有名词解释：
-    # asset example: packages/flutter_demo/assets/images/hot_foot_N.png
-    # file_basename example: hot_foot_N.png
-    # asset_basename example: hot_foot_N
-    # file_extname example: .png
-    # asset_dir_name example: assets/images
-
-    # 为当前asset生成合法的asset_variable_name（资产变量名）
-    def self.generate_asset_variable_name (asset, prior_asset_type=".*")
+    # 为当前asset生成合法的asset_id（资产ID）
+    def self.generate_asset_id (asset, prior_asset_type=".*")
       file_extname = File.extname(asset).downcase
 
       file_basename = File.basename(asset)
 
-      asset_basename = File.basename(asset, ".*")
-      asset_variable_name = asset_basename.dup
+      file_basename_no_extension = File.basename(asset, ".*")
+      asset_id = file_basename_no_extension.dup
       if prior_asset_type.eql?(".*") or file_extname.eql?(prior_asset_type) == false
         ext_info = file_extname
         ext_info[0] = "_"
-        asset_variable_name = asset_variable_name + ext_info
+        asset_id = asset_id + ext_info
       end
 
       # 过滤非法字符
-      asset_variable_name = asset_variable_name.gsub(/[^0-9A-Za-z_$]/, "_")
+      asset_id = asset_id.gsub(/[^0-9A-Za-z_$]/, "_")
 
       # 首字母转化为小写
-      capital = asset_variable_name[0].downcase
-      asset_variable_name[0] = capital
+      capital = asset_id[0].downcase
+      asset_id[0] = capital
 
       # 检测首字符是不是数字、_、$，若是则添加前缀字符"a"
       if capital =~ /[0-9_$]/
-        asset_variable_name = "a" + asset_variable_name
+        asset_id = "a" + asset_id
       end
 
-      return asset_variable_name
+      return asset_id
     end
 
     # 为当前asset生成注释
@@ -697,22 +701,22 @@ class _R_Text {
     # 为当前asset生成AssetResource的代码
     def self.generate_assetResource_code (asset, package_name, prior_asset_type=".*")
 
-      asset_variable_name = generate_asset_variable_name(asset, prior_asset_type)
+      asset_id = generate_asset_id(asset, prior_asset_type)
       asset_comment = generate_asset_comment(asset, package_name)
 
       file_basename = File.basename(asset)
 
-      asset_dir_name = asset.dup
-      asset_dir_name["packages/#{package_name}/"] = ""
-      asset_dir_name["/#{file_basename}"] = ""
+      file_dirname = asset.dup
+      file_dirname["packages/#{package_name}/"] = ""
+      file_dirname["/#{file_basename}"] = ""
 
       param_file_basename = file_basename.gsub(/[$]/, "\\$")
-      param_assetName = "#{asset_dir_name}/#{param_file_basename}"
+      param_asset_name = "#{file_dirname}/#{param_file_basename}"
 
       assetResource_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  final #{asset_variable_name} = const AssetResource("#{param_assetName}", package: R.package);
+  final #{asset_id} = const AssetResource("#{param_asset_name}", package: R.package);
 
       CODE
 
