@@ -26,10 +26,10 @@ module Flr
       # 检测当前目录是否存在 pubspec.yaml；
       # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印错误提示；
       unless File.exist?(pubspec_path)
-        message = <<-HEREDO
+        message = <<-MESSAGE
 [x]: #{pubspec_path} not found
 [*]: please make sure current directory is a flutter project directory
-        HEREDO
+        MESSAGE
         abort(message)
       end
 
@@ -39,7 +39,7 @@ module Flr
       if File.exist?(flrfile_path) == false
         flrfile_file = File.open(flrfile_path, "w")
 
-        flrfile_content = <<-HEREDO
+        flrfile_content = <<-CODE
 # Flrfile.yaml is used to config the asset directories that needs to be scanned in current flutter project directory.
 
 assets:
@@ -56,7 +56,7 @@ assets:
   texts:
     #- lib/assets/texts
 
-        HEREDO
+        CODE
 
         flrfile_file.puts(flrfile_content)
         flrfile_file.close
@@ -103,10 +103,10 @@ assets:
       # 检测当前目录是否存在 Flrfile.yaml；
       # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
       unless File.exist?(flrfile_path)
-        message = <<-HEREDO
+        message = <<-MESSAGE
 [x]: #{flrfile_path} not found
 [*]: please run `flr init` to fix it
-        HEREDO
+        MESSAGE
         abort(message)
       end
 
@@ -164,7 +164,7 @@ assets:
       r_dart_file = File.open(r_dart_path,"w")
 
       # 生成 `class R` 的代码
-      r_declaration = <<-HEREDOC
+      r_declaration = <<-CODE
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_svg/flutter_svg.dart';
@@ -176,16 +176,16 @@ class R {
   static const package = "#{package_name}";
 }
 
-      HEREDOC
+      CODE
       r_dart_file.puts(r_declaration)
 
       # 生成 `class R_Image` 的代码
-      r_image_declaration_header = <<-HEREDOC
+      r_image_declaration_header = <<-CODE
 /// Because dart does not support nested class, so use class `R_Image` to replace nested class `R.Image`
 // ignore: camel_case_types
 class R_Image {
 
-      HEREDOC
+      CODE
       r_dart_file.puts(r_image_declaration_header)
 
 
@@ -222,31 +222,31 @@ class R_Image {
         param_file_basename = file_basename.gsub(/[$]/, "\\$")
         param_assetName = "#{asset_dir_name}/#{param_file_basename}"
 
-        asset_declaration = <<-HEREDOC
+        asset_declaration = <<-CODE
   /// asset: "#{asset_dir_name}/#{file_basename}"
   // ignore: non_constant_identifier_names
   static const #{asset_basename} = AssetImage("#{param_assetName}", package: R.package);
 
-        HEREDOC
+        CODE
 
         r_dart_file.puts(asset_declaration)
 
       end
 
-      r_image_declaration_footer = <<-HEREDOC
+      r_image_declaration_footer = <<-CODE
 }
 
-      HEREDOC
+      CODE
       r_dart_file.puts(r_image_declaration_footer)
 
 
       # 生成 `class R_Svg` 的代码
-      r_svg_declaration_header = <<-HEREDOC
+      r_svg_declaration_header = <<-CODE
 /// Because dart does not support nested class, so use class `R_Svg` to replace nested class `R.Svg`
 // ignore: camel_case_types
 class R_Svg {
 
-      HEREDOC
+      CODE
       r_dart_file.puts(r_svg_declaration_header)
 
       # 根据遍历得到的静态资源数组，生成对应变量声明，写入到“R.dart”中
@@ -271,7 +271,7 @@ class R_Svg {
         param_asset = asset.dup
         param_asset = param_asset.gsub(/[$]/, "\\$")
 
-        asset_declaration = <<-HEREDOC
+        asset_declaration = <<-CODE
   /// asset: #{asset_dir_name}/#{file_basename}
   // ignore: non_constant_identifier_names
   static AssetSvg #{asset_basename}({@required double width, @required double height}) {
@@ -280,25 +280,25 @@ class R_Svg {
     return imageProvider;
   }
 
-        HEREDOC
+        CODE
 
         r_dart_file.puts(asset_declaration)
 
       end
 
-      r_svg_declaration_footer = <<-HEREDOC
+      r_svg_declaration_footer = <<-CODE
 }
 
-      HEREDOC
+      CODE
       r_dart_file.puts(r_svg_declaration_footer)
 
       # 生成 `class R_Text` 的代码
-      r_text_declaration_header = <<-HEREDOC
+      r_text_declaration_header = <<-CODE
 /// Because dart does not support nested class, so use class `R_Json` to replace nested class `R.Json`
 // ignore: camel_case_types
 class R_Text {
 
-      HEREDOC
+      CODE
       r_dart_file.puts(r_text_declaration_header)
 
       supported_asset_txts = [".txt", ".json", ".yaml", ".xml"]
@@ -327,7 +327,7 @@ class R_Text {
         param_asset = asset.dup
         param_asset = param_asset.gsub(/[$]/, "\\$")
 
-        asset_declaration = <<-HEREDOC
+        asset_declaration = <<-CODE
   /// asset: #{asset_dir_name}/#{file_basename}
   // ignore: non_constant_identifier_names
   static Future<String> #{asset_basename}() {
@@ -336,16 +336,16 @@ class R_Text {
     return str;
   }
 
-        HEREDOC
+        CODE
 
         r_dart_file.puts(asset_declaration)
 
       end
 
-      r_text_declaration_footer = <<-HEREDOC
+      r_text_declaration_footer = <<-CODE
 }
 
-      HEREDOC
+      CODE
       r_dart_file.puts(r_text_declaration_footer)
 
 
@@ -395,10 +395,10 @@ class R_Text {
       # 检测当前目录是否存在 Flrfile.yaml；
       # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
       unless File.exist?(flrfile_path)
-        message = <<-HEREDO
+        message = <<-MESSAGE
 [x]: #{flrfile_path} not found
 [*]: please run `flr init` to fix it
-        HEREDO
+        MESSAGE
         abort(message)
       end
 
