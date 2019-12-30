@@ -204,17 +204,15 @@ class R {
 }
 
 /// Asset resource’s metadata class.
+/// For example, here is the metadata of `packages/flutter_demo/assets/images/example.png` asset:
+/// - packageName：flutter_demo
+/// - assetName：assets/images/example.png
+/// - fileDirname：assets/images
+/// - fileBasename：example.png
+/// - fileBasenameNoExtension：example
+/// - fileExtname：.png
 class AssetResource {
   /// Creates an object to hold the asset resource’s metadata.
-  /// For example:
-  /// - asset: packages/flutter_demo/assets/images/example.png
-  /// - packageName：flutter_demo
-  /// - assetName：assets/images/example.png
-  /// - fileDirname：assets/images
-  /// - fileBasename：example.png
-  /// - fileBasenameNoExtension：example
-  /// - fileExtname：.png
-  ///
   const AssetResource(this.assetName,
       {this.packageName,
       this.fileDirname,
@@ -229,7 +227,7 @@ class AssetResource {
   /// The name of the package from which the asset resource is included.
   final String packageName;
 
-  /// The path name of the asset resource.
+  /// The directory path name of the asset resource.
   final String fileDirname;
 
   /// The file basename of the asset resource.
