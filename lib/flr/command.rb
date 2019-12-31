@@ -541,7 +541,7 @@ class _R_Text {
         illegal_assets.each do |asset|
           puts "  - #{asset}"
         end
-        puts "[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '!', '@', '&', '$', '￥') to name the asset"
+        puts "[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '.', '·', '!', '@', '&', '$', '￥') to name the asset"
 
       end
 
@@ -684,9 +684,9 @@ class _R_Text {
     end
 
     # 判断当前file_basename（无拓展名）是不是合法的文件名
-    # 合法的文件名应该由数字、字母、其他合法字符（'_', '+', '-', '.', '!', '@', '&', '$', '￥'）组成
+    # 合法的文件名应该由数字、字母、其他合法字符（'_', '+', '-', '.', '·', '!', '@', '&', '$', '￥'）组成
     def self.is_legal_file_basename (file_basename_no_extension)
-      regx = /^[0-9A-Za-z_\+\-.!@&$￥]+$/
+      regx = /^[0-9A-Za-z_\+\-\.·!@&$￥]+$/
 
       if file_basename_no_extension =~ regx
         return true
