@@ -525,7 +525,7 @@ class _R_Text {
       uniq_flutter_assets.each do |asset|
         file_basename_no_extension = File.basename(asset, ".*")
 
-        if FlutterAssetTool.is_legalize_file_basename(file_basename_no_extension) == false
+        if FlutterAssetTool.is_legal_file_basename(file_basename_no_extension) == false
           illegal_assets << asset
         end
 
@@ -535,11 +535,11 @@ class _R_Text {
 
       if illegal_assets.length > 0
         puts ""
-        puts "[!]: warning, find these assets who's asset name contains bad characters: "
+        puts "[!]: warning, find these assets who's asset name contains illegal characters: "
         illegal_assets.each do |asset|
           puts "  - #{asset}"
         end
-        puts "[*]: to fix it, you should only use letters (a-z,A-Z), numbers (0-9), and the underscore character (_) to name the asset"
+        puts "[*]: to fix it, you should only use letters (a-z,A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '!', '@', '&', '$', '￥') to name the asset"
 
       end
 
@@ -683,8 +683,8 @@ class _R_Text {
 
     # 判断当前file_basename（无拓展名）是不是合法的文件名
     # 合法的文件名应该由数字、字母、_字符组成
-    def self.is_legalize_file_basename (file_basename_no_extension)
-      regx = /^[0-9A-Za-z_]+$/
+    def self.is_legal_file_basename (file_basename_no_extension)
+      regx = /^[0-9A-Za-z_\+\-$@!¥&]+$/
 
       if file_basename_no_extension =~ regx
         return true
