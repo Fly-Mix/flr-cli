@@ -185,6 +185,7 @@ assets:
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:path/path.dart' as path;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:r_dart_library/asset_svg.dart';
 
@@ -213,13 +214,7 @@ class R {
 /// - fileExtname：.png
 class AssetResource {
   /// Creates an object to hold the asset resource’s metadata.
-  const AssetResource(this.assetName,
-      {this.packageName,
-      this.fileDirname,
-      this.fileBasename,
-      this.fileBasenameNoExtension,
-      this.fileExtname})
-      : assert(assetName != null);
+  const AssetResource(this.assetName, {this.packageName}) : assert(assetName != null);
 
   /// The name of the main asset from the set of asset resources to choose from.
   final String assetName;
@@ -227,22 +222,40 @@ class AssetResource {
   /// The name of the package from which the asset resource is included.
   final String packageName;
 
-  /// The directory path name of the asset resource.
-  final String fileDirname;
-
-  /// The file basename of the asset resource.
-  final String fileBasename;
-
-  /// The no extension file basename of the asset resource.
-  final String fileBasenameNoExtension;
-
-  /// The file extension name of the asset resource.
-  final String fileExtname;
-
   /// The name used to generate the key to obtain the asset resource. For local assets
   /// this is [assetName], and for assets from packages the [assetName] is
   /// prefixed 'packages/<package_name>/'.
-  String get keyName => packageName == null ? assetName : 'packages/$packageName/$assetName';
+  String get keyName => packageName == null ? assetName : "packages/$packageName/$assetName";
+
+  /// The file basename of the asset resource.
+  String get fileBasename {
+    final basename = path.basename(assetName);
+    return basename;
+  }
+
+  /// The no extension file basename of the asset resource.
+  String get fileBasenameNoExtension {
+    final basenameWithoutExtension = path.basenameWithoutExtension(assetName);
+    return basenameWithoutExtension;
+  }
+
+  /// The file extension name of the asset resource.
+  String get fileExtname {
+    final extension = path.extension(assetName);
+    return extension;
+  }
+
+  /// The directory path name of the asset resource.
+  String get fileDirname {
+    var dirname = assetName;
+    if (packageName != null) {
+      final packageStr = "packages/$packageName/";
+      dirname = dirname.replaceAll(packageStr, "");
+    }
+    final filenameStr = "$fileBasename/";
+    dirname = dirname.replaceAll(filenameStr, "");
+    return dirname;
+  }
 }
       CODE
       r_dart_file.puts(r_code)
@@ -729,28 +742,18 @@ class _R_Text {
 
       file_basename = File.basename(asset)
 
-      file_basename_no_extension = File.basename(asset, ".*")
-
-      file_extname = File.extname(asset).downcase
-
       file_dirname = asset.dup
       file_dirname["packages/#{package_name}/"] = ""
       file_dirname["/#{file_basename}"] = ""
 
       param_file_basename = file_basename.gsub(/[$]/, "\\$")
-      param_file_basename_no_extension = file_basename_no_extension.gsub(/[$]/, "\\$")
 
       param_asset_name = "#{file_dirname}/#{param_file_basename}"
 
       assetResource_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
-  final #{asset_id} = const AssetResource("#{param_asset_name}",
-      packageName: R.package,
-      fileDirname: "#{file_dirname}",
-      fileBasename: "#{param_file_basename}",
-      fileBasenameNoExtension: "#{param_file_basename_no_extension}",
-      fileExtname: "#{file_extname}");
+  final #{asset_id} = const AssetResource("#{param_asset_name}", packageName: R.package);
 
       CODE
 
