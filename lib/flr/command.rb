@@ -434,7 +434,7 @@ class _R_Svg {
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   AssetSvg #{asset_id}({@required double width, @required double height}) {
-    var imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
+    final imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
     return imageProvider;
   }
         CODE
@@ -483,7 +483,7 @@ class _R_Text {
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   Future<String> #{asset_id}() {
-    var str = rootBundle.loadString(asset.#{asset_id}.keyName);
+    final str = rootBundle.loadString(asset.#{asset_id}.keyName);
     return str;
   }
         CODE
