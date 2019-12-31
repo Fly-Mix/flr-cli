@@ -386,7 +386,7 @@ class _R_Image {
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   AssetImage #{asset_id}() {
-    return AssetImage(asset.#{asset_id}.assetName, package: asset.#{asset_id}.packageName);
+    return AssetImage(asset.#{asset_id}.keyName);
   }
         CODE
 
