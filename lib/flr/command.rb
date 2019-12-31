@@ -537,7 +537,7 @@ class _R_Text {
 
       if illegal_assets.length > 0
         puts ""
-        puts "[!]: warning, find these assets who's asset name contains illegal characters: "
+        puts "[!]: warning, find illegal assets who's file basename contains illegal characters: "
         illegal_assets.each do |asset|
           puts "  - #{asset}"
         end
