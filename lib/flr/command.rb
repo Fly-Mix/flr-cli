@@ -161,6 +161,18 @@ assets:
       end
 
       uniq_flutter_assets = flutter_assets.uniq
+
+      illegal_assets = []
+      uniq_flutter_assets.each do |asset|
+        file_basename_no_extension = File.basename(asset, ".*")
+
+        if FlutterAssetTool.is_legal_file_basename(file_basename_no_extension) == false
+          illegal_assets << asset
+        end
+
+      end
+      uniq_flutter_assets -= illegal_assets
+
       pubspec_yaml["flutter"]["assets"] = uniq_flutter_assets
 
       pubspec_file = File.open(pubspec_path, 'w')
@@ -520,16 +532,6 @@ class _R_Text {
       system(get_flutter_pub_cmd)
 
       puts "execute `flutter pub get` done !!!"
-
-      illegal_assets = []
-      uniq_flutter_assets.each do |asset|
-        file_basename_no_extension = File.basename(asset, ".*")
-
-        if FlutterAssetTool.is_legal_file_basename(file_basename_no_extension) == false
-          illegal_assets << asset
-        end
-
-      end
 
       puts("[√]: generate done !!!")
 
