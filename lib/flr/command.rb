@@ -33,7 +33,6 @@ module Flr
     def self.init
       flutter_project_root_dir = "#{Pathname.pwd}"
 
-      flrfile_path = flutter_project_root_dir + "/Flrfile.yaml"
       pubspec_path = flutter_project_root_dir + "/pubspec.yaml"
 
       # 检测当前目录是否存在 pubspec.yaml；
@@ -48,40 +47,14 @@ module Flr
 
       puts("init #{flutter_project_root_dir} now...")
 
-      # 若不存在 Flrfile，则创建一个 Flrfile
-      if File.exist?(flrfile_path) == false
-        flrfile_file = File.open(flrfile_path, "w")
-
-        flrfile_content = <<-CODE
-# Flrfile.yaml is used to config the asset directories that needs to be scanned in current flutter project directory.
-
-assets:
-
-  # config the image asset directories that need to be scanned
-  # supported image assets: [".png", ".jpg", ".jpeg", ".gif", ".webp", ".icon", ".bmp", ".wbmp", ".svg"]
-  # config example: - lib/assets/images
-  images:
-    #- lib/assets/images
-
-  # config the text asset directories that need to be scanned
-  # supported text assets: [".txt", ".json", ".yaml", ".xml"]
-  # config example: - lib/assets/texts
-  texts:
-    #- lib/assets/texts
-
-        CODE
-
-        flrfile_file.puts(flrfile_content)
-        flrfile_file.close
-
-        puts("create Flrfile.yaml done !!!")
-      end
-
       # 更新 pubspec.yaml，添加和获取依赖包 `r_dart_library`(https://github.com/YK-Unit/r_dart_library)
       pubspec_file = File.open(pubspec_path, 'r')
       pubspec_yaml = YAML.load(pubspec_file)
       pubspec_file.close
       dependencies = pubspec_yaml["dependencies"]
+
+      flr_config = Hash["version"  => "#{Flr::VERSION}", "assets" => nil ]
+      pubspec_yaml["flr"] = flr_config
 
       r_dart_library = Hash["git" => Hash["url"  => "https://github.com/YK-Unit/r_dart_library.git"]]
       dependencies["r_dart_library"] = r_dart_library
@@ -92,53 +65,112 @@ assets:
       pubspec_file.write(pubspec_yaml.to_yaml)
       pubspec_file.close
 
-      puts("add dependency `r_dart_library`(https://github.com/YK-Unit/r_dart_library) into pubspec.yaml done!")
+      puts("add flr configuration into pubspec.yaml done!")
 
-      puts "get dependency `r_dart_library` via execute `flutter pub get` now ..."
+      puts("add dependency \"r_dart_library\"(https://github.com/YK-Unit/r_dart_library) into pubspec.yaml done!")
+
+      puts("get dependency \"r_dart_library\" via execute \"flutter pub get\" now ...")
 
       get_flutter_pub_cmd = "flutter pub get"
       system(get_flutter_pub_cmd)
 
-      puts "get dependency `r_dart_library` done !!!"
+      puts "get dependency \"r_dart_library\" done !!!"
 
       puts("[√]: init done !!!")
+    end
+
+    # check if the conditions for generation are met
+    def self.check_before_generate
+      flutter_project_root_dir = "#{Pathname.pwd}"
+
+      pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
+
+      # 检测当前目录是否存在 pubspec.yaml；
+      # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止当前任务，并打印错误提示；
+      unless File.exist?(pubspec_path)
+        message = <<-MESSAGE
+[x]: #{pubspec_path} not found
+[*]: please make sure current directory is a flutter project directory
+        MESSAGE
+        abort(message)
+      end
+
+      pubspec_file = File.open(pubspec_path, 'r')
+      pubspec_yaml = YAML.load(pubspec_file)
+      pubspec_file.close
+
+      # 读取 pubspec_yaml，判断是否有 flr 的配置信息；
+      # 若有，说明已经进行了初始化；然后检测是否配置了资源目录，若没有配置，这时直接终止当前任务，并提示开发者手动配置它
+      # 若没有，说明还没进行初始化，这时直接终止当前任务，并提示开发者手动配置它
+
+      flr_config = pubspec_yaml["flr"]
+      unless flr_config.is_a?(Hash)
+        message = <<-MESSAGE
+[x]: have no flr configuration in pubspec.yaml
+[*]: please run "flr init" to fix it
+        MESSAGE
+        abort(message)
+      end
+
+      flr_version = flr_config["version"]
+      all_asset_dir_paths = flr_config["assets"]
+
+      unless all_asset_dir_paths.is_a?(Array)
+        message = <<-MESSAGE
+[x]: have no valid asset directories configuration in pubspec.yaml
+[*]: please manually configure the asset directories to fix it, for example: 
+
+    flr:
+      version: #{flr_version}
+      assets:
+      # config the asset directories that need to be scanned
+      - lib/assets/images
+      - lib/assets/texts
+        
+
+        MESSAGE
+        abort(message)
+      end
+
+      # 移除非法的非法的 asset_dir_path（nil，空字符串）
+      all_asset_dir_paths = all_asset_dir_paths - [nil, ""]
+
+      # 若当前all_asset_dir_paths数量为0，则说明开发者没有配置资源目录路径，这时直接终止当前任务，并提示开发者手动配置它
+      unless all_asset_dir_paths.length > 0
+        message = <<-MESSAGE
+[x]: have no valid asset directories configuration in pubspec.yaml
+[*]: please manually configure the asset directories to fix it, for example: 
+
+    flr:
+      version: #{flr_version}
+      assets:
+      # config the asset directories that need to be scanned
+      - lib/assets/images
+      - lib/assets/texts
+        
+
+        MESSAGE
+        abort(message)
+      end
     end
 
     # scan assets,
     # then automatically specify scanned assets in `pubspec.yaml`,
     # and generate `r.g.dart` file.
     def self.generate
+
+      check_before_generate
+
       flutter_project_root_dir = "#{Pathname.pwd}"
 
-      # 读取 Flrfile，获取要搜索的资源目录
-      flrfile_path = "#{flutter_project_root_dir}/Flrfile.yaml"
+      pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
+      pubspec_file = File.open(pubspec_path, 'r')
+      pubspec_yaml = YAML.load(pubspec_file)
+      pubspec_file.close
 
-      # 检测当前目录是否存在 Flrfile.yaml；
-      # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
-      unless File.exist?(flrfile_path)
-        message = <<-MESSAGE
-[x]: #{flrfile_path} not found
-[*]: please run `flr init` to fix it
-        MESSAGE
-        abort(message)
-      end
-
-      flrfile_file = File.open(flrfile_path, "r")
-      flrfile_yaml = YAML.load(flrfile_file)
-      flrfile_file.close
-
-      image_asset_dir_paths = flrfile_yaml["assets"]["images"]
-      text_asset_dir_paths = flrfile_yaml["assets"]["texts"]
-      all_asset_dir_paths = []
-
-      if image_asset_dir_paths.is_a?(Array)
-        all_asset_dir_paths = all_asset_dir_paths + image_asset_dir_paths
-      end
-
-      if text_asset_dir_paths.is_a?(Array)
-        all_asset_dir_paths = all_asset_dir_paths + text_asset_dir_paths
-      end
-
+      flr_config = pubspec_yaml["flr"]
+      flr_version = flr_config["version"]
+      all_asset_dir_paths = flr_config["assets"]
       all_asset_dir_paths = all_asset_dir_paths.uniq
 
       # 需要过滤的资源类型
@@ -146,12 +178,7 @@ assets:
       ignored_asset_types = [".DS_Store"]
 
       # 添加资源声明到 `pubspec.yaml`
-      puts("add the asset declarations into `pubspec.yaml` now ...")
-
-      pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
-      pubspec_file = File.open(pubspec_path, 'r')
-      pubspec_yaml = YAML.load(pubspec_file)
-      pubspec_file.close
+      puts("add the asset declarations into pubspec.yaml now ...")
 
       package_name = pubspec_yaml["name"]
       flutter_assets = []
@@ -179,11 +206,11 @@ assets:
       pubspec_file.write(pubspec_yaml.to_yaml)
       pubspec_file.close
 
-      puts("add the asset declarations into `pubspec.yaml` done !!!")
+      puts("add the asset declarations into pubspec.yaml done !!!")
 
       # 创建生成 `r.g.dart`
 
-      puts("generate r.g.dart now ...")
+      puts("generate \"r.g.dart\" now ...")
 
       r_dart_path = "#{flutter_project_root_dir}/lib/r.g.dart"
       r_dart_file = File.open(r_dart_path,"w")
@@ -524,16 +551,22 @@ class _R_Text {
 
 
       r_dart_file.close
-      puts "generate r.g.dart done !!!"
+      puts "generate \"r.g.dart\" done !!!"
 
-      puts "execute `flutter pub get` now ..."
+      puts "execute \"flutter pub get\" now ..."
 
       get_flutter_pub_cmd = "flutter pub get"
       system(get_flutter_pub_cmd)
 
-      puts "execute `flutter pub get` done !!!"
+      puts "execute \"flutter pub get\" done !!!"
 
       puts("[√]: generate done !!!")
+
+      if flr_version != Flr::VERSION
+        puts ""
+        puts "[!]: warning, the configured Flr version is #{flr_version}, while the currently used Flr version is #{Flr::VERSION}"
+        puts "[*]: to fix it, you should make sure that both versions are the same"
+      end
 
       if illegal_assets.length > 0
         puts ""
@@ -551,32 +584,22 @@ class _R_Text {
     # If there are any changes, it will automatically execute `flr generate`.
     # You can terminate the service by manually pressing `Ctrl-C`.
     def self.start_assert_monitor
+
+      check_before_generate
+
       flutter_project_root_dir = "#{Pathname.pwd}"
 
-      # 读取 Flrfile，获取要搜索的资源目录
-      flrfile_path = "#{flutter_project_root_dir}/Flrfile.yaml"
-
-      # 检测当前目录是否存在 Flrfile.yaml；
-      # 若不存在，说明当前工程目录还没有执行 `Flr init`，这时候直接终止创建，并打印错误提示
-      unless File.exist?(flrfile_path)
-        message = <<-MESSAGE
-[x]: #{flrfile_path} not found
-[*]: please run `flr init` to fix it
-        MESSAGE
-        abort(message)
-      end
-
-      puts("execute `fly generate` and launch a monitoring service")
+      puts("execute \"fly generate\" and launch a monitoring service")
       puts("\n")
 
       now_str = Time.now.to_s
       puts("-------------------- #{now_str} --------------------")
-      puts("execute `fly generate` now ...")
+      puts("execute \"fly generate\" now ...")
       puts("\n")
       generate
       puts("\n")
-      puts("execute `fly generate` done !!!")
-      puts("specify assets and generate `r.g.dart` done !!!")
+      puts("execute \"fly generate\" done !!!")
+      puts("specify assets and generate \"r.g.dart\" done !!!")
       puts("-------------------------------------------------------------------")
       puts("\n")
 
@@ -620,16 +643,16 @@ class _R_Text {
         puts("modified absolute paths: #{modified}")
         puts("added absolute paths: #{added}")
         puts("removed absolute paths: #{removed}")
-        puts("execute `fly generate` now ...")
+        puts("execute \"fly generate\" now ...")
         puts("\n")
         generate
         puts("\n")
-        puts("execute `fly generate` done !!!")
-        puts("specify assets and generate `r.g.dart` done !!!")
+        puts("execute \"fly generate\" done !!!")
+        puts("specify assets and generate \"r.g.dart\" done !!!")
         puts("-------------------------------------------------------------------")
         puts("\n")
-        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `r.g.dart` ...")
-        puts("[*]: you can press `Ctrl-C` to terminate it")
+        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...")
+        puts("[*]: you can press \"Ctrl-C\" to terminate it")
         puts("\n")
       end
       # not blocking
@@ -637,8 +660,8 @@ class _R_Text {
 
       # https://ruby-doc.org/core-2.5.0/Interrupt.html
       begin
-        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates `r.g.dart` ...")
-        puts("[*]: you can press `Ctrl-C` to terminate it")
+        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...")
+        puts("[*]: you can press \"Ctrl-C\" to terminate it")
         puts("\n")
         loop {}
       rescue Interrupt => e
