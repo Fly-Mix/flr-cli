@@ -170,6 +170,9 @@ module Flr
       flr_config = pubspec_yaml["flr"]
       flr_version = flr_config["version"]
       all_asset_dir_paths = flr_config["assets"]
+      # 移除非法的非法的 asset_dir_path（nil，空字符串）
+      all_asset_dir_paths = all_asset_dir_paths - [nil, ""]
+      # 过滤重复的 asset_dir_path
       all_asset_dir_paths = all_asset_dir_paths.uniq
 
       # 需要过滤的资源类型
