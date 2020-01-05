@@ -25,32 +25,27 @@ module Flr
       Command.init
     end
 
-    desc "generate", "Perform once a assets scan, then auto specify scanned assets in pubspec.yaml, and generate \"r.g.dart\""
+    desc "run [--auto]", "Scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\""
     long_desc <<-LONGDESC
-      Perform once a assets scan for your project,
-      then automatically specify scanned assets in pubspec.yaml,
+      
+      #{"With no option".bold}, #{"Flr".bold} will perform once an assets scan for your project,
+      then specify scanned assets in pubspec.yaml,
       and generate "r.g.dart" file.
 
-    LONGDESC
-    def generate
-      Command.generate
-    end
+      #{"With".bold} #{"--auto".red.bold} #{"option".bold}, #{"Flr".bold} will launch a monitoring service that continuously monitors asset changes for your project,
+      and if the service detects any asset changes, it will automatically perform an assets scan,
+      then specify scanned assets in pubspec.yaml,
+      and generate "r.g.dart" file.
 
-    desc "monitor", "Launch a monitoring service. When detects asset changes, the service will auto execute \"flr generate\". Press \"Ctrl-C\" can terminate it"
-    long_desc <<-LONGDESC
-       Launch a monitoring service that continuously monitors asset changes for your project. 
-
-       If there are any changes, it will automatically execute "flr generate" command which 
-       will perform a assets scan,
-       then automatically specify scanned assets in pubspec.yaml,
-       and generate the "r.g.dart" file.
-
-       You can terminate the service by manually pressing "Ctrl-C".
+      You can terminate the monitoring service by manually pressing "Ctrl-C" if it exists.
 
     LONGDESC
-    def monitor
-      Command.start_assert_monitor
+    option :auto, :type => :boolean
+    def run_command
+      options[:auto] ? Command.start_assert_monitor : Command.generate
     end
+
+    map 'run' => 'run_command'
 
   end
 end

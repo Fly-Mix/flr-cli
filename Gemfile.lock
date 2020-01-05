@@ -4,7 +4,7 @@ PATH
     flr (0.2.0)
       bundler (~> 2.0, >= 2.0.2)
       listen (~> 3.0, >= 3.2.1)
-      thor (~> 0.20, >= 0.20.3)
+      thor (~> 1.0, >= 1.0.1)
 
 GEM
   remote: https://rubygems.org/
@@ -16,7 +16,7 @@ GEM
     rb-fsevent (0.10.3)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
-    thor (0.20.3)
+    thor (1.0.1)
 
 PLATFORMS
   ruby

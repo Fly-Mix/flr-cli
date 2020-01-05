@@ -193,8 +193,8 @@ module Flr
       # .DS_Store 是 macOS 下文件夹里默认自带的的隐藏文件
       ignored_asset_types = [".DS_Store"]
 
-      # 添加资源声明到 `pubspec.yaml`
-      puts("add the asset declarations into pubspec.yaml now ...")
+      # 扫描资源
+      puts("scan assets now ...")
 
       package_name = pubspec_yaml["name"]
       flutter_assets = []
@@ -216,13 +216,18 @@ module Flr
       end
       uniq_flutter_assets -= illegal_assets
 
+      puts("scan assets done !!!")
+
+      # 添加资源声明到 `pubspec.yaml`
+      puts("specify scanned assets in pubspec.yaml now ...")
+
       pubspec_yaml["flutter"]["assets"] = uniq_flutter_assets
 
       pubspec_file = File.open(pubspec_path, 'w')
       pubspec_file.write(pubspec_yaml.to_yaml)
       pubspec_file.close
 
-      puts("add the asset declarations into pubspec.yaml done !!!")
+      puts("specify scanned assets in pubspec.yaml done !!!")
 
       # 创建生成 `r.g.dart`
 
@@ -598,27 +603,23 @@ class _R_Text {
 
     end
 
-    # 启动一个资源目录监听服务，若检测到有资源变化，就自动执行`flr generate`；手动输入`Ctrl-C`，可终止当前服务
+    # 启动一个资源目录监听服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
     def self.start_assert_monitor
 
       all_asset_dir_paths = check_before_generate
 
-      puts("execute \"flr generate\" and launch a monitoring service")
-      puts("\n")
-
       now_str = Time.now.to_s
-      puts("-------------------- #{now_str} --------------------")
-      puts("execute \"flr generate\" now ...")
+      puts("--------------------------- #{now_str} ---------------------------")
+      puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" now ...")
       puts("\n")
       generate
       puts("\n")
-      puts("execute \"flr generate\" done !!!")
-      puts("specify assets and generate \"r.g.dart\" done !!!")
-      puts("-------------------------------------------------------------------")
+      puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" done !!!")
+      puts("---------------------------------------------------------------------------------")
       puts("\n")
 
       now_str = Time.now.to_s
-      puts("-------------------- #{now_str} --------------------")
+      puts("--------------------------- #{now_str} ---------------------------")
       puts("launch a monitoring service now ...")
       puts("launching ...")
       # stop the monitoring service if exists
@@ -628,7 +629,7 @@ class _R_Text {
       all_asset_dir_paths.each do |dir_path|
         puts("- #{dir_path}")
       end
-      puts("-------------------------------------------------------------------")
+      puts("---------------------------------------------------------------------------------")
       puts("\n")
 
       # Allow array of directories as input #92
@@ -636,19 +637,18 @@ class _R_Text {
       @@listener = Listen.to(*all_asset_dir_paths, ignore: [/\.DS_Store/], latency: 0.5, wait_for_delay: 5, relative: true) do |modified, added, removed|
         # for example: 2013-03-30 03:13:14 +0900
         now_str = Time.now.to_s
-        puts("-------------------- #{now_str} --------------------")
+        puts("--------------------------- #{now_str} ---------------------------")
         puts("modified absolute paths: #{modified}")
         puts("added absolute paths: #{added}")
         puts("removed absolute paths: #{removed}")
-        puts("execute \"flr generate\" now ...")
+        puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" now ...")
         puts("\n")
         generate
         puts("\n")
-        puts("execute \"flr generate\" done !!!")
-        puts("specify assets and generate \"r.g.dart\" done !!!")
-        puts("-------------------------------------------------------------------")
+        puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" done !!!")
+        puts("---------------------------------------------------------------------------------")
         puts("\n")
-        puts("[*]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...".tips_style)
+        puts("[*]: the monitoring service is monitoring the asset changes, and then auto scan assets, specifies assets and generates \"r.g.dart\" ...".tips_style)
         puts("[*]: you can press \"Ctrl-C\" to terminate it".tips_style)
         puts("\n")
       end
@@ -657,7 +657,7 @@ class _R_Text {
 
       # https://ruby-doc.org/core-2.5.0/Interrupt.html
       begin
-        puts("[*]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...".tips_style)
+        puts("[*]: the monitoring service is monitoring the asset changes, and then auto scan assets, specifies assets and generates \"r.g.dart\" ...".tips_style)
         puts("[*]: you can press \"Ctrl-C\" to terminate it".tips_style)
         puts("\n")
         loop {}
