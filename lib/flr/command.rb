@@ -80,7 +80,9 @@ module Flr
       puts("[√]: init done !!!")
     end
 
-    # check if the conditions for generation are met
+    # check if the conditions for generation are met, and return the valid asset directories that need to be scanned
+    # if not met, then abort current program
+    # @return all_valid_asset_dir_paths
     def self.check_before_generate
       flutter_project_root_dir = "#{Pathname.pwd}"
 
@@ -134,6 +136,8 @@ module Flr
 
       # 移除非法的非法的 asset_dir_path（nil，空字符串）
       all_asset_dir_paths = all_asset_dir_paths - [nil, ""]
+      # 过滤重复的 asset_dir_path
+      all_asset_dir_paths = all_asset_dir_paths.uniq
 
       # 若当前all_asset_dir_paths数量为0，则说明开发者没有配置资源目录路径，这时直接终止当前任务，并提示开发者手动配置它
       unless all_asset_dir_paths.length > 0
@@ -151,6 +155,8 @@ module Flr
         MESSAGE
         abort(message)
       end
+
+      return all_asset_dir_paths
     end
 
     # scan assets,
@@ -158,10 +164,9 @@ module Flr
     # and generate `r.g.dart` file.
     def self.generate
 
-      check_before_generate
+      all_asset_dir_paths = check_before_generate
 
       flutter_project_root_dir = "#{Pathname.pwd}"
-
       pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
       pubspec_file = File.open(pubspec_path, 'r')
       pubspec_yaml = YAML.load(pubspec_file)
@@ -169,11 +174,6 @@ module Flr
 
       flr_config = pubspec_yaml["flr"]
       flr_version = flr_config["version"]
-      all_asset_dir_paths = flr_config["assets"]
-      # 移除非法的非法的 asset_dir_path（nil，空字符串）
-      all_asset_dir_paths = all_asset_dir_paths - [nil, ""]
-      # 过滤重复的 asset_dir_path
-      all_asset_dir_paths = all_asset_dir_paths.uniq
 
       # 需要过滤的资源类型
       # .DS_Store 是 macOS 下文件夹里默认自带的的隐藏文件
@@ -590,39 +590,21 @@ class _R_Text {
     # You can terminate the service by manually pressing `Ctrl-C`.
     def self.start_assert_monitor
 
-      check_before_generate
+      all_asset_dir_paths = check_before_generate
 
-      flutter_project_root_dir = "#{Pathname.pwd}"
-
-      puts("execute \"fly generate\" and launch a monitoring service")
+      puts("execute \"flr generate\" and launch a monitoring service")
       puts("\n")
 
       now_str = Time.now.to_s
       puts("-------------------- #{now_str} --------------------")
-      puts("execute \"fly generate\" now ...")
+      puts("execute \"flr generate\" now ...")
       puts("\n")
       generate
       puts("\n")
-      puts("execute \"fly generate\" done !!!")
+      puts("execute \"flr generate\" done !!!")
       puts("specify assets and generate \"r.g.dart\" done !!!")
       puts("-------------------------------------------------------------------")
       puts("\n")
-
-      flrfile = File.open(flrfile_path, "r")
-      flrfile_yaml = YAML.load(flrfile)
-      flrfile.close
-
-      image_asset_dir_paths = flrfile_yaml["assets"]["images"]
-      text_asset_dir_paths = flrfile_yaml["assets"]["texts"]
-      all_asset_dir_paths = []
-
-      if image_asset_dir_paths.is_a?(Array)
-        all_asset_dir_paths = all_asset_dir_paths + image_asset_dir_paths
-      end
-
-      if text_asset_dir_paths.is_a?(Array)
-        all_asset_dir_paths = all_asset_dir_paths + text_asset_dir_paths
-      end
 
       now_str = Time.now.to_s
       puts("-------------------- #{now_str} --------------------")
@@ -631,7 +613,6 @@ class _R_Text {
       # stop the monitoring service if exists
       stop_assert_monitor
       puts("launch a monitoring service done !!!")
-      all_asset_dir_paths = all_asset_dir_paths.uniq
       puts("the monitoring service is monitoring these asset directories:")
       all_asset_dir_paths.each do |dir_path|
         puts("- #{dir_path}")
@@ -648,16 +629,16 @@ class _R_Text {
         puts("modified absolute paths: #{modified}")
         puts("added absolute paths: #{added}")
         puts("removed absolute paths: #{removed}")
-        puts("execute \"fly generate\" now ...")
+        puts("execute \"flr generate\" now ...")
         puts("\n")
         generate
         puts("\n")
-        puts("execute \"fly generate\" done !!!")
+        puts("execute \"flr generate\" done !!!")
         puts("specify assets and generate \"r.g.dart\" done !!!")
         puts("-------------------------------------------------------------------")
         puts("\n")
-        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...")
-        puts("[*]: you can press \"Ctrl-C\" to terminate it")
+        puts("[*]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...".tips_style)
+        puts("[*]: you can press \"Ctrl-C\" to terminate it".tips_style)
         puts("\n")
       end
       # not blocking
@@ -665,8 +646,8 @@ class _R_Text {
 
       # https://ruby-doc.org/core-2.5.0/Interrupt.html
       begin
-        puts("[!]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...")
-        puts("[*]: you can press \"Ctrl-C\" to terminate it")
+        puts("[*]: the monitoring service is monitoring the asset changes, and then auto specifies assets and generates \"r.g.dart\" ...".tips_style)
+        puts("[*]: you can press \"Ctrl-C\" to terminate it".tips_style)
         puts("\n")
         loop {}
       rescue Interrupt => e
