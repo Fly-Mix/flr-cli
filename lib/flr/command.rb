@@ -236,7 +236,6 @@ module Flr
       # 生成 `class R` 的代码
       r_code = <<-CODE
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// Flr CLI: https://github.com/Fly-Mix/flr-cli
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
