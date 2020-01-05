@@ -6,14 +6,21 @@ module Flr
 
   class CLI < Thor
 
-    desc "version", "Show flr version"
+    def self.exit_on_failure?
+      puts("")
+      CLI::help(CLI::Base.shell.new)
+      true
+    end
+
+    desc "version", "Display version"
     long_desc <<-LONGDESC
-      Show the version of flr.
+      Display the version of Flr.
 
     LONGDESC
     def version
       Command.version
     end
+    map %w[-v --version] => :version
 
     desc "init", "Add flr configuration and dependency \"r_dart_library\" into pubspec.yaml"
     long_desc <<-LONGDESC
@@ -45,7 +52,7 @@ module Flr
       options[:auto] ? Command.start_assert_monitor : Command.generate
     end
 
-    map 'run' => 'run_command'
+    map 'run' => :run_command
 
   end
 end
