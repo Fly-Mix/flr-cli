@@ -35,12 +35,12 @@ module Flr
     desc "run [--auto]", "Scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\""
     long_desc <<-LONGDESC
       
-      #{"With no option".bold}, #{"Flr".bold} will perform once an assets scan for your project,
+      #{"With no option".bold}, #{"Flr".bold} will scan the asset directories configured in `pubspec.yaml`,
       then specify scanned assets in pubspec.yaml,
       and generate "r.g.dart" file.
 
-      #{"With".bold} #{"--auto".red.bold} #{"option".bold}, #{"Flr".bold} will launch a monitoring service that continuously monitors asset changes for your project,
-      and if the service detects any asset changes, it will automatically perform an assets scan,
+      #{"With".bold} #{"--auto".red.bold} #{"option".bold}, #{"Flr".bold} will launch a monitoring service that continuously monitors asset directories configured in pubspec.yaml.
+      If the service detects any asset changes, #{"Flr".bold} will automatically scan the asset directories,
       then specify scanned assets in pubspec.yaml,
       and generate "r.g.dart" file.
 
