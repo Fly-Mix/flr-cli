@@ -13,7 +13,7 @@ Flr (Flutter-R): a CLI tool likes `AAPT`(Android Asset Packaging Tool), which ca
 ## Feature
 
 - Support auto service that automatically specify assets in `pubspec.yaml` and generate  `r.g.dart` file,  which can be triggered manually or by monitoring asset changes
-- Support `R.x`（such as`R.image.test()`, `R.svg.test()`, `R.txt.test_json()`）code  struct 
+- Support `R.x` (such as`R.image.test()`, `R.svg.test(width: 100, height: 100)`, `R.txt.test_json()`) code struct 
 - Support for processing image assets ( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
 - Support for processing text assets ( `.txt`, `.json`, `.yaml`, `.xml` ) 
 - Support for processing [image asset variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
