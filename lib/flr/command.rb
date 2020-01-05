@@ -29,15 +29,17 @@ module Flr
       puts(version_desc)
     end
 
-    # create a `Flrfile.yaml` file for the current directory if none currently exists,
-    # and automatically specify package `r_dart_library`(https://github.com/YK-Unit/r_dart_library) in `pubspec.yaml`.
+    # 按照以下步骤执行初始化：
+    # 1. 检测当前目录是否是合法的flutter工程目录
+    # 2. 添加Flr配置到pubspec.yaml
+    # 3. 添加依赖包`r_dart_library`(https://github.com/YK-Unit/r_dart_library)的声明到pubspec.yaml
     def self.init
       flutter_project_root_dir = "#{Pathname.pwd}"
 
       pubspec_path = flutter_project_root_dir + "/pubspec.yaml"
 
       # 检测当前目录是否存在 pubspec.yaml；
-      # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印错误提示；
+      # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印相关提示；
       unless File.exist?(pubspec_path)
         message = <<-MESSAGE
 #{"[x]: #{pubspec_path} not found".error_style}
@@ -48,20 +50,23 @@ module Flr
 
       puts("init #{flutter_project_root_dir} now...")
 
-      # 更新 pubspec.yaml，添加和获取依赖包 `r_dart_library`(https://github.com/YK-Unit/r_dart_library)
+      # 读取pubspec.yaml，然后添加相关配置
       pubspec_file = File.open(pubspec_path, 'r')
       pubspec_yaml = YAML.load(pubspec_file)
       pubspec_file.close
       dependencies = pubspec_yaml["dependencies"]
 
+      # 添加Flr的配置到pubspec.yaml
       flr_config = Hash["version"  => "#{Flr::VERSION}", "assets" => nil ]
       pubspec_yaml["flr"] = flr_config
 
+      # 添加依赖包`r_dart_library`(https://github.com/YK-Unit/r_dart_library)的声明到pubspec.yaml
       r_dart_library = Hash["git" => Hash["url"  => "https://github.com/YK-Unit/r_dart_library.git"]]
       dependencies["r_dart_library"] = r_dart_library
 
       pubspec_yaml["dependencies"] = dependencies
 
+      # 保存pubspec.yaml
       pubspec_file = File.open(pubspec_path, 'w')
       pubspec_file.write(pubspec_yaml.to_yaml)
       pubspec_file.close
@@ -80,8 +85,11 @@ module Flr
       puts("[√]: init done !!!")
     end
 
-    # check if the conditions for generation are met, and return the valid asset directories that need to be scanned
-    # if not met, then abort current program
+    # 按照以下步骤检测是否符合执行创建任务的条件
+    # 1. 检测当前目录是否存在pubspec.yaml
+    # 2. 检测pubspec.yaml中是否存在flr的配置
+    # 3. 检测flr的配置中是否有配置了合法的资源目录路径
+    # 4. 返回所有合法的资源目录路径数组
     # @return all_valid_asset_dir_paths
     def self.check_before_generate
       flutter_project_root_dir = "#{Pathname.pwd}"
@@ -159,9 +167,15 @@ module Flr
       return all_asset_dir_paths
     end
 
-    # scan assets,
-    # then automatically specify scanned assets in `pubspec.yaml`,
-    # and generate `r.g.dart` file.
+    # 按照以下步骤执行创建：
+    # 1. 检测当前是否配置了需要扫描的资源目录路径，并输出所有合法的资源目录数组
+    # 2. 遍历合法的资源目录数组，对每个资源目录进行扫描，然后输出非法资源数组和合法资源数组
+    # 3. 遍历合法资源数组，一一为资源添加声明到pubspec.yaml
+    # 4. 遍历合法资源数组，筛选非SVG类的图片资源，为其生成相关代码到r.g.dart
+    # 5. 遍历合法资源数组，筛选SVG类的图片资源，为其生成相关代码到r.g.dart
+    # 6. 遍历合法资源数组，筛选文本资源，为其生成相关代码到r.g.dart
+    # 7. 检测当前使用的flr版本与配置的flr版本是否一致，若不一致，输出相关警告（指出当前二者版本不一致，需要修复）
+    # 8. 检测非法资源数组是否为空，若不为空，输出相关警告（列举当前文件名带有非法字符的资源，需要修复）
     def self.generate
 
       all_asset_dir_paths = check_before_generate
@@ -585,9 +599,7 @@ class _R_Text {
 
     end
 
-    # Launch a monitoring service that continuously monitors asset changes for your project.
-    # If there are any changes, it will automatically execute `flr generate`.
-    # You can terminate the service by manually pressing `Ctrl-C`.
+    # 启动一个资源目录监听服务，若检测到有资源变化，就自动执行`flr generate`；手动输入`Ctrl-C`，可终止当前服务
     def self.start_assert_monitor
 
       all_asset_dir_paths = check_before_generate
@@ -658,7 +670,7 @@ class _R_Text {
 
     end
 
-    # stop assert monitor task
+    # 停止资源目录监听服务
     def self.stop_assert_monitor
       if @@listener.nil? == false
         @@listener.stop
