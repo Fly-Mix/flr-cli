@@ -2,6 +2,7 @@ require 'yaml'
 require 'find'
 require 'listen'
 require 'flr/version'
+require 'flr/string_extensions'
 
 # 专有名词解释：
 # PS：以下有部分定义（file_dirname、file_basename、file_basename_no_extension、file_extname）参考自 Visual Studio Code
@@ -39,8 +40,8 @@ module Flr
       # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印错误提示；
       unless File.exist?(pubspec_path)
         message = <<-MESSAGE
-[x]: #{pubspec_path} not found
-[*]: please make sure current directory is a flutter project directory
+#{"[x]: #{pubspec_path} not found".error_style}
+#{"[*]: please make sure current directory is a flutter project directory".tips_style}
         MESSAGE
         abort(message)
       end
@@ -74,7 +75,7 @@ module Flr
       get_flutter_pub_cmd = "flutter pub get"
       system(get_flutter_pub_cmd)
 
-      puts "get dependency \"r_dart_library\" done !!!"
+      puts("get dependency \"r_dart_library\" done !!!")
 
       puts("[√]: init done !!!")
     end
@@ -89,8 +90,8 @@ module Flr
       # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止当前任务，并打印错误提示；
       unless File.exist?(pubspec_path)
         message = <<-MESSAGE
-[x]: #{pubspec_path} not found
-[*]: please make sure current directory is a flutter project directory
+#{"[x]: #{pubspec_path} not found".error_style}
+#{"[*]: please make sure current directory is a flutter project directory".tips_style}
         MESSAGE
         abort(message)
       end
@@ -106,8 +107,8 @@ module Flr
       flr_config = pubspec_yaml["flr"]
       unless flr_config.is_a?(Hash)
         message = <<-MESSAGE
-[x]: have no flr configuration in pubspec.yaml
-[*]: please run "flr init" to fix it
+#{"[x]: have no flr configuration in pubspec.yaml".error_style}
+#{"[*]: please run \"flr init\" to fix it".tips_style}
         MESSAGE
         abort(message)
       end
@@ -117,16 +118,15 @@ module Flr
 
       unless all_asset_dir_paths.is_a?(Array)
         message = <<-MESSAGE
-[x]: have no valid asset directories configuration in pubspec.yaml
-[*]: please manually configure the asset directories to fix it, for example: 
+#{"[x]: have no valid asset directories configuration in pubspec.yaml".error_style}
+#{"[*]: please manually configure the asset directories to fix it, for example: ".tips_style}
 
-    flr:
-      version: #{flr_version}
-      assets:
-      # config the asset directories that need to be scanned
-      - lib/assets/images
-      - lib/assets/texts
-        
+    #{"flr:".tips_style}
+      #{"version: #{flr_version}".tips_style}
+      #{"assets:".tips_style}
+      #{"# config the asset directories that need to be scanned".tips_style}
+      #{"- lib/assets/images".tips_style}
+      #{"- lib/assets/texts".tips_style}
 
         MESSAGE
         abort(message)
@@ -138,16 +138,15 @@ module Flr
       # 若当前all_asset_dir_paths数量为0，则说明开发者没有配置资源目录路径，这时直接终止当前任务，并提示开发者手动配置它
       unless all_asset_dir_paths.length > 0
         message = <<-MESSAGE
-[x]: have no valid asset directories configuration in pubspec.yaml
-[*]: please manually configure the asset directories to fix it, for example: 
+#{"[x]: have no valid asset directories configuration in pubspec.yaml".error_style}
+#{"[*]: please manually configure the asset directories to fix it, for example: ".tips_style}
 
-    flr:
-      version: #{flr_version}
-      assets:
-      # config the asset directories that need to be scanned
-      - lib/assets/images
-      - lib/assets/texts
-        
+    #{"flr:".tips_style}
+      #{"version: #{flr_version}".tips_style}
+      #{"assets:".tips_style}
+      #{"# config the asset directories that need to be scanned".tips_style}
+      #{"- lib/assets/images".tips_style}
+      #{"- lib/assets/texts".tips_style}
 
         MESSAGE
         abort(message)
@@ -551,30 +550,33 @@ class _R_Text {
 
 
       r_dart_file.close
-      puts "generate \"r.g.dart\" done !!!"
+      puts("generate \"r.g.dart\" done !!!")
 
-      puts "execute \"flutter pub get\" now ..."
+      puts("execute \"flutter pub get\" now ...")
 
       get_flutter_pub_cmd = "flutter pub get"
       system(get_flutter_pub_cmd)
 
-      puts "execute \"flutter pub get\" done !!!"
+      puts("execute \"flutter pub get\" done !!!")
 
       puts("[√]: generate done !!!")
 
       if flr_version != Flr::VERSION
-        puts ""
-        puts "[!]: warning, the configured Flr version is #{flr_version}, while the currently used Flr version is #{Flr::VERSION}"
-        puts "[*]: to fix it, you should make sure that both versions are the same"
+        message = <<-MESSAGE
+        
+#{"[!]: warning, the configured Flr version is #{flr_version}, while the currently used Flr version is #{Flr::VERSION}".warning_style}
+#{"[*]: to fix it, you should make sure that both versions are the same".tips_style}
+        MESSAGE
+        puts(message)
       end
 
       if illegal_assets.length > 0
-        puts ""
-        puts "[!]: warning, find illegal assets who's file basename contains illegal characters: "
+        puts("")
+        puts("[!]: warning, find illegal assets who's file basename contains illegal characters: ".warning_style)
         illegal_assets.each do |asset|
-          puts "  - #{asset}"
+          puts("  - #{asset}".warning_style)
         end
-        puts "[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '.', '·', '!', '@', '&', '$', '￥') to name the asset"
+        puts("[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '.', '·', '!', '@', '&', '$', '￥') to name the asset".tips_style)
 
       end
 
