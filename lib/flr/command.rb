@@ -573,12 +573,15 @@ class _R_Text {
       r_dart_file.close
       puts("generate \"r.g.dart\" done !!!")
 
-      puts("execute \"flutter pub get\" now ...")
+      flutter_format_cmd = "flutter format #{r_dart_path}"
+      puts("execute \"#{flutter_format_cmd}\" now ...")
+      system(flutter_format_cmd)
+      puts("execute \"#{flutter_format_cmd}\" done !!!")
 
       get_flutter_pub_cmd = "flutter pub get"
+      puts("execute \"#{get_flutter_pub_cmd}\" now ...")
       system(get_flutter_pub_cmd)
-
-      puts("execute \"flutter pub get\" done !!!")
+      puts("execute \"#{get_flutter_pub_cmd}\" done !!!")
 
       puts("[√]: generate done !!!")
 
