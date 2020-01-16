@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
   spec.email         = ["yorkzhang520@gmail.com"]
 
   spec.summary       = "Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool)."
-  spec.description   = "Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in pubspec.yaml and generate R.dart file after he updates the flutter project assets."
-  spec.homepage      = "https://github.com/YK-Unit/flr"
+  spec.description   = "Flr(Flutter-R): a CLI tool likes AAPT(Android Asset Packaging Tool), which can help flutter developer to auto specify assets in pubspec.yaml and generate r.g.dart file after he changes the flutter project assets."
+  spec.homepage      = "https://github.com/Fly-Mix/flr-cli"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -20,8 +20,8 @@ Gem::Specification.new do |spec|
     # spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
     spec.metadata["homepage_uri"] = spec.homepage
-    spec.metadata["source_code_uri"] = "https://github.com/YK-Unit/flr"
-    spec.metadata["changelog_uri"] = "https://github.com/YK-Unit/Flr/blob/master/CHANGELOG.md"
+    spec.metadata["source_code_uri"] = spec.homepage
+    spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/master/CHANGELOG.md"
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
       "public gem pushes."

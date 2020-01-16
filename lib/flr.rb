@@ -6,9 +6,21 @@ module Flr
 
   class CLI < Thor
 
+    def self.help(shell, subcommand = false, display_introduction = true)
+      introduction = <<-MESSAGE
+A CLI tool for flutter developer to auto specify assets and generate R class.
+More details see https://github.com/Fly-Mix/flr-cli
+
+      MESSAGE
+      if display_introduction
+        puts(introduction)
+      end
+      super(shell,subcommand)
+    end
+
     def self.exit_on_failure?
       puts("")
-      CLI::help(CLI::Base.shell.new)
+      help(CLI::Base.shell.new, false, false)
       true
     end
 
@@ -44,7 +56,7 @@ module Flr
       then specify scanned assets in pubspec.yaml,
       and generate "r.g.dart" file.
 
-      You can terminate the monitoring service by manually pressing "Ctrl-C" if it exists.
+      You can terminate the monitoring service by manually pressing #{"\"Ctrl-C\"".bold} if it exists.
 
     LONGDESC
     option :auto, :type => :boolean
