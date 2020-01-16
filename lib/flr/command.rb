@@ -29,6 +29,31 @@ module Flr
       puts(version_desc)
     end
 
+    # get the right version of r_dart_library package based on flutter's version
+    # to get more detail, click https://github.com/YK-Unit/r_dart_library#dependency-relationship-table
+    def self.get_r_dart_library_version
+      r_dart_library_version = "0.1.0"
+
+      #$ flutter --version
+      #Flutter 1.12.13+hotfix.5 • channel stable • https://github.com/flutter/flutter.git
+      #Framework • revision 27321ebbad (5 weeks ago) • 2019-12-10 18:15:01 -0800
+      #Engine • revision 2994f7e1e6
+      #Tools • Dart 2.7.0
+      flutter_version_result = `flutter --version`
+      if (flutter_version_result.nil? == true ||flutter_version_result.empty? == true)
+        return r_dart_library_version
+      end
+
+      version_with_hotfix_str = flutter_version_result.split(" ")[1]
+      version_without_hotfix_str = version_with_hotfix_str.split("+")[0]
+
+      if Version.new(version_with_hotfix_str) >= Version.new("1.10.15")
+        r_dart_library_version = "0.2.0"
+      end
+
+      return r_dart_library_version
+    end
+
     # 按照以下步骤执行初始化：
     # 1. 检测当前目录是否是合法的flutter工程目录
     # 2. 添加Flr配置到pubspec.yaml
@@ -61,7 +86,8 @@ module Flr
       pubspec_yaml["flr"] = flr_config
 
       # 添加依赖包`r_dart_library`(https://github.com/YK-Unit/r_dart_library)的声明到pubspec.yaml
-      r_dart_library = Hash["git" => Hash["url"  => "https://github.com/YK-Unit/r_dart_library.git"]]
+      r_dart_library_version = get_r_dart_library_version
+      r_dart_library = Hash["git" => Hash["url"  => "https://github.com/YK-Unit/r_dart_library.git", "ref" => r_dart_library_version]]
       dependencies["r_dart_library"] = r_dart_library
 
       pubspec_yaml["dependencies"] = dependencies
