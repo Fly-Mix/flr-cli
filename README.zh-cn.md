@@ -19,7 +19,7 @@
 	- 文件名带有非法字符，如空格、`~`、`#` 等（非法字符是指不在合法字符集合内的字符；合法字符集合的字符有：`0-9`、`A-Z`、 `a-z`、 `_`、`+`、`-`、`.`、`·`、 `!`、 `@`、 `&`、`$`、`￥`）
 	- 文件名以数字或者`_`或者`$`字符开头
 
-## Installation & Update Flr
+## Install & Update Flr
 
 安装或者更新`Flr`，只需要在终端运行一句命令即可： `sudo gem install flr`。
 > 若你希望在Windows系统下使用Flr，强烈建议你在[WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 环境下安装和运行。

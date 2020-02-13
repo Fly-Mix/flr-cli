@@ -22,7 +22,7 @@ Flr (Flutter-R): A Flutter Resource Manager CLI TooL, which can help flutter dev
    - filename begins with a number or character `_`  or character`$`
    
 
-## Installation & Update Flr
+## Install & Update Flr
 
 To install or update Flr, run `sudo gem install flr`
 
