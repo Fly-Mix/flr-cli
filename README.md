@@ -69,7 +69,7 @@ To uninstall  Flr run `sudo gem uninstall flr`
      > After run `flr run` command, `Flr` will scan the asset directories configured in `pubspec.yaml`, then specify scanned assets in pubspec.yaml, and generate "r.g.dart" file.
      > 
      > **If you want `Flr` to do the above operations automatically every time a asset changes, you can run the command `Flr run --auto`.**
-     > Then `Flr` will launche a monitoring service that continuously monitors asset directories configured in `pubspec.yaml`. If the service detects any asset changes, `Flr` will automatically scan the asset directories, then specify scanned assets in pubspec.yaml, and generate "r.g.dart" file. 
+     > Then `Flr` will launch a monitoring service that continuously monitors asset directories configured in `pubspec.yaml`. If the service detects any asset changes, `Flr` will automatically scan the asset directories, then specify scanned assets in pubspec.yaml, and generate "r.g.dart" file. 
      >
      > **You can terminate this monitoring service by manually pressing `Ctrl-C`.**
 
