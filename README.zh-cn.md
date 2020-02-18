@@ -1,8 +1,8 @@
-# Flr
+# Flr CLI
 
 ![ruby](https://img.shields.io/badge/language-ruby-orange.svg) [![Gem Version](https://badge.fury.io/rb/flr.svg)](http://badge.fury.io/rb/flr) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`Flr`（Flutter-R）：一个Flutter资源管理的`CLI`工具，用于帮助Flutter开发者在修改项目资源后，可以自动为资源添加声明到 `pubspec.yaml` 以及生成`r.g.dart`文件。借助`r.g.dart`，Flutter开发者可以在代码中通过资源ID函数的方式应用资源。
+`Flr`（Flutter-R）CLI：一个Flutter资源管理的`CLI`工具，用于帮助Flutter开发者在修改项目资源后，可以自动为资源添加声明到 `pubspec.yaml` 以及生成`r.g.dart`文件。借助`r.g.dart`，Flutter开发者可以在代码中通过资源ID函数的方式应用资源。
 
 ![Flr Usage Example](README_Assets/flr-usage-example.gif)
 
@@ -19,12 +19,12 @@
 	- 文件名带有非法字符，如空格、`~`、`#` 等（非法字符是指不在合法字符集合内的字符；合法字符集合的字符有：`0-9`、`A-Z`、 `a-z`、 `_`、`+`、`-`、`.`、`·`、 `!`、 `@`、 `&`、`$`、`￥`）
 	- 文件名以数字或者`_`或者`$`字符开头
 
-## Install & Update Flr
+## Install & Update Flr CLI
 
 安装或者更新`Flr`，只需要在终端运行一句命令即可： `sudo gem install flr`。
 > 若你希望在Windows系统下使用Flr，强烈建议你在[WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 环境下安装和运行。
 
-## Uninstall Flr
+## Uninstall Flr CLI
 
 卸载`Flr`，只需要在终端运行一句命令即可：  `sudo gem uninstall flr`。
 

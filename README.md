@@ -1,9 +1,9 @@
-# Flr
+# Flr CLI
 
 ![ruby](https://img.shields.io/badge/language-ruby-orange.svg) [![Gem Version](https://badge.fury.io/rb/flr.svg)](http://badge.fury.io/rb/flr) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-Flr (Flutter-R): A Flutter Resource Manager CLI TooL, which can help flutter developer to auto specify assets in `pubspec.yaml` and generate `r.g.dart` file after he changes the flutter project assets. With `r.g.dart`,  flutter developer can apply the asset in code by referencing it's asset ID function.
+Flr (Flutter-R) CLI: A Flutter Resource Manager CLI TooL, which can help flutter developer to auto specify assets in `pubspec.yaml` and generate `r.g.dart` file after he changes the flutter project assets. With `r.g.dart`,  flutter developer can apply the asset in code by referencing it's asset ID function.
 
 ![Flr Usage Example](README_Assets/flr-usage-example.gif)
 
@@ -22,13 +22,13 @@ Flr (Flutter-R): A Flutter Resource Manager CLI TooL, which can help flutter dev
    - filename begins with a number or character `_`  or character`$`
    
 
-## Install & Update Flr
+## Install & Update Flr CLI
 
 To install or update Flr, run `sudo gem install flr`
 
 > If you want to use Flr tool on the Windows system, you are strongly recommended to run it on [WSL(Windows Subsystem for Linux)](https://docs.microsoft.com/en-us/windows/wsl/install-win10) environment !!! 
 
-## Uninstall Flr
+## Uninstall Flr CLI
 
 To uninstall  Flr run `sudo gem uninstall flr`
 
@@ -78,7 +78,7 @@ To uninstall  Flr run `sudo gem uninstall flr`
 
 ## r.g.dart
 
-After you run `flr run [--auto]`, Flr will scan the asset directories configured in `pubspec.yaml`, then specify scanned assets in pubspec.yaml, and generate "r.g.dart" file.
+After you run `flr run [--auto]`, Flr will scan the asset directories configured in `pubspec.yaml`, then specify scanned assets in `pubspec.yaml`, and generate `r.g.dart` file.
 
 `r.g.dart` defines a asset access interface class: `R`, which allows flutter developer to apply the asset in code by referencing it's asset ID function, such as: 
 
