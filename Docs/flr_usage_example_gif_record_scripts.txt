@@ -1,0 +1,21 @@
+---------------------------------------------
+
+1. Run `flr init`
+
+---------------------------------------------
+
+2. Edit pubspec.yaml to configure the asset directory paths
+
+---------------------------------------------
+
+3. Run `flr run --auto`
+
+
+---------------------------------------------
+
+4. Add a new asset: 163.com.yaml
+
+---------------------------------------------
+
+5. Press `Ctrl-C` to terminate the monitoring service if you want
+
