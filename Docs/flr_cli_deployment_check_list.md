@@ -21,7 +21,5 @@
 1. 在项目根目录下运行脚本发布Flr：`gem push flr-x.y.z.gem`
 
 ## Other
-
-其他知识点：
  
-- 从RubyGems市场下架指定版本的Flr：`gem yank flr -v x.y.z`
+1. 从RubyGems市场下架指定版本的Flr：`gem yank flr -v x.y.z`
