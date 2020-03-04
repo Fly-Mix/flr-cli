@@ -173,6 +173,26 @@ module Flr
       # 过滤重复的 asset_dir_path
       all_asset_dir_paths = all_asset_dir_paths.uniq
 
+      # 过滤非法的asset_dir_path：不存在对应的目录
+      illegal_asset_dir_paths = []
+      all_asset_dir_paths.each do |asset_dir_path|
+        if File.exist?(asset_dir_path) == false
+          illegal_asset_dir_paths.push(asset_dir_path)
+          next
+        end
+      end
+
+      if illegal_asset_dir_paths.length > 0
+        puts("")
+        puts("[!]: warning, found the following asset directories do not exist: ".warning_style)
+        illegal_asset_dir_paths.each do |asset_dir_path|
+          puts("  - #{asset_dir_path}".warning_style)
+        end
+        puts("")
+        all_asset_dir_paths = all_asset_dir_paths - illegal_asset_dir_paths
+      end
+
+
       # 若当前all_asset_dir_paths数量为0，则说明开发者没有配置资源目录路径，这时直接终止当前任务，并提示开发者手动配置它
       unless all_asset_dir_paths.length > 0
         message = <<-MESSAGE
