@@ -8,6 +8,7 @@ To uninstall  Flr run `sudo gem uninstall flr`
 
 ## 0.2.2
 
+- improve robustness
 - fix bug
 
 ## 0.2.1
