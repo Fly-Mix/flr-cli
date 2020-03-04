@@ -184,7 +184,7 @@ module Flr
 
       if illegal_asset_dir_paths.length > 0
         puts("")
-        puts("[!]: warning, found the following asset directories do not exist: ".warning_style)
+        puts("[!]: warning, found the following asset directories who do not exist: ".warning_style)
         illegal_asset_dir_paths.each do |asset_dir_path|
           puts("  - #{asset_dir_path}".warning_style)
         end
@@ -644,7 +644,7 @@ class _R_Text {
 
       if illegal_assets.length > 0
         puts("")
-        puts("[!]: warning, find illegal assets who's file basename contains illegal characters: ".warning_style)
+        puts("[!]: warning, found the following illegal assets who's file basename contains illegal characters: ".warning_style)
         illegal_assets.each do |asset|
           puts("  - #{asset}".warning_style)
         end
