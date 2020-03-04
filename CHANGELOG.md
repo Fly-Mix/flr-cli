@@ -6,6 +6,10 @@ To install or update Flr run `sudo gem install flr`
 
 To uninstall  Flr run `sudo gem uninstall flr`
 
+## 0.2.2
+
+- fix bug
+
 ## 0.2.1
 
 - optimize flr help command
