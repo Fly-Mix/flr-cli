@@ -32,7 +32,7 @@ module Flr
     # get the right version of r_dart_library package based on flutter's version
     # to get more detail, see https://github.com/YK-Unit/r_dart_library#dependency-relationship-table
     def self.get_r_dart_library_version
-      r_dart_library_version = "0.1.0"
+      r_dart_library_version = "0.1.1"
 
       #$ flutter --version
       #Flutter 1.12.13+hotfix.5 • channel stable • https://github.com/flutter/flutter.git
@@ -48,7 +48,7 @@ module Flr
       version_without_hotfix_str = version_with_hotfix_str.split("+")[0]
 
       if Version.new(version_with_hotfix_str) >= Version.new("1.10.15")
-        r_dart_library_version = "0.2.0"
+        r_dart_library_version = "0.2.1"
       end
 
       return r_dart_library_version
