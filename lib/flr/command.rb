@@ -29,6 +29,26 @@ module Flr
       puts(version_desc)
     end
 
+    # safe load pubspec.yaml
+    # pubspec_path: String, path/to/pubspec.yaml
+    def self.safe_load_pubspec_file(pubspec_path)
+      begin
+        pubspec_file = File.open(pubspec_path, 'r')
+        pubspec_yaml = YAML.load(pubspec_file)
+        pubspec_file.close
+      rescue YAML::SyntaxError => e
+        pubspec_file.close
+        puts("YAML SyntaxError: #{e}")
+        puts("")
+        message = <<-MESSAGE
+#{"[x]: pubspec.yaml is damaged".error_style}
+#{"[*]: please correct the pubspec.yaml file at #{pubspec_path}".tips_style}
+        MESSAGE
+        abort(message)
+      end
+      return pubspec_yaml
+    end
+
     # get the right version of r_dart_library package based on flutter's version
     # to get more detail, see https://github.com/YK-Unit/r_dart_library#dependency-relationship-table
     def self.get_r_dart_library_version
@@ -76,9 +96,7 @@ module Flr
       puts("init #{flutter_project_root_dir} now...")
 
       # 读取pubspec.yaml，然后添加相关配置
-      pubspec_file = File.open(pubspec_path, 'r')
-      pubspec_yaml = YAML.load(pubspec_file)
-      pubspec_file.close
+      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
       dependencies = pubspec_yaml["dependencies"]
 
       # 添加Flr的配置到pubspec.yaml
@@ -132,9 +150,7 @@ module Flr
         abort(message)
       end
 
-      pubspec_file = File.open(pubspec_path, 'r')
-      pubspec_yaml = YAML.load(pubspec_file)
-      pubspec_file.close
+      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
 
       # 读取 pubspec_yaml，判断是否有 flr 的配置信息；
       # 若有，说明已经进行了初始化；然后检测是否配置了资源目录，若没有配置，这时直接终止当前任务，并提示开发者手动配置它
@@ -228,9 +244,7 @@ module Flr
 
       flutter_project_root_dir = "#{Pathname.pwd}"
       pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
-      pubspec_file = File.open(pubspec_path, 'r')
-      pubspec_yaml = YAML.load(pubspec_file)
-      pubspec_file.close
+      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
 
       flr_config = pubspec_yaml["flr"]
       flr_version = flr_config["version"]
