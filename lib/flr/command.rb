@@ -38,7 +38,7 @@ module Flr
         pubspec_file.close
       rescue YAML::SyntaxError => e
         pubspec_file.close
-        puts("YAML SyntaxError: #{e}")
+        puts("YAML Syntax Error: #{e}".error_style)
         puts("")
         message = <<-MESSAGE
 #{"[x]: pubspec.yaml is damaged with syntax error".error_style}
