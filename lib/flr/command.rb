@@ -41,7 +41,7 @@ module Flr
         puts("YAML SyntaxError: #{e}")
         puts("")
         message = <<-MESSAGE
-#{"[x]: pubspec.yaml is damaged".error_style}
+#{"[x]: pubspec.yaml is damaged with syntax error".error_style}
 #{"[*]: please correct the pubspec.yaml file at #{pubspec_path}".tips_style}
         MESSAGE
         abort(message)
