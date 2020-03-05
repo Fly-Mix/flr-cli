@@ -1,5 +1,5 @@
 module Flr
-  VERSION = "0.2.1"
+  VERSION = "0.2.2"
 
   class Version < Array
     def initialize str

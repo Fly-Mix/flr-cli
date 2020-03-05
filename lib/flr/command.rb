@@ -29,10 +29,30 @@ module Flr
       puts(version_desc)
     end
 
+    # safe load pubspec.yaml
+    # pubspec_path: String, path/to/pubspec.yaml
+    def self.safe_load_pubspec_file(pubspec_path)
+      begin
+        pubspec_file = File.open(pubspec_path, 'r')
+        pubspec_yaml = YAML.load(pubspec_file)
+        pubspec_file.close
+      rescue YAML::SyntaxError => e
+        pubspec_file.close
+        puts("YAML Syntax Error: #{e}".error_style)
+        puts("")
+        message = <<-MESSAGE
+#{"[x]: pubspec.yaml is damaged with syntax error".error_style}
+#{"[*]: please correct the pubspec.yaml file at #{pubspec_path}".tips_style}
+        MESSAGE
+        abort(message)
+      end
+      return pubspec_yaml
+    end
+
     # get the right version of r_dart_library package based on flutter's version
     # to get more detail, see https://github.com/YK-Unit/r_dart_library#dependency-relationship-table
     def self.get_r_dart_library_version
-      r_dart_library_version = "0.1.0"
+      r_dart_library_version = "0.1.1"
 
       #$ flutter --version
       #Flutter 1.12.13+hotfix.5 • channel stable • https://github.com/flutter/flutter.git
@@ -48,7 +68,7 @@ module Flr
       version_without_hotfix_str = version_with_hotfix_str.split("+")[0]
 
       if Version.new(version_with_hotfix_str) >= Version.new("1.10.15")
-        r_dart_library_version = "0.2.0"
+        r_dart_library_version = "0.2.1"
       end
 
       return r_dart_library_version
@@ -76,9 +96,7 @@ module Flr
       puts("init #{flutter_project_root_dir} now...")
 
       # 读取pubspec.yaml，然后添加相关配置
-      pubspec_file = File.open(pubspec_path, 'r')
-      pubspec_yaml = YAML.load(pubspec_file)
-      pubspec_file.close
+      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
       dependencies = pubspec_yaml["dependencies"]
 
       # 添加Flr的配置到pubspec.yaml
@@ -132,9 +150,7 @@ module Flr
         abort(message)
       end
 
-      pubspec_file = File.open(pubspec_path, 'r')
-      pubspec_yaml = YAML.load(pubspec_file)
-      pubspec_file.close
+      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
 
       # 读取 pubspec_yaml，判断是否有 flr 的配置信息；
       # 若有，说明已经进行了初始化；然后检测是否配置了资源目录，若没有配置，这时直接终止当前任务，并提示开发者手动配置它
@@ -173,6 +189,26 @@ module Flr
       # 过滤重复的 asset_dir_path
       all_asset_dir_paths = all_asset_dir_paths.uniq
 
+      # 过滤非法的asset_dir_path：不存在对应的目录
+      illegal_asset_dir_paths = []
+      all_asset_dir_paths.each do |asset_dir_path|
+        if File.exist?(asset_dir_path) == false
+          illegal_asset_dir_paths.push(asset_dir_path)
+          next
+        end
+      end
+
+      if illegal_asset_dir_paths.length > 0
+        puts("")
+        puts("[!]: warning, found the following asset directories who do not exist: ".warning_style)
+        illegal_asset_dir_paths.each do |asset_dir_path|
+          puts("  - #{asset_dir_path}".warning_style)
+        end
+        puts("")
+        all_asset_dir_paths = all_asset_dir_paths - illegal_asset_dir_paths
+      end
+
+
       # 若当前all_asset_dir_paths数量为0，则说明开发者没有配置资源目录路径，这时直接终止当前任务，并提示开发者手动配置它
       unless all_asset_dir_paths.length > 0
         message = <<-MESSAGE
@@ -208,9 +244,7 @@ module Flr
 
       flutter_project_root_dir = "#{Pathname.pwd}"
       pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
-      pubspec_file = File.open(pubspec_path, 'r')
-      pubspec_yaml = YAML.load(pubspec_file)
-      pubspec_file.close
+      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
 
       flr_config = pubspec_yaml["flr"]
       flr_version = flr_config["version"]
@@ -624,7 +658,7 @@ class _R_Text {
 
       if illegal_assets.length > 0
         puts("")
-        puts("[!]: warning, find illegal assets who's file basename contains illegal characters: ".warning_style)
+        puts("[!]: warning, found the following illegal assets who's file basename contains illegal characters: ".warning_style)
         illegal_assets.each do |asset|
           puts("  - #{asset}".warning_style)
         end
