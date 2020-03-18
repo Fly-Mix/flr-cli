@@ -25,7 +25,7 @@ module Flr
 
     # show the version of flr
     def self.version
-      version_desc = "flr version #{Flr::VERSION}"
+      version_desc = "Flr version #{Flr::VERSION}\nCoreLogic version #{Flr::CORE_VERSION}"
       puts(version_desc)
     end
 
@@ -100,7 +100,7 @@ module Flr
       dependencies = pubspec_yaml["dependencies"]
 
       # 添加Flr的配置到pubspec.yaml
-      flr_config = Hash["version"  => "#{Flr::VERSION}", "assets" => nil ]
+      flr_config = Hash["core_version"  => "#{Flr::CORE_VERSION}", "assets" => nil ]
       pubspec_yaml["flr"] = flr_config
 
       # 添加依赖包`r_dart_library`(https://github.com/YK-Unit/r_dart_library)的声明到pubspec.yaml
@@ -165,7 +165,7 @@ module Flr
         abort(message)
       end
 
-      flr_version = flr_config["version"]
+      flr_core_version = flr_config["core_version"]
       all_asset_dir_paths = flr_config["assets"]
 
       unless all_asset_dir_paths.is_a?(Array)
@@ -174,7 +174,7 @@ module Flr
 #{"[*]: please manually configure the asset directories to fix it, for example: ".tips_style}
 
     #{"flr:".tips_style}
-      #{"version: #{flr_version}".tips_style}
+      #{"core_version: #{flr_core_version}".tips_style}
       #{"assets:".tips_style}
       #{"# config the asset directories that need to be scanned".tips_style}
       #{"- lib/assets/images".tips_style}
@@ -216,7 +216,7 @@ module Flr
 #{"[*]: please manually configure the asset directories to fix it, for example: ".tips_style}
 
     #{"flr:".tips_style}
-      #{"version: #{flr_version}".tips_style}
+      #{"version: #{flr_core_version}".tips_style}
       #{"assets:".tips_style}
       #{"# config the asset directories that need to be scanned".tips_style}
       #{"- lib/assets/images".tips_style}
@@ -247,7 +247,7 @@ module Flr
       pubspec_yaml = safe_load_pubspec_file(pubspec_path)
 
       flr_config = pubspec_yaml["flr"]
-      flr_version = flr_config["version"]
+      flr_core_version = flr_config["core_version"]
 
       # 需要过滤的资源类型
       # .DS_Store 是 macOS 下文件夹里默认自带的的隐藏文件
@@ -647,11 +647,11 @@ class _R_Text {
 
       puts("[√]: generate done !!!")
 
-      if flr_version != Flr::VERSION
+      if flr_core_version != Flr::VERSION
         message = <<-MESSAGE
         
-#{"[!]: warning, the configured Flr version is #{flr_version}, while the currently used Flr version is #{Flr::VERSION}".warning_style}
-#{"[*]: to fix it, you should make sure that both versions are the same".tips_style}
+#{"[!]: warning, the core logic version of the configured Flr tool is #{flr_core_version}, while the core logic version of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
+#{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
         MESSAGE
         puts(message)
       end
