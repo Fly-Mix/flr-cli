@@ -1,6 +1,7 @@
 require 'thor'
 require 'flr/version'
 require 'flr/command'
+require 'flr/string_extensions'
 
 module Flr
 

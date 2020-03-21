@@ -3,18 +3,22 @@ require 'find'
 require 'listen'
 require 'flr/version'
 require 'flr/string_extensions'
+require 'flr/checker'
+require 'flr/util/file_util'
+require 'flr/util/asset_util'
+require 'flr/util/code_util'
 
-# 专有名词解释：
-# PS：以下有部分定义（file_dirname、file_basename、file_basename_no_extension、file_extname）参考自 Visual Studio Code
+# 专有名词简单解释和示例：
+# （详细定义请看 flr-core 项目的文档描述）
 #
-# asset：flutter工程的资源，其定义是“packages/#{package_name}/#{asset_name}”，例如“packages/flutter_demo/assets/images/hot_foot_N.png”
-# package_name：flutter工程的包名，例如“flutter_demo”
-# asset_name：资源名称，其定义是“#{file_dirname}/#{file_basename}”，例如“assets/images/hot_foot_N.png”
-# file_dirname：资源的目录路径名称，例如“assets/images”
+# package_name：flutter工程的package产物的名称，例如“flutter_demo”
+# resource_file：flutter工程的资源文件，例如“lib/assets/images/hot_foot_N.png”、“lib/assets/images/3.0x/hot_foot_N.png”
+# asset：flutter工程的package产物中资源，可当作是工程中的资源文件的映射和声明，例如上述2个资源对于的asset都是“packages/flutter_demo/assets/images/hot_foot_N.png”
 # file_basename：资源的文件名，其定义是“#{file_basename_no_extension}#{file_extname}”，例如“hot_foot_N.png”
 # file_basename_no_extension：资源的不带扩展名的文件名，例如“hot_foot_N”
 # file_extname：资源的扩展名，例如“.png”
 #
+# asset_name：main asset的名称，例如“assets/images/hot_foot_N.png”
 # asset_id：资源ID，其值一般为 file_basename_no_extension
 
 module Flr
@@ -29,38 +33,18 @@ module Flr
       puts(version_desc)
     end
 
-    # safe load pubspec.yaml
-    # pubspec_path: String, path/to/pubspec.yaml
-    def self.safe_load_pubspec_file(pubspec_path)
-      begin
-        pubspec_file = File.open(pubspec_path, 'r')
-        pubspec_yaml = YAML.load(pubspec_file)
-        pubspec_file.close
-      rescue YAML::SyntaxError => e
-        pubspec_file.close
-        puts("YAML Syntax Error: #{e}".error_style)
-        puts("")
-        message = <<-MESSAGE
-#{"[x]: pubspec.yaml is damaged with syntax error".error_style}
-#{"[*]: please correct the pubspec.yaml file at #{pubspec_path}".tips_style}
-        MESSAGE
-        abort(message)
-      end
-      return pubspec_yaml
-    end
-
     # get the right version of r_dart_library package based on flutter's version
     # to get more detail, see https://github.com/YK-Unit/r_dart_library#dependency-relationship-table
     def self.get_r_dart_library_version
       r_dart_library_version = "0.1.1"
 
-      #$ flutter --version
-      #Flutter 1.12.13+hotfix.5 • channel stable • https://github.com/flutter/flutter.git
-      #Framework • revision 27321ebbad (5 weeks ago) • 2019-12-10 18:15:01 -0800
-      #Engine • revision 2994f7e1e6
-      #Tools • Dart 2.7.0
+      # $ flutter --version
+      # Flutter 1.12.13+hotfix.5 • channel stable • https://github.com/flutter/flutter.git
+      # Framework • revision 27321ebbad (5 weeks ago) • 2019-12-10 18:15:01 -0800
+      # Engine • revision 2994f7e1e6
+      # Tools • Dart 2.7.0
       flutter_version_result = `flutter --version`
-      if (flutter_version_result.nil? == true ||flutter_version_result.empty? == true)
+      if (flutter_version_result.nil? == true || flutter_version_result.empty? == true)
         return r_dart_library_version
       end
 
@@ -74,57 +58,81 @@ module Flr
       return r_dart_library_version
     end
 
-    # 按照以下步骤执行初始化：
-    # 1. 检测当前目录是否是合法的flutter工程目录
-    # 2. 添加Flr配置到pubspec.yaml
-    # 3. 添加依赖包`r_dart_library`(https://github.com/YK-Unit/r_dart_library)的声明到pubspec.yaml
+    # 对 flutter 工程进行初始化
     def self.init
-      flutter_project_root_dir = "#{Pathname.pwd}"
+      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
+      pubspec_file_path = FileUtil.get_pubspec_file_path
 
-      pubspec_path = flutter_project_root_dir + "/pubspec.yaml"
+      # ----- Step-1 Begin -----
+      # 进行环境检测:
+      #  - 检测当前 flutter 工程根目录是否存在 pubspec.yaml
+      #
 
-      # 检测当前目录是否存在 pubspec.yaml；
-      # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止初始化，并打印相关提示；
-      unless File.exist?(pubspec_path)
-        message = <<-MESSAGE
-#{"[x]: #{pubspec_path} not found".error_style}
-#{"[*]: please make sure current directory is a flutter project directory".tips_style}
-        MESSAGE
-        abort(message)
+      begin
+        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+      rescue Exception => e
+        puts(e.message)
+        return
       end
+
+      # ----- Step-1 End -----
 
       puts("init #{flutter_project_root_dir} now...")
 
-      # 读取pubspec.yaml，然后添加相关配置
-      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
-      dependencies = pubspec_yaml["dependencies"]
+      # ----- Step-2 Begin -----
+      # 添加 flr_config 和 r_dart_library 的依赖声明到 pubspec.yaml
+      #
 
-      # 添加Flr的配置到pubspec.yaml
-      flr_config = Hash["core_version"  => "#{Flr::CORE_VERSION}", "assets" => nil ]
-      pubspec_yaml["flr"] = flr_config
+      # 读取 pubspec.yaml，然后添加相关配置
+      pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
+      dependencies = pubspec_config["dependencies"]
 
-      # 添加依赖包`r_dart_library`(https://github.com/YK-Unit/r_dart_library)的声明到pubspec.yaml
+      # 添加 flr_config 到 pubspec.yaml
+      #
+      # flr_config: Flr的配置信息
+      # ```yaml
+      # flr:
+      #  core_version: 1.0.0
+      #  assets:
+      # ```
+      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "assets" => nil]
+      pubspec_config["flr"] = flr_config
+
+      # 添加 r_dart_library（https://github.com/YK-Unit/r_dart_library）的依赖声明
+      #  - 获取正确的库版本
+      #  - 添加依赖声明
+      #
+      # r_dart_library的依赖声明：
+      # ```yaml
+      # r_dart_library:
+      #  git:
+      #    url: "https://github.com/YK-Unit/r_dart_library.git"
+      #    ref: 0.1.1
+      # ```
       r_dart_library_version = get_r_dart_library_version
-      r_dart_library = Hash["git" => Hash["url"  => "https://github.com/YK-Unit/r_dart_library.git", "ref" => r_dart_library_version]]
-      dependencies["r_dart_library"] = r_dart_library
+      r_dart_library_hash = Hash["git" => Hash["url" => "https://github.com/YK-Unit/r_dart_library.git", "ref" => r_dart_library_version]]
+      dependencies["r_dart_library"] = r_dart_library_hash
 
-      pubspec_yaml["dependencies"] = dependencies
-
-      # 保存pubspec.yaml
-      pubspec_file = File.open(pubspec_path, 'w')
-      pubspec_file.write(pubspec_yaml.to_yaml)
-      pubspec_file.close
+      # 更新并保存 pubspec.yaml
+      pubspec_config["dependencies"] = dependencies
+      FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
 
       puts("add flr configuration into pubspec.yaml done!")
-
       puts("add dependency \"r_dart_library\"(https://github.com/YK-Unit/r_dart_library) into pubspec.yaml done!")
 
+      # ----- Step-2 End -----
+
       puts("get dependency \"r_dart_library\" via execute \"flutter pub get\" now ...")
+
+      # ----- Step-3 Begin -----
+      # 调用 flutter 工具，为 flutter 工程获取依赖
 
       get_flutter_pub_cmd = "flutter pub get"
       system(get_flutter_pub_cmd)
 
       puts("get dependency \"r_dart_library\" done !!!")
+
+      # ----- Step-3 End -----
 
       puts("[√]: init done !!!")
     end
@@ -229,449 +237,360 @@ module Flr
       return all_asset_dir_paths
     end
 
-    # 按照以下步骤执行创建：
-    # 1. 检测当前是否配置了需要扫描的资源目录路径，并输出所有合法的资源目录数组
-    # 2. 遍历合法的资源目录数组，对每个资源目录进行扫描，然后输出非法资源数组和合法资源数组
-    # 3. 遍历合法资源数组，一一为资源添加声明到pubspec.yaml
-    # 4. 遍历合法资源数组，筛选非SVG类的图片资源，为其生成相关代码到r.g.dart
-    # 5. 遍历合法资源数组，筛选SVG类的图片资源，为其生成相关代码到r.g.dart
-    # 6. 遍历合法资源数组，筛选文本资源，为其生成相关代码到r.g.dart
-    # 7. 检测当前使用的flr版本与配置的flr版本是否一致，若不一致，输出相关警告（指出当前二者版本不一致，需要修复）
-    # 8. 检测非法资源数组是否为空，若不为空，输出相关警告（列举当前文件名带有非法字符的资源，需要修复）
+    # 扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
     def self.generate
 
-      all_asset_dir_paths = check_before_generate
+      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
+      pubspec_file_path = FileUtil.get_pubspec_file_path
 
-      flutter_project_root_dir = "#{Pathname.pwd}"
-      pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
-      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
+      # 警告日志数组
+      warning_messages = []
 
-      flr_config = pubspec_yaml["flr"]
+      # ----- Step-1 Begin -----
+      # 1. 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程
+      # - 检测当前flutter工程根目录是否存在pubspec.yaml
+      # - 检测当前pubspec.yaml中是否存在Flr的配置
+      # - 检测当前Flr配置中的assets配置是否合法：assets配置的资产目录数组中，“合法的资产目录数组”的长度大于0；判断配置的资产目录是否合法的标准是：该目录真实存在
+      #
+
+      begin
+        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+
+        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
+
+        Checker.check_flr_config_is_existed(pubspec_config)
+
+        flr_config = pubspec_config["flr"]
+
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
+
+      rescue Exception => e
+        puts(e.message)
+        return
+      end
+
+      package_name = pubspec_config["name"]
+
+      # ----- Step-1 End -----
+
+      # ----- Step-2 Begin -----
+      # 2. 进行核心逻辑版本检测
+      # 检测Flr配置中的核心逻辑版本号和当前工具的核心逻辑版本号是否一致；若不一致，则生成“核心逻辑版本不一致”的警告日志，存放到警告日志数组
+
       flr_core_version = flr_config["core_version"]
 
-      # 需要过滤的资源类型
-      # .DS_Store 是 macOS 下文件夹里默认自带的的隐藏文件
-      ignored_asset_types = [".DS_Store"]
+      if flr_core_version.nil?
+        flr_core_version = "unknown"
+      end
+
+      if flr_core_version != Flr::CORE_VERSION
+        message = <<-MESSAGE
+#{"[!]: warning, the core logic version of the configured Flr tool is #{flr_core_version}, while the core logic version of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
+#{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
+        MESSAGE
+
+        warning_messages.push(message)
+      end
+
+      # ----- Step-2 End -----
+
+      # ----- Step-3 Begin -----
+      # 3. 获取legal_resource_dir数组和illegal_resource_dir数组
+      #
+      # - 从flr_config中的assets配置获取legal_resource_dir数组和illegal_resource_dir数组。
+      # - 若illegal_resource_dir数组长度大于0，则生成“存在非法的资源目录”的警告日志，存放到警告日志数组。
+      #
+
+      # 合法的资源目录数组
+      legal_resource_dir_array = resource_dir_result_tuple[0]
+      # 非法的资源目录数组
+      illegal_resource_dir_array = resource_dir_result_tuple[1]
+
+      if illegal_resource_dir_array.length > 0
+        message = "[!]: warning, found the following resource directory who is non-existed: ".warning_style
+        illegal_resource_dir_array.each do |resource_dir|
+          message = message + "\n" + "  - #{resource_dir}".warning_style
+        end
+
+        warning_messages.push(message)
+      end
+
+      # ----- Step-3 End -----
 
       # 扫描资源
       puts("scan assets now ...")
 
-      package_name = pubspec_yaml["name"]
-      flutter_assets = []
-      all_asset_dir_paths.each do |asset_dir_path|
-        specified_assets = FlutterAssetTool.get_assets_in_dir(asset_dir_path, ignored_asset_types, package_name)
-        flutter_assets = flutter_assets + specified_assets
+      # ----- Step-4 Begin -----
+      # 扫描所有legal_resource_dir，输出image_asset数组和illegal_image_file数组：
+      #  - 遍历legal_resource_dir数组，按照如下处理每个资源目录：
+      #    - 扫描当前资源目录和其第1级的子目录，查找所有image_file；
+      #    - 根据legal_resource_file的标准，筛选查找结果生成legal_image_file子数组和illegal_image_file子数组；illegal_image_file子数组合并到illegal_image_file数组
+      #    - 根据image_asset的定义，遍历legal_image_file子数组，生成image_asset子数组；image_asset子数组合并到image_asset数组。
+      #  - 对image_asset数组做去重处理；
+      #  - 按照字典顺序对image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      #  - 输出image_asset数组和illegal_image_file数组。
+      #
+
+      image_asset_array = []
+      illegal_image_file_array = []
+
+      legal_resource_dir_array.each do |resource_dir|
+        image_file_result_tuple = FileUtil.find_image_files(resource_dir)
+        legal_image_file_subarray = image_file_result_tuple[0]
+        illegal_image_file_subarray = image_file_result_tuple[1]
+
+        illegal_image_file_array += illegal_image_file_subarray
+
+        image_asset_subarray = AssetUtil.generate_image_assets(legal_image_file_subarray, resource_dir, package_name)
+        image_asset_array += image_asset_subarray
       end
 
-      uniq_flutter_assets = flutter_assets.uniq
+      image_asset_array.uniq!
+      image_asset_array.sort!
 
-      illegal_assets = []
-      uniq_flutter_assets.each do |asset|
-        file_basename_no_extension = File.basename(asset, ".*")
+      # ----- Step-4 End -----
 
-        if FlutterAssetTool.is_legal_file_basename(file_basename_no_extension) == false
-          illegal_assets << asset
-        end
+      # ----- Step-5 Begin -----
+      # 扫描所有legal_resource_dir，输出text_asset数组和illegal_text_file数组：
+      #  - 遍历legal_resource_dir数组，按照如下处理每个资源目录：
+      #    - 扫描当前资源目录和其所有层级的子目录，查找所有text_file；
+      #    - 根据legal_resource_file的标准，筛选查找结果生成legal_text_file子数组和illegal_text_file子数组；illegal_text_file子数组合并到illegal_text_file数组；
+      #    - 根据text_asset的定义，遍历legal_text_file子数组，生成text_asset子数组；text_asset子数组合并到illegal_text_file数组。
+      #  - 对text_asset数组做去重处理；
+      #  - 按照字典顺序对text_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      #  - 输出text_asset数组和illegal_image_file数组。
+      #
 
+      text_asset_array = []
+      illegal_text_file_array = []
+
+      legal_resource_dir_array.each do |resource_dir|
+        text_file_result_tuple = FileUtil.find_text_files(resource_dir)
+        legal_text_file_subarray = text_file_result_tuple[0]
+        illegal_text_file_subarray = text_file_result_tuple[1]
+
+        illegal_text_file_array += illegal_text_file_subarray
+
+        text_asset_subarray = AssetUtil.generate_text_assets(legal_text_file_subarray, resource_dir, package_name)
+        text_asset_array += text_asset_subarray
       end
-      uniq_flutter_assets -= illegal_assets
+
+      text_asset_array.uniq!
+      text_asset_array.sort!
+
+      # ----- Step-5 End -----
 
       puts("scan assets done !!!")
 
-      # 添加资源声明到 `pubspec.yaml`
+      # ----- Step-6 Begin -----
+      # 检测是否存在illegal_resource_file：
+      # - 合并illegal_image_file数组和illegal_text_file数组为illegal_resource_file数组；
+      # - 若illegal_resource_file数组长度大于0，则生成“存在非法的资源文件”的警告日志，存放到警告日志数组。
+      #
+
+      illegal_resource_file_array = illegal_image_file_array + illegal_image_file_array
+      if illegal_resource_file_array.length > 0
+        message = "[!]: warning, found the following illegal resource file who's file basename contains illegal characters: ".warning_style
+        illegal_resource_file_array.each do |resource_file|
+          message = message + "\n" + "  - #{resource_file}".warning_style
+        end
+        message = message + "\n" + "[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '.', '·', '!', '@', '&', '$', '￥') to name the asset".tips_style
+
+        warning_messages.push(message)
+      end
+
+      # ----- Step-6 End -----
+
       puts("specify scanned assets in pubspec.yaml now ...")
 
-      pubspec_yaml["flutter"]["assets"] = uniq_flutter_assets
+      # ----- Step-7 Begin -----
+      # 为扫描得到的legal_resource_file添加资源声明到pubspec.yaml：
+      #  - 合并image_asset数组和text_asset数组为asset数组（image_asset数组元素在前）。
+      #  - 修改pubspec.yaml中flutter-assets配置的值为asset数组。
 
-      pubspec_file = File.open(pubspec_path, 'w')
-      pubspec_file.write(pubspec_yaml.to_yaml)
-      pubspec_file.close
+      asset_array = image_asset_array + text_asset_array
+      pubspec_config["flutter"]["assets"] = asset_array
+
+      FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
+
+      # ----- Step-7 End -----
 
       puts("specify scanned assets in pubspec.yaml done !!!")
 
-      # 创建生成 `r.g.dart`
-
       puts("generate \"r.g.dart\" now ...")
 
+      # ----- Step-8 Begin -----
+      # 按照SVG分类，从image_asset数组筛选得到有序的non_svg_image_asset数组和svg_image_asset数组：
+      #  - 按照SVG分类，从image_asset数组筛选得到non_svg_image_asset数组和svg_image_asset数组；
+      #  - 按照字典顺序对non_svg_image_asset数组和svg_image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      #
+
+      non_svg_image_asset_array = []
+      svg_image_asset_array = []
+
+      image_asset_array.each do |image_asset|
+        file_extname = File.extname(image_asset).downcase
+
+        if file_extname.eql?(".svg")
+          svg_image_asset_array.push(image_asset)
+        else
+          non_svg_image_asset_array.push(image_asset)
+        end
+      end
+
+      non_svg_image_asset_array.sort!
+      svg_image_asset_array.sort!
+
+      # ----- Step-8 End -----
+
+      # ----- Step-9 Begin -----
+      # 在当前根目录下创建新的r.g.dart文件。
+      #
+
       r_dart_path = "#{flutter_project_root_dir}/lib/r.g.dart"
-      r_dart_file = File.open(r_dart_path,"w")
-
-      # ----- R Begin -----
-
-      # 生成 `class R` 的代码
-      r_code = <<-CODE
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// GENERATED BY FLR CLI, SEE https://github.com/Fly-Mix/flr-cli
-//
-
-import 'package:flutter/widgets.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:path/path.dart' as path;
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:r_dart_library/asset_svg.dart';
-
-/// This `R` class is generated and contains references to static asset resources.
-class R {
-  /// package name: #{package_name}
-  static const package = "#{package_name}";
-
-  /// This `R.image` struct is generated, and contains static references to static non-svg type image asset resources.
-  static const image = _R_Image();
-
-  /// This `R.svg` struct is generated, and contains static references to static svg type image asset resources.
-  static const svg = _R_Svg();
-
-  /// This `R.text` struct is generated, and contains static references to static text asset resources.
-  static const text = _R_Text();
-}
-
-/// Asset resource’s metadata class.
-/// For example, here is the metadata of `packages/flutter_demo/assets/images/example.png` asset:
-/// - packageName：flutter_demo
-/// - assetName：assets/images/example.png
-/// - fileDirname：assets/images
-/// - fileBasename：example.png
-/// - fileBasenameNoExtension：example
-/// - fileExtname：.png
-class AssetResource {
-  /// Creates an object to hold the asset resource’s metadata.
-  const AssetResource(this.assetName, {this.packageName}) : assert(assetName != null);
-
-  /// The name of the main asset from the set of asset resources to choose from.
-  final String assetName;
-
-  /// The name of the package from which the asset resource is included.
-  final String packageName;
-
-  /// The name used to generate the key to obtain the asset resource. For local assets
-  /// this is [assetName], and for assets from packages the [assetName] is
-  /// prefixed 'packages/<package_name>/'.
-  String get keyName => packageName == null ? assetName : "packages/$packageName/$assetName";
-
-  /// The file basename of the asset resource.
-  String get fileBasename {
-    final basename = path.basename(assetName);
-    return basename;
-  }
-
-  /// The no extension file basename of the asset resource.
-  String get fileBasenameNoExtension {
-    final basenameWithoutExtension = path.basenameWithoutExtension(assetName);
-    return basenameWithoutExtension;
-  }
-
-  /// The file extension name of the asset resource.
-  String get fileExtname {
-    final extension = path.extension(assetName);
-    return extension;
-  }
-
-  /// The directory path name of the asset resource.
-  String get fileDirname {
-    var dirname = assetName;
-    if (packageName != null) {
-      final packageStr = "packages/$packageName/";
-      dirname = dirname.replaceAll(packageStr, "");
-    }
-    final filenameStr = "$fileBasename/";
-    dirname = dirname.replaceAll(filenameStr, "");
-    return dirname;
-  }
-}
-      CODE
-      r_dart_file.puts(r_code)
-
-      # ----- R End -----
-
-      supported_asset_images = %w(.png .jpg .jpeg .gif .webp .icon .bmp .wbmp)
-      supported_asset_texts = %w(.txt .json .yaml .xml)
-
-      # ----- _R_Image_AssetResource Begin -----
-
-      # 生成 `class _R_Image_AssetResource` 的代码
-      r_image_assetResource_code_header = <<-CODE
-      
-// ignore: camel_case_types
-class _R_Image_AssetResource {
-  const _R_Image_AssetResource();
-      CODE
-      r_dart_file.puts(r_image_assetResource_code_header)
+      r_dart_file = File.open(r_dart_path, "w")
 
-      uniq_flutter_assets.each do |asset|
+      # ----- Step-9 End -----
 
-        file_extname = File.extname(asset).downcase
+      # ----- Step-10 Begin -----
+      # 生成 R 类的代码，追加写入r.g.dart
+      #
 
-        # 如果当前不是支持的图片资源，则跳过
-        unless supported_asset_images.include?(file_extname)
-          next
-        end
+      g_R_class_code = CodeUtil.generate_R_class(package_name)
+      r_dart_file.puts(g_R_class_code)
 
-        r_dart_file.puts("")
+      # ----- Step-10 End -----
 
-        assetResource_code = FlutterAssetTool.generate_assetResource_code(asset, package_name,".png")
-        r_dart_file.puts(assetResource_code)
+      # ----- Step-11 Begin -----
+      # 生成 AssetResource 类的代码，追加写入r.g.dart
+      #
 
-      end
+      r_dart_file.puts("\n")
+      g_AssetResource_class_code = CodeUtil.generate_AssetResource_class(package_name)
+      r_dart_file.puts(g_AssetResource_class_code)
 
-      r_image_assetResource_code_footer = <<-CODE
-}
-      CODE
-      r_dart_file.puts(r_image_assetResource_code_footer)
+      # ----- Step-11 End -----
 
-      # ----- _R_Image_AssetResource End -----
+      # ----- Step-12 Begin -----
+      # 遍历 non_svg_image_asset 数组，生成 _R_Image_AssetResource 类，追加写入 r.g.dart
+      #
 
+      r_dart_file.puts("\n")
+      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, package_name)
+      r_dart_file.puts(g__R_Image_AssetResource_class_code)
 
-      # ----- _R_Svg_AssetResource Begin -----
+      # ----- Step-12 End -----
 
-      # 生成 `class _R_Svg_AssetResourceg` 的代码
-      r_svg_assetResource_code_header = <<-CODE
-      
-// ignore: camel_case_types
-class _R_Svg_AssetResource {
-  const _R_Svg_AssetResource();
-      CODE
-      r_dart_file.puts(r_svg_assetResource_code_header)
+      # ----- Step-13 Begin -----
+      # 遍历 svg_image_asset 数组，生成 _R_Svg_AssetResource 类，追加写入 r.g.dart。
+      #
 
-      uniq_flutter_assets.each do |asset|
+      r_dart_file.puts("\n")
+      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, package_name)
+      r_dart_file.puts(g__R_Svg_AssetResource_class_code)
 
-        file_extname = File.extname(asset).downcase
+      # ----- Step-13 End -----
 
-        # 如果当前不是支持的图片资源，则跳过
-        unless file_extname.eql?(".svg")
-          next
-        end
+      # ----- Step-14 Begin -----
+      # 遍历 text_asset 数组，生成 _R_Image_AssetResource 类，追加写入 r.g.dart
+      #
 
-        r_dart_file.puts("")
+      r_dart_file.puts("\n")
+      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, package_name)
+      r_dart_file.puts(g__R_Text_AssetResource_class_code)
 
-        assetResource_code = FlutterAssetTool.generate_assetResource_code(asset, package_name, ".svg")
-        r_dart_file.puts(assetResource_code)
+      # ----- Step-14 End -----
 
-      end
 
-      r_svg_assetResource_code_footer = <<-CODE
-}
-      CODE
-      r_dart_file.puts(r_svg_assetResource_code_footer)
-      # ----- _R_Svg_AssetResource End -----
+      # ----- Step-15 Begin -----
+      # 遍历non_svg_image_asset数组，生成 _R_Image 类，追加写入 r.g.dart
+      #
 
-      # ----- _R_Text_AssetResource Begin -----
+      r_dart_file.puts("\n")
+      g__R_Image_class_code = CodeUtil.generate__R_Image_class(non_svg_image_asset_array, package_name)
+      r_dart_file.puts(g__R_Image_class_code)
 
-      # 生成 `class _R_Text_AssetResource` 的代码
-      r_text_assetResource_code_header = <<-CODE
-      
-// ignore: camel_case_types
-class _R_Text_AssetResource {
-  const _R_Text_AssetResource();
-      CODE
-      r_dart_file.puts(r_text_assetResource_code_header)
+      # ----- Step-15 End -----
 
-      uniq_flutter_assets.each do |asset|
+      # ----- Step-16 Begin -----
+      # 遍历 svg_image_asset 数组，生成 _R_Svg 类，追加写入 r.g.dart。
+      #
 
-        file_extname = File.extname(asset).downcase
+      r_dart_file.puts("\n")
+      g__R_Svg_class_code = CodeUtil.generate__R_Svg_class(svg_image_asset_array, package_name)
+      r_dart_file.puts(g__R_Svg_class_code)
 
-        # 如果当前不是支持的文本资源，则跳过
-        unless supported_asset_texts.include?(file_extname)
-          next
-        end
+      # ----- Step-16 End -----
 
-        r_dart_file.puts("")
+      # ----- Step-17 Begin -----
+      # 遍历 text_asset 数组，生成 _R_Image 类，追加写入 r.g.dart
+      #
 
-        assetResource_code = FlutterAssetTool.generate_assetResource_code(asset, package_name)
-        r_dart_file.puts(assetResource_code)
+      r_dart_file.puts("\n")
+      g__R_Text_class_code = CodeUtil.generate__R_Text_class(text_asset_array, package_name)
+      r_dart_file.puts(g__R_Text_class_code)
 
-      end
+      # ----- Step-17 End -----
 
-      r_text_assetResource_code_footer = <<-CODE
-}
-      CODE
-      r_dart_file.puts(r_text_assetResource_code_footer)
 
-      # ----- _R_Text_AssetResource End -----
-
-      # -----  _R_Image Begin -----
-
-      # 生成 `class _R_Image` 的代码
-      r_image_code_header = <<-CODE
-      
-/// This `_R_Image` class is generated and contains references to static non-svg type image asset resources.
-// ignore: camel_case_types
-class _R_Image {
-  const _R_Image();
-
-  final asset = const _R_Image_AssetResource();
-      CODE
-      r_dart_file.puts(r_image_code_header)
-
-      uniq_flutter_assets.each do |asset|
-
-        file_extname = File.extname(asset).downcase
-
-        # 如果当前不是支持的图片资源，则跳过
-        unless supported_asset_images.include?(file_extname)
-          next
-        end
-
-        r_dart_file.puts("")
-
-        asset_id = FlutterAssetTool.generate_asset_id(asset, ".png")
-        asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
-
-        assetMethod_code = <<-CODE
-  /// #{asset_comment}
-  // ignore: non_constant_identifier_names
-  AssetImage #{asset_id}() {
-    return AssetImage(asset.#{asset_id}.keyName);
-  }
-        CODE
-
-        r_dart_file.puts(assetMethod_code)
-
-      end
-
-      r_image_code_footer = <<-CODE
-}
-      CODE
-      r_dart_file.puts(r_image_code_footer)
-
-      # -----  _R_Image End -----
-
-      # -----  _R_Svg Begin -----
-
-      # 生成 `class _R_Svg` 的代码
-      r_svg_code_header = <<-CODE
-      
-/// This `_R_Svg` class is generated and contains references to static svg type image asset resources.
-// ignore: camel_case_types
-class _R_Svg {
-  const _R_Svg();
-
-  final asset = const _R_Svg_AssetResource();
-      CODE
-      r_dart_file.puts(r_svg_code_header)
-
-
-      uniq_flutter_assets.each do |asset|
-
-        file_extname = File.extname(asset).downcase
-
-        # 如果当前不是支持的图片资源，则跳过
-        unless file_extname.eql?(".svg")
-          next
-        end
-
-        r_dart_file.puts("")
-
-        asset_id = FlutterAssetTool.generate_asset_id(asset, ".svg")
-        asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
-
-        assetMethod_code = <<-CODE
-  /// #{asset_comment}
-  // ignore: non_constant_identifier_names
-  AssetSvg #{asset_id}({@required double width, @required double height}) {
-    final imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
-    return imageProvider;
-  }
-        CODE
-
-        r_dart_file.puts(assetMethod_code)
-
-      end
-
-      r_svg_code_footer = <<-CODE
-}
-      CODE
-      r_dart_file.puts(r_svg_code_footer)
-
-      # -----  _R_Svg End -----
-
-      # -----  _R_Text Begin -----
-
-
-      # 生成 `class _R_Text` 的代码
-      r_text_code_header = <<-CODE
-      
-/// This `_R_Text` class is generated and contains references to static text asset resources.
-// ignore: camel_case_types
-class _R_Text {
-  const _R_Text();
-
-  final asset = const _R_Text_AssetResource();
-      CODE
-      r_dart_file.puts(r_text_code_header)
-
-      uniq_flutter_assets.each do |asset|
-
-        file_extname = File.extname(asset).downcase
-
-        # 如果当前不是支持的文本资源，则跳过
-        unless supported_asset_texts.include?(file_extname)
-          next
-        end
-
-        r_dart_file.puts("")
-
-        asset_id = FlutterAssetTool.generate_asset_id(asset, ".png")
-        asset_comment = FlutterAssetTool.generate_asset_comment(asset, package_name)
-
-        assetMethod_code = <<-CODE
-  /// #{asset_comment}
-  // ignore: non_constant_identifier_names
-  Future<String> #{asset_id}() {
-    final str = rootBundle.loadString(asset.#{asset_id}.keyName);
-    return str;
-  }
-        CODE
-
-        r_dart_file.puts(assetMethod_code)
-
-      end
-
-      r_text_code_footer = <<-CODE
-}
-      CODE
-      r_dart_file.puts(r_text_code_footer)
-
+      # ----- Step-18 Begin -----
+      # 结束操作，保存 r.g.dart
+      #
 
       r_dart_file.close
       puts("generate \"r.g.dart\" done !!!")
+
+      # ----- Step-18 End -----
+
+
+      # ----- Step-19 Begin -----
+      # 调用 flutter 工具对 r.g.dart 进行格式化操作
+      #
 
       flutter_format_cmd = "flutter format #{r_dart_path}"
       puts("execute \"#{flutter_format_cmd}\" now ...")
       system(flutter_format_cmd)
       puts("execute \"#{flutter_format_cmd}\" done !!!")
 
+      # ----- Step-19 End -----
+
+      # ----- Step-20 Begin -----
+      # 调用flutter工具，为flutter工程获取依赖
+      #
+
       get_flutter_pub_cmd = "flutter pub get"
       puts("execute \"#{get_flutter_pub_cmd}\" now ...")
       system(get_flutter_pub_cmd)
       puts("execute \"#{get_flutter_pub_cmd}\" done !!!")
 
+      # ----- Step-20 End -----
+
       puts("[√]: generate done !!!")
 
-      if flr_core_version != Flr::VERSION
-        message = <<-MESSAGE
-        
-#{"[!]: warning, the core logic version of the configured Flr tool is #{flr_core_version}, while the core logic version of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
-#{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
-        MESSAGE
-        puts(message)
-      end
+      # ----- Step-21 Begin -----
+      # 判断警告日志数组是否为空，若不为空，输出所有警告日志
+      #
 
-      if illegal_assets.length > 0
-        puts("")
-        puts("[!]: warning, found the following illegal assets who's file basename contains illegal characters: ".warning_style)
-        illegal_assets.each do |asset|
-          puts("  - #{asset}".warning_style)
+      if warning_messages.length > 0
+        warning_messages.each do |warning_message|
+          puts("")
+          puts(warning_message)
         end
-        puts("[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '.', '·', '!', '@', '&', '$', '￥') to name the asset".tips_style)
-
       end
+
+      # ----- Step-21 End -----
 
     end
 
-    # 启动一个资源目录监听服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
+    # 启动一个资源变化监控服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
     def self.start_assert_monitor
 
-      all_asset_dir_paths = check_before_generate
+      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
+      pubspec_file_path = FileUtil.get_pubspec_file_path
+
+      # ----- Step-1 Begin -----
+      # 执行一次 flr generate 操作
+      #
 
       now_str = Time.now.to_s
       puts("--------------------------- #{now_str} ---------------------------")
@@ -683,6 +602,36 @@ class _R_Text {
       puts("---------------------------------------------------------------------------------")
       puts("\n")
 
+      # ----- Step-1 End -----
+
+      # ----- Step-2 Begin -----
+      # 从 pubspec.yaml 读取 legal_resource_dir 数组
+      #
+      begin
+        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
+
+        flr_config = pubspec_config["flr"]
+
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
+
+      rescue Exception => e
+        puts(e.message)
+        return
+      end
+
+      # 合法的资源目录数组
+      legal_resource_dir_array = resource_dir_result_tuple[0]
+      # 非法的资源目录数组
+      illegal_resource_dir_array = resource_dir_result_tuple[1]
+
+      # ----- Step-2 End -----
+
+      # ----- Step-3 Begin -----
+      # 启动资源监控服务
+      #  - 启动一个文件监控服务，对 legal_resource_dir 数组中的资源目录进行文件监控
+      #  - 若服务检测到资源变化（资源目录下的发生增/删/改文件），则执行一次 flr generate 操作
+      #
+
       now_str = Time.now.to_s
       puts("--------------------------- #{now_str} ---------------------------")
       puts("launch a monitoring service now ...")
@@ -690,22 +639,29 @@ class _R_Text {
       # stop the monitoring service if exists
       stop_assert_monitor
       puts("launch a monitoring service done !!!")
-      puts("the monitoring service is monitoring these asset directories:")
-      all_asset_dir_paths.each do |dir_path|
-        puts("- #{dir_path}")
+      puts("the monitoring service is monitoring the following resource directory:")
+      legal_resource_dir_array.each do |resource_dir|
+        puts("  - #{resource_dir}")
+      end
+      if illegal_resource_dir_array.length > 0
+        puts("")
+        puts("[!]: warning, found the following resource directory who is non-existed: ".warning_style)
+        illegal_resource_dir_array.each do |resource_dir|
+          puts("  - #{resource_dir}".warning_style)
+        end
       end
       puts("---------------------------------------------------------------------------------")
       puts("\n")
 
       # Allow array of directories as input #92
       # https://github.com/guard/listen/pull/92
-      @@listener = Listen.to(*all_asset_dir_paths, ignore: [/\.DS_Store/], latency: 0.5, wait_for_delay: 5, relative: true) do |modified, added, removed|
+      @@listener = Listen.to(*legal_resource_dir_array, ignore: [/\.DS_Store/], latency: 0.5, wait_for_delay: 5, relative: true) do |modified, added, removed|
         # for example: 2013-03-30 03:13:14 +0900
         now_str = Time.now.to_s
         puts("--------------------------- #{now_str} ---------------------------")
-        puts("modified absolute paths: #{modified}")
-        puts("added absolute paths: #{added}")
-        puts("removed absolute paths: #{removed}")
+        puts("modified resource files: #{modified}")
+        puts("added resource files: #{added}")
+        puts("removed resource files: #{removed}")
         puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" now ...")
         puts("\n")
         generate
@@ -734,7 +690,7 @@ class _R_Text {
 
     end
 
-    # 停止资源目录监听服务
+    # 停止资源变化监控服务
     def self.stop_assert_monitor
       if @@listener.nil? == false
         @@listener.stop
@@ -742,109 +698,6 @@ class _R_Text {
       end
     end
 
-    end
-
-  class FlutterAssetTool
-
-    # 历指定资源文件夹下所有文件（包括子文件夹），返回资源的依赖说明数组，如
-    # ["packages/flutter_demo/assets/images/hot_foot_N.png", "packages/flutter_demo/assets/images/hot_foot_S.png"]
-    def self.get_assets_in_dir (asset_dir_path, ignored_asset_types, package_name)
-      file_dirname = asset_dir_path.split("lib/")[1]
-      assets = []
-      Find.find(asset_dir_path) do |path|
-        if File.file?(path)
-          file_basename = File.basename(path)
-
-          if ignored_asset_types.include?(file_basename)
-            next
-          end
-
-          asset_name = "#{file_dirname}/#{file_basename}"
-          asset = "packages/#{package_name}/#{asset_name}"
-          assets << asset
-        end
-      end
-      uniq_assets = assets.uniq
-      return uniq_assets
-    end
-
-    # 判断当前file_basename（无拓展名）是不是合法的文件名
-    # 合法的文件名应该由数字、字母、其他合法字符（'_', '+', '-', '.', '·', '!', '@', '&', '$', '￥'）组成
-    def self.is_legal_file_basename (file_basename_no_extension)
-      regx = /^[0-9A-Za-z_\+\-\.·!@&$￥]+$/
-
-      if file_basename_no_extension =~ regx
-        return true
-      else
-        return false
-      end
-    end
-
-    # 为当前asset生成合法的asset_id（资产ID）
-    def self.generate_asset_id (asset, prior_asset_type=".*")
-      file_extname = File.extname(asset).downcase
-
-      file_basename = File.basename(asset)
-
-      file_basename_no_extension = File.basename(asset, ".*")
-      asset_id = file_basename_no_extension.dup
-      if prior_asset_type.eql?(".*") or file_extname.eql?(prior_asset_type) == false
-        ext_info = file_extname
-        ext_info[0] = "_"
-        asset_id = asset_id + ext_info
-      end
-
-      # 过滤非法字符
-      asset_id = asset_id.gsub(/[^0-9A-Za-z_$]/, "_")
-
-      # 首字母转化为小写
-      capital = asset_id[0].downcase
-      asset_id[0] = capital
-
-      # 检测首字符是不是数字、_、$，若是则添加前缀字符"a"
-      if capital =~ /[0-9_$]/
-        asset_id = "a" + asset_id
-      end
-
-      return asset_id
-    end
-
-    # 为当前asset生成注释
-    def self.generate_asset_comment (asset, package_name)
-
-      asset_digest = asset.dup
-      asset_digest["packages/#{package_name}/"] = ""
-
-      asset_comment = "asset: \"#{asset_digest}\""
-
-      return asset_comment
-    end
-
-
-    # 为当前asset生成AssetResource的代码
-    def self.generate_assetResource_code (asset, package_name, prior_asset_type=".*")
-
-      asset_id = generate_asset_id(asset, prior_asset_type)
-      asset_comment = generate_asset_comment(asset, package_name)
-
-      file_basename = File.basename(asset)
-
-      file_dirname = asset.dup
-      file_dirname["packages/#{package_name}/"] = ""
-      file_dirname["/#{file_basename}"] = ""
-
-      param_file_basename = file_basename.gsub(/[$]/, "\\$")
-
-      param_asset_name = "#{file_dirname}/#{param_file_basename}"
-
-      assetResource_code = <<-CODE
-  /// #{asset_comment}
-  // ignore: non_constant_identifier_names
-  final #{asset_id} = const AssetResource("#{param_asset_name}", packageName: R.package);
-
-      CODE
-
-      return assetResource_code
-    end
   end
+
 end
