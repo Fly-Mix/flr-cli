@@ -210,7 +210,7 @@ module Flr
       illegal_resource_dir_array = resource_dir_result_tuple[1]
 
       if illegal_resource_dir_array.length > 0
-        message = "[!]: warning, found the following resource directory who is not existed: ".warning_style
+        message = "[!]: warning, found the following resource directory which is not existed: ".warning_style
         illegal_resource_dir_array.each do |resource_dir|
           message = message + "\n" + "  - #{resource_dir}".warning_style
         end
@@ -620,7 +620,7 @@ module Flr
       end
       if illegal_resource_dir_array.length > 0
         puts("")
-        puts("[!]: warning, found the following resource directory who is not existed: ".warning_style)
+        puts("[!]: warning, found the following resource directory which is not existed: ".warning_style)
         illegal_resource_dir_array.each do |resource_dir|
           puts("  - #{resource_dir}".warning_style)
         end
