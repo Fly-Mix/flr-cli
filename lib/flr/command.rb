@@ -553,9 +553,38 @@ module Flr
     # 启动一个资源变化监控服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
     def self.start_assert_monitor
 
+      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
       pubspec_file_path = FileUtil.get_pubspec_file_path
 
       # ----- Step-1 Begin -----
+      # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程：
+      # - 检测当前flutter工程根目录是否存在pubspec.yaml
+      # - 检测当前pubspec.yaml中是否存在Flr的配置
+      # - 检测当前flr_config中的resource_dir配置是否合法：
+      #   判断合法的标准是：assets配置或者fonts配置了至少1个legal_resource_dir
+      #
+
+      begin
+        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+
+        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
+
+        Checker.check_flr_config_is_existed(pubspec_config)
+
+        flr_config = pubspec_config["flr"]
+
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
+
+      rescue Exception => e
+        puts(e.message)
+        return
+      end
+
+      package_name = pubspec_config["name"]
+
+      # ----- Step-1 End -----
+
+      # ----- Step-2 Begin -----
       # 执行一次 flr generate 操作
       #
 
@@ -569,25 +598,14 @@ module Flr
       puts("---------------------------------------------------------------------------------")
       puts("\n")
 
-      # ----- Step-1 End -----
+      # ----- Step-2 End -----
 
-      # ----- Step-2 Begin -----
+      # ----- Step-3 Begin -----
       # 获取legal_resource_dir数组：
       # - 从flr_config中的assets配置获取assets_legal_resource_dir数组；
       # - 从flr_config中的fonts配置获取fonts_legal_resource_dir数组；
       # - 合并assets_legal_resource_dir数组和fonts_legal_resource_dir数组为legal_resource_dir数组。
       #
-      begin
-        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
-
-        flr_config = pubspec_config["flr"]
-
-        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
-
-      rescue Exception => e
-        puts(e.message)
-        return
-      end
 
       # 合法的资源目录数组
       legal_resource_dir_result_tuple = resource_dir_result_tuple[0]
@@ -599,9 +617,9 @@ module Flr
       # 非法的资源目录数组
       illegal_resource_dir_array = resource_dir_result_tuple[1]
 
-      # ----- Step-2 End -----
+      # ----- Step-3 End -----
 
-      # ----- Step-3 Begin -----
+      # ----- Step-4 Begin -----
       # 启动资源监控服务
       #  - 启动一个文件监控服务，对 legal_resource_dir 数组中的资源目录进行文件监控
       #  - 若服务检测到资源变化（资源目录下的发生增/删/改文件），则执行一次 flr generate 操作
@@ -662,6 +680,8 @@ module Flr
         puts("")
         puts("[√]: terminate monitor service done !!!")
       end
+
+      # ----- Step-4 End -----
 
     end
 
