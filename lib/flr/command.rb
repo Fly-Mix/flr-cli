@@ -138,106 +138,6 @@ module Flr
       puts("[√]: init done !!!")
     end
 
-    # 按照以下步骤检测是否符合执行创建任务的条件
-    # 1. 检测当前目录是否存在pubspec.yaml
-    # 2. 检测pubspec.yaml中是否存在flr的配置
-    # 3. 检测flr的配置中是否有配置了合法的资源目录路径
-    # 4. 返回所有合法的资源目录路径数组
-    # @return all_valid_asset_dir_paths
-    def self.check_before_generate
-      flutter_project_root_dir = "#{Pathname.pwd}"
-
-      pubspec_path = "#{flutter_project_root_dir}/pubspec.yaml"
-
-      # 检测当前目录是否存在 pubspec.yaml；
-      # 若不存在，说明当前目录不是一个flutter工程目录，这时直接终止当前任务，并打印错误提示；
-      unless File.exist?(pubspec_path)
-        message = <<-MESSAGE
-#{"[x]: #{pubspec_path} not found".error_style}
-#{"[*]: please make sure current directory is a flutter project directory".tips_style}
-        MESSAGE
-        abort(message)
-      end
-
-      pubspec_yaml = safe_load_pubspec_file(pubspec_path)
-
-      # 读取 pubspec_yaml，判断是否有 flr 的配置信息；
-      # 若有，说明已经进行了初始化；然后检测是否配置了资源目录，若没有配置，这时直接终止当前任务，并提示开发者手动配置它
-      # 若没有，说明还没进行初始化，这时直接终止当前任务，并提示开发者手动配置它
-
-      flr_config = pubspec_yaml["flr"]
-      unless flr_config.is_a?(Hash)
-        message = <<-MESSAGE
-#{"[x]: have no flr configuration in pubspec.yaml".error_style}
-#{"[*]: please run \"flr init\" to fix it".tips_style}
-        MESSAGE
-        abort(message)
-      end
-
-      flr_core_version = flr_config["core_version"]
-      all_asset_dir_paths = flr_config["assets"]
-
-      unless all_asset_dir_paths.is_a?(Array)
-        message = <<-MESSAGE
-#{"[x]: have no valid asset directories configuration in pubspec.yaml".error_style}
-#{"[*]: please manually configure the asset directories to fix it, for example: ".tips_style}
-
-    #{"flr:".tips_style}
-      #{"core_version: #{flr_core_version}".tips_style}
-      #{"assets:".tips_style}
-      #{"# config the asset directories that need to be scanned".tips_style}
-      #{"- lib/assets/images".tips_style}
-      #{"- lib/assets/texts".tips_style}
-
-        MESSAGE
-        abort(message)
-      end
-
-      # 移除非法的非法的 asset_dir_path（nil，空字符串）
-      all_asset_dir_paths = all_asset_dir_paths - [nil, ""]
-      # 过滤重复的 asset_dir_path
-      all_asset_dir_paths = all_asset_dir_paths.uniq
-
-      # 过滤非法的asset_dir_path：不存在对应的目录
-      illegal_asset_dir_paths = []
-      all_asset_dir_paths.each do |asset_dir_path|
-        if File.exist?(asset_dir_path) == false
-          illegal_asset_dir_paths.push(asset_dir_path)
-          next
-        end
-      end
-
-      if illegal_asset_dir_paths.length > 0
-        puts("")
-        puts("[!]: warning, found the following asset directories who do not exist: ".warning_style)
-        illegal_asset_dir_paths.each do |asset_dir_path|
-          puts("  - #{asset_dir_path}".warning_style)
-        end
-        puts("")
-        all_asset_dir_paths = all_asset_dir_paths - illegal_asset_dir_paths
-      end
-
-
-      # 若当前all_asset_dir_paths数量为0，则说明开发者没有配置资源目录路径，这时直接终止当前任务，并提示开发者手动配置它
-      unless all_asset_dir_paths.length > 0
-        message = <<-MESSAGE
-#{"[x]: have no valid asset directories configuration in pubspec.yaml".error_style}
-#{"[*]: please manually configure the asset directories to fix it, for example: ".tips_style}
-
-    #{"flr:".tips_style}
-      #{"version: #{flr_core_version}".tips_style}
-      #{"assets:".tips_style}
-      #{"# config the asset directories that need to be scanned".tips_style}
-      #{"- lib/assets/images".tips_style}
-      #{"- lib/assets/texts".tips_style}
-
-        MESSAGE
-        abort(message)
-      end
-
-      return all_asset_dir_paths
-    end
-
     # 扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
     def self.generate
 
@@ -310,7 +210,7 @@ module Flr
       illegal_resource_dir_array = resource_dir_result_tuple[1]
 
       if illegal_resource_dir_array.length > 0
-        message = "[!]: warning, found the following resource directory who is non-existed: ".warning_style
+        message = "[!]: warning, found the following resource directory who is not existed: ".warning_style
         illegal_resource_dir_array.each do |resource_dir|
           message = message + "\n" + "  - #{resource_dir}".warning_style
         end
@@ -653,7 +553,6 @@ module Flr
     # 启动一个资源变化监控服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
     def self.start_assert_monitor
 
-      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
       pubspec_file_path = FileUtil.get_pubspec_file_path
 
       # ----- Step-1 Begin -----
@@ -673,7 +572,10 @@ module Flr
       # ----- Step-1 End -----
 
       # ----- Step-2 Begin -----
-      # 从 pubspec.yaml 读取 legal_resource_dir 数组
+      # 获取legal_resource_dir数组：
+      # - 从flr_config中的assets配置获取assets_legal_resource_dir数组；
+      # - 从flr_config中的fonts配置获取fonts_legal_resource_dir数组；
+      # - 合并assets_legal_resource_dir数组和fonts_legal_resource_dir数组为legal_resource_dir数组。
       #
       begin
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
@@ -688,7 +590,12 @@ module Flr
       end
 
       # 合法的资源目录数组
-      legal_resource_dir_array = resource_dir_result_tuple[0]
+      legal_resource_dir_result_tuple = resource_dir_result_tuple[0]
+      assets_legal_resource_dir_array = legal_resource_dir_result_tuple[0]
+      fonts_legal_resource_dir_array = legal_resource_dir_result_tuple[1]
+
+      legal_resource_dir_array = assets_legal_resource_dir_array + fonts_legal_resource_dir_array
+
       # 非法的资源目录数组
       illegal_resource_dir_array = resource_dir_result_tuple[1]
 
@@ -713,7 +620,7 @@ module Flr
       end
       if illegal_resource_dir_array.length > 0
         puts("")
-        puts("[!]: warning, found the following resource directory who is non-existed: ".warning_style)
+        puts("[!]: warning, found the following resource directory who is not existed: ".warning_style)
         illegal_resource_dir_array.each do |resource_dir|
           puts("  - #{resource_dir}".warning_style)
         end
