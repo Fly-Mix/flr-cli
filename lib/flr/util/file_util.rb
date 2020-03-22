@@ -58,7 +58,22 @@ module Flr
     #
     def self.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
       pubspec_file = File.open(pubspec_file_path, 'w')
-      pubspec_file.write(pubspec_config.to_yaml)
+      yaml_content = pubspec_config.to_yaml
+
+      # Because pubspec.yaml is only one document remove,
+      # and I want to shortcut it,
+      # so I choose to remove three dashes (“---”).
+      #
+      # To get the details about three dashes (“---”)
+      # see: https://yaml.org/spec/1.2/spec.html#id2760395
+      #
+      document_separate_maker = "---\n"
+      regx = /\A#{document_separate_maker}/
+      if yaml_content =~ regx
+        yaml_content[document_separate_maker] = ""
+      end
+
+      pubspec_file.write(yaml_content)
       pubspec_file.close
       return true
     end
