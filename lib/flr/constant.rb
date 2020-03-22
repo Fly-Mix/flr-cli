@@ -3,6 +3,8 @@ module Flr
   IMAGE_FILE_TYPES = %w(.png .jpg .jpeg .gif .webp .icon .bmp .wbmp .svg)
   # Flr支持的文本文件类型
   TEXT_FILE_TYPES = %w(.txt .json .yaml .xml)
+  # Flr支持的字体文件类型
+  FONT_FILE_TYPES = %w(.ttf .otf .ttc)
 
   # Flr优先考虑的非SVG类图片文件类型
   PRIOR_NON_SVG_IMAGE_FILE_TYPE = ".png"
@@ -11,4 +13,7 @@ module Flr
   # Flr优先考虑的文本文件类型
   # 当前值为 ".*"， 意味所有文本文件类型的优先级都一样
   PRIOR_TEXT_FILE_TYPE = ".*"
+  # Flr优先考虑的字体文件类型
+  # 当前值为 ".*"， 意味所有文本文件类型的优先级都一样
+  PRIOR_FONT_FILE_TYPE = ".*"
 end

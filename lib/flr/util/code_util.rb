@@ -42,6 +42,9 @@ class R {
 
   /// This `R.text` struct is generated, and contains static references to static text asset resources.
   static const text = _R_Text();
+
+  /// This `R.fontFamily` struct is generated, and contains static references to static font resources.
+  static const fontFamily = _R_Font_Family();
 }
       CODE
 
@@ -140,7 +143,7 @@ class AssetResource {
     # a_asset_id = "test_json"
     # b_asset_id = "test_yaml"
     #
-    def self.generate_asset_id (asset, prior_asset_type = ".*")
+    def self.generate_asset_id(asset, prior_asset_type = ".*")
       file_extname = File.extname(asset).downcase
 
       file_basename = File.basename(asset)
@@ -404,6 +407,76 @@ class _R_Text {
       return code
     end
 
+    # generate_font_family_id(font_family_name) -> string
+    #
+    # 为当前 font_family_name 生成 font_family_id；font_family_id 一般为 asset 的 font_family_name；
+    # 但是为了保证 font_family_id 的健壮性，需要对 font_family_name 做以下加工处理：
+    # - 处理非法字符：把除了字母（a-z, A-Z）、数字（0-9）、'_' 字符、'$' 字符之外的字符转换为 '_' 字符
+    # - 首字母转化为小写
+    # - 处理首字符异常情况：检测首字符是不是数字、'_'、'$'，若是则添加前缀字符"a"
+    #
+    # === Examples
+    # a_font_family_name = "Amiri"
+    # b_font_family_name = "Baloo-Thambi-2"
+    # a_font_family_id = "amiri"
+    # b_font_family_id = "baloo_Thambi_2"
+    #
+    #
+    def self.generate_font_family_id(font_family_name)
+
+      font_family_id = font_family_name.dup
+
+      # 处理非法字符
+      font_family_id = font_family_id.gsub(/[^a-zA-Z0-9_$]/, "_")
+
+      # 首字母转化为小写
+      capital = font_family_id[0].downcase
+      font_family_id[0] = capital
+
+      # 处理首字符异常情况
+      if capital =~ /[0-9_$]/
+        font_family_id = "a" + font_family_id
+      end
+
+      return font_family_id
+    end
+
+    # generate__R_Font_Family_class(font_family_config_array, package_name) -> string
+    #
+    # 根据模板，为 font_family_config_array（字体家族配置数组）生成 _R_Font_Family class 的代码
+    #
+    def self.generate__R_Font_Family_class(font_family_config_array, package_name)
+
+      all_g_AssetResource_property_code = ""
+
+      font_family_config_array.each do |font_family_config|
+        all_g_AssetResource_property_code += "\n"
+
+        font_family_name = font_family_config["family"]
+
+        font_family_id = generate_font_family_id(font_family_name)
+        font_family_comment = "font family: #{font_family_name}"
+
+        g_AssetResource_property_code = <<-CODE
+  /// #{font_family_comment}
+  // ignore: non_constant_identifier_names
+  final #{font_family_id} = "#{font_family_name}";
+        CODE
+
+        all_g_AssetResource_property_code += g_AssetResource_property_code
+      end
+
+      code = <<-CODE
+/// This `_R_Font_Family` class is generated and contains references to static font resources.
+// ignore: camel_case_types
+class _R_Font_Family {
+  const _R_Font_Family();
+#{all_g_AssetResource_property_code}
+}
+      CODE
+
+      return code
+    end
   end
 
 end

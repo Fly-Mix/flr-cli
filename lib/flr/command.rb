@@ -94,8 +94,9 @@ module Flr
       # flr:
       #  core_version: 1.0.0
       #  assets:
+      #  fonts:
       # ```
-      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "assets" => nil]
+      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "assets" => nil, "fonts" => nil]
       pubspec_config["flr"] = flr_config
 
       # 添加 r_dart_library（https://github.com/YK-Unit/r_dart_library）的依赖声明
@@ -247,10 +248,11 @@ module Flr
       warning_messages = []
 
       # ----- Step-1 Begin -----
-      # 1. 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程
+      # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程：
       # - 检测当前flutter工程根目录是否存在pubspec.yaml
       # - 检测当前pubspec.yaml中是否存在Flr的配置
-      # - 检测当前Flr配置中的assets配置是否合法：assets配置的资产目录数组中，“合法的资产目录数组”的长度大于0；判断配置的资产目录是否合法的标准是：该目录真实存在
+      # - 检测当前flr_config中的resource_dir配置是否合法：
+      #   判断合法的标准是：assets配置或者fonts配置了至少1个legal_resource_dir
       #
 
       begin
@@ -274,7 +276,7 @@ module Flr
       # ----- Step-1 End -----
 
       # ----- Step-2 Begin -----
-      # 2. 进行核心逻辑版本检测
+      # 进行核心逻辑版本检测：
       # 检测Flr配置中的核心逻辑版本号和当前工具的核心逻辑版本号是否一致；若不一致，则生成“核心逻辑版本不一致”的警告日志，存放到警告日志数组
 
       flr_core_version = flr_config["core_version"]
@@ -295,14 +297,15 @@ module Flr
       # ----- Step-2 End -----
 
       # ----- Step-3 Begin -----
-      # 3. 获取legal_resource_dir数组和illegal_resource_dir数组
-      #
-      # - 从flr_config中的assets配置获取legal_resource_dir数组和illegal_resource_dir数组。
-      # - 若illegal_resource_dir数组长度大于0，则生成“存在非法的资源目录”的警告日志，存放到警告日志数组。
-      #
+      # 获取assets_legal_resource_dir数组、fonts_legal_resource_dir数组和illegal_resource_dir数组：
+      # - 从flr_config中的assets配置获取assets_legal_resource_dir数组和assets_illegal_resource_dir数组；
+      # - 从flr_config中的fonts配置获取fonts_legal_resource_dir数组和fonts_illegal_resource_dir数组；
+      # - 合并assets_illegal_resource_dir数组和fonts_illegal_resource_dir数组为illegal_resource_dir数组‘；若illegal_resource_dir数组长度大于0，则生成“存在非法的资源目录”的警告日志，存放到警告日志数组。
 
       # 合法的资源目录数组
-      legal_resource_dir_array = resource_dir_result_tuple[0]
+      legal_resource_dir_result_tuple = resource_dir_result_tuple[0]
+      assets_legal_resource_dir_array = legal_resource_dir_result_tuple[0]
+      fonts_legal_resource_dir_array = legal_resource_dir_result_tuple[1]
       # 非法的资源目录数组
       illegal_resource_dir_array = resource_dir_result_tuple[1]
 
@@ -321,20 +324,21 @@ module Flr
       puts("scan assets now ...")
 
       # ----- Step-4 Begin -----
-      # 扫描所有legal_resource_dir，输出image_asset数组和illegal_image_file数组：
-      #  - 遍历legal_resource_dir数组，按照如下处理每个资源目录：
-      #    - 扫描当前资源目录和其第1级的子目录，查找所有image_file；
-      #    - 根据legal_resource_file的标准，筛选查找结果生成legal_image_file子数组和illegal_image_file子数组；illegal_image_file子数组合并到illegal_image_file数组
-      #    - 根据image_asset的定义，遍历legal_image_file子数组，生成image_asset子数组；image_asset子数组合并到image_asset数组。
-      #  - 对image_asset数组做去重处理；
-      #  - 按照字典顺序对image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
-      #  - 输出image_asset数组和illegal_image_file数组。
+      # 扫描assets_legal_resource_dir数组中的legal_resource_dir，输出image_asset数组和illegal_image_file数组：
+      # - 创建image_asset数组、illegal_image_file数组；
+      # - 遍历assets_legal_resource_dir数组，按照如下处理每个资源目录：
+      #  - 扫描当前资源目录和其第1级的子目录，查找所有image_file；
+      #  - 根据legal_resource_file的标准，筛选查找结果生成legal_image_file子数组和illegal_image_file子数组；illegal_image_file子数组合并到illegal_image_file数组；
+      #  - 根据image_asset的定义，遍历legal_image_file子数组，生成image_asset子数；组；image_asset子数组合并到image_asset数组。
+      # - 对image_asset数组做去重处理；
+      # - 按照字典顺序对image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      # - 输出image_asset数组和illegal_image_file数组。
       #
 
       image_asset_array = []
       illegal_image_file_array = []
 
-      legal_resource_dir_array.each do |resource_dir|
+      assets_legal_resource_dir_array.each do |resource_dir|
         image_file_result_tuple = FileUtil.find_image_files(resource_dir)
         legal_image_file_subarray = image_file_result_tuple[0]
         illegal_image_file_subarray = image_file_result_tuple[1]
@@ -351,20 +355,22 @@ module Flr
       # ----- Step-4 End -----
 
       # ----- Step-5 Begin -----
-      # 扫描所有legal_resource_dir，输出text_asset数组和illegal_text_file数组：
-      #  - 遍历legal_resource_dir数组，按照如下处理每个资源目录：
-      #    - 扫描当前资源目录和其所有层级的子目录，查找所有text_file；
-      #    - 根据legal_resource_file的标准，筛选查找结果生成legal_text_file子数组和illegal_text_file子数组；illegal_text_file子数组合并到illegal_text_file数组；
-      #    - 根据text_asset的定义，遍历legal_text_file子数组，生成text_asset子数组；text_asset子数组合并到illegal_text_file数组。
-      #  - 对text_asset数组做去重处理；
-      #  - 按照字典顺序对text_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
-      #  - 输出text_asset数组和illegal_image_file数组。
+      # 扫描assets_legal_resource_dir数组中的legal_resource_dir，输出text_asset数组和illegal_text_file数组：
+      # - 创建text_asset数组、illegal_text_file数组；
+      #
+      # - 遍历assets_legal_resource_dir数组，按照如下处理每个资源目录：
+      #  - 扫描当前资源目录和其所有层级的子目录，查找所有text_file；
+      #  - 根据legal_resource_file的标准，筛选查找结果生成legal_text_file子数组和illegal_text_file子数组；illegal_text_file子数组合并到illegal_text_file数组；
+      #  - 根据text_asset的定义，遍历legal_text_file子数组，生成text_asset子数组；text_asset子数组合并到text_asset数组。
+      # - 对text_asset数组做去重处理；
+      # - 按照字典顺序对text_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      # - 输出text_asset数组和illegal_image_file数组。
       #
 
       text_asset_array = []
       illegal_text_file_array = []
 
-      legal_resource_dir_array.each do |resource_dir|
+      assets_legal_resource_dir_array.each do |resource_dir|
         text_file_result_tuple = FileUtil.find_text_files(resource_dir)
         legal_text_file_subarray = text_file_result_tuple[0]
         illegal_text_file_subarray = text_file_result_tuple[1]
@@ -380,15 +386,58 @@ module Flr
 
       # ----- Step-5 End -----
 
-      puts("scan assets done !!!")
-
       # ----- Step-6 Begin -----
-      # 检测是否存在illegal_resource_file：
-      # - 合并illegal_image_file数组和illegal_text_file数组为illegal_resource_file数组；
-      # - 若illegal_resource_file数组长度大于0，则生成“存在非法的资源文件”的警告日志，存放到警告日志数组。
+      # 扫描fonts_legal_resource_dir数组中的legal_resource_dir，输出font_family_config数组、illegal_font_file数组；：
+      #
+      # - 创建font_family_config数组、illegal_font_file数组；
+      # - 遍历fonts_legal_resource_dir数组，按照如下处理每个资源目录：
+      #  - 扫描当前资源目录，获得其第1级子目录数组，并按照字典顺序对数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      #  - 遍历第1级子目录数组，按照如下处理每个子目录：
+      #    - 获取当前子目录的名称，生成font_family_name；
+      #    - 扫描当前子目录和其所有子目录，查找所有font_file；
+      #    - 根据legal_resource_file的标准，筛选查找结果生成legal_font_file数组和illegal_font_file子数组；illegal_font_file子数组合并到illegal_font_file数组；
+      #    - 据font_asset的定义，遍历legal_font_file数组，生成font_asset_config数组；
+      #    - 根据font_family_config的定义，为当前子目录组织font_family_name和font_asset_config数组生成font_family_config对象，添加到font_family_config子数组；font_family_config子数组合并到font_family_config数组。
+      # - 输出font_family_config数组、illegal_font_file数组。
       #
 
-      illegal_resource_file_array = illegal_image_file_array + illegal_image_file_array
+      font_family_config_array = []
+      illegal_font_file_array = []
+
+      fonts_legal_resource_dir_array.each do |resource_dir|
+        top_child_dir_array = FileUtil.find_top_child_dirs(resource_dir)
+
+        top_child_dir_array.sort!
+
+        top_child_dir_array.each do |child_dir|
+          font_family_name = File.basename(child_dir)
+
+          font_file_result_tuple = FileUtil.find_font_files(child_dir)
+          legal_font_file_array = font_file_result_tuple[0]
+          illegal_font_file_subarray = font_file_result_tuple[1]
+
+          illegal_font_file_array += illegal_font_file_subarray
+
+          unless legal_font_file_array.length > 0
+            next
+          end
+
+          font_asset_config_array = AssetUtil.generate_font_asset_configs(legal_font_file_array, child_dir, package_name)
+          font_family_config =  Hash["family" => font_family_name , "fonts" => font_asset_config_array]
+          font_family_config_array.push(font_family_config)
+        end
+      end
+
+      # ----- Step-6 End -----
+
+      puts("scan assets done !!!")
+
+      # ----- Step-7 Begin -----
+      # 检测是否存在illegal_resource_file：
+      # - 合并illegal_image_file数组、illegal_text_file数组和illegal_font_file数组为illegal_resource_file数组；
+      # - 若illegal_resource_file数组长度大于0，则生成“存在非法的资源文件”的警告日志，存放到警告日志数组。
+
+      illegal_resource_file_array = illegal_image_file_array + illegal_text_file_array + illegal_font_file_array
       if illegal_resource_file_array.length > 0
         message = "[!]: warning, found the following illegal resource file who's file basename contains illegal characters: ".warning_style
         illegal_resource_file_array.each do |resource_file|
@@ -399,27 +448,36 @@ module Flr
         warning_messages.push(message)
       end
 
-      # ----- Step-6 End -----
+      # ----- Step-7 End -----
 
       puts("specify scanned assets in pubspec.yaml now ...")
 
-      # ----- Step-7 Begin -----
+      # ----- Step-8 Begin -----
       # 为扫描得到的legal_resource_file添加资源声明到pubspec.yaml：
-      #  - 合并image_asset数组和text_asset数组为asset数组（image_asset数组元素在前）。
-      #  - 修改pubspec.yaml中flutter-assets配置的值为asset数组。
+      # - 合并image_asset数组和text_asset数组为asset数组（image_asset数组元素在前）;
+      # - 修改pubspec.yaml中flutter-assets配置的值为asset数组；
+      # - 修改pubspec.yaml中flutter-fonts配置的值为font_family_config数组。
 
       asset_array = image_asset_array + text_asset_array
-      pubspec_config["flutter"]["assets"] = asset_array
+      if asset_array.length > 0
+        pubspec_config["flutter"]["assets"] = asset_array
+      else
+        pubspec_config["flutter"].delete("assets")
+      end
+
+      if font_family_config_array.length > 0
+        pubspec_config["flutter"]["fonts"] = font_family_config_array
+      else
+        pubspec_config["flutter"].delete("fonts")
+      end
 
       FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
 
-      # ----- Step-7 End -----
+      # ----- Step-8 End -----
 
       puts("specify scanned assets in pubspec.yaml done !!!")
 
-      puts("generate \"r.g.dart\" now ...")
-
-      # ----- Step-8 Begin -----
+      # ----- Step-9 Begin -----
       # 按照SVG分类，从image_asset数组筛选得到有序的non_svg_image_asset数组和svg_image_asset数组：
       #  - 按照SVG分类，从image_asset数组筛选得到non_svg_image_asset数组和svg_image_asset数组；
       #  - 按照字典顺序对non_svg_image_asset数组和svg_image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
@@ -441,27 +499,29 @@ module Flr
       non_svg_image_asset_array.sort!
       svg_image_asset_array.sort!
 
-      # ----- Step-8 End -----
+      # ----- Step-9 End -----
 
-      # ----- Step-9 Begin -----
+      puts("generate \"r.g.dart\" now ...")
+
+      # ----- Step-10 Begin -----
       # 在当前根目录下创建新的r.g.dart文件。
       #
 
       r_dart_path = "#{flutter_project_root_dir}/lib/r.g.dart"
       r_dart_file = File.open(r_dart_path, "w")
 
-      # ----- Step-9 End -----
+      # ----- Step-10 End -----
 
-      # ----- Step-10 Begin -----
+      # ----- Step-11 Begin -----
       # 生成 R 类的代码，追加写入r.g.dart
       #
 
       g_R_class_code = CodeUtil.generate_R_class(package_name)
       r_dart_file.puts(g_R_class_code)
 
-      # ----- Step-10 End -----
+      # ----- Step-11 End -----
 
-      # ----- Step-11 Begin -----
+      # ----- Step-12 Begin -----
       # 生成 AssetResource 类的代码，追加写入r.g.dart
       #
 
@@ -469,9 +529,9 @@ module Flr
       g_AssetResource_class_code = CodeUtil.generate_AssetResource_class(package_name)
       r_dart_file.puts(g_AssetResource_class_code)
 
-      # ----- Step-11 End -----
+      # ----- Step-12 End -----
 
-      # ----- Step-12 Begin -----
+      # ----- Step-13 Begin -----
       # 遍历 non_svg_image_asset 数组，生成 _R_Image_AssetResource 类，追加写入 r.g.dart
       #
 
@@ -479,9 +539,9 @@ module Flr
       g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, package_name)
       r_dart_file.puts(g__R_Image_AssetResource_class_code)
 
-      # ----- Step-12 End -----
+      # ----- Step-13 End -----
 
-      # ----- Step-13 Begin -----
+      # ----- Step-14 Begin -----
       # 遍历 svg_image_asset 数组，生成 _R_Svg_AssetResource 类，追加写入 r.g.dart。
       #
 
@@ -489,9 +549,9 @@ module Flr
       g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, package_name)
       r_dart_file.puts(g__R_Svg_AssetResource_class_code)
 
-      # ----- Step-13 End -----
+      # ----- Step-14 End -----
 
-      # ----- Step-14 Begin -----
+      # ----- Step-15 Begin -----
       # 遍历 text_asset 数组，生成 _R_Image_AssetResource 类，追加写入 r.g.dart
       #
 
@@ -499,10 +559,10 @@ module Flr
       g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, package_name)
       r_dart_file.puts(g__R_Text_AssetResource_class_code)
 
-      # ----- Step-14 End -----
+      # ----- Step-15 End -----
 
 
-      # ----- Step-15 Begin -----
+      # ----- Step-16 Begin -----
       # 遍历non_svg_image_asset数组，生成 _R_Image 类，追加写入 r.g.dart
       #
 
@@ -510,9 +570,9 @@ module Flr
       g__R_Image_class_code = CodeUtil.generate__R_Image_class(non_svg_image_asset_array, package_name)
       r_dart_file.puts(g__R_Image_class_code)
 
-      # ----- Step-15 End -----
+      # ----- Step-16 End -----
 
-      # ----- Step-16 Begin -----
+      # ----- Step-17 Begin -----
       # 遍历 svg_image_asset 数组，生成 _R_Svg 类，追加写入 r.g.dart。
       #
 
@@ -520,30 +580,38 @@ module Flr
       g__R_Svg_class_code = CodeUtil.generate__R_Svg_class(svg_image_asset_array, package_name)
       r_dart_file.puts(g__R_Svg_class_code)
 
-      # ----- Step-16 End -----
+      # ----- Step-17 End -----
 
-      # ----- Step-17 Begin -----
-      # 遍历 text_asset 数组，生成 _R_Image 类，追加写入 r.g.dart
+      # ----- Step-18 Begin -----
+      # 遍历 text_asset 数组，生成 _R_Image 类，追加写入 r.g.dart。
       #
 
       r_dart_file.puts("\n")
       g__R_Text_class_code = CodeUtil.generate__R_Text_class(text_asset_array, package_name)
       r_dart_file.puts(g__R_Text_class_code)
 
-      # ----- Step-17 End -----
+      # ----- Step-18 End -----
 
+      # ----- Step-19 Begin -----
+      # 遍历font_family_config数组，根据下面的模板生成_R_Font_Family类，追加写入r.g.dart。
 
-      # ----- Step-18 Begin -----
+      r_dart_file.puts("\n")
+      g__R_Font_Family_class_code = CodeUtil.generate__R_Font_Family_class(font_family_config_array, package_name)
+      r_dart_file.puts(g__R_Font_Family_class_code)
+
+      # ----- Step-19 End -----
+
+      # ----- Step-20 Begin -----
       # 结束操作，保存 r.g.dart
       #
 
       r_dart_file.close
       puts("generate \"r.g.dart\" done !!!")
 
-      # ----- Step-18 End -----
+      # ----- Step-20 End -----
 
 
-      # ----- Step-19 Begin -----
+      # ----- Step-21 Begin -----
       # 调用 flutter 工具对 r.g.dart 进行格式化操作
       #
 
@@ -552,9 +620,9 @@ module Flr
       system(flutter_format_cmd)
       puts("execute \"#{flutter_format_cmd}\" done !!!")
 
-      # ----- Step-19 End -----
+      # ----- Step-21 End -----
 
-      # ----- Step-20 Begin -----
+      # ----- Step-22 Begin -----
       # 调用flutter工具，为flutter工程获取依赖
       #
 
@@ -563,11 +631,11 @@ module Flr
       system(get_flutter_pub_cmd)
       puts("execute \"#{get_flutter_pub_cmd}\" done !!!")
 
-      # ----- Step-20 End -----
+      # ----- Step-22 End -----
 
       puts("[√]: generate done !!!")
 
-      # ----- Step-21 Begin -----
+      # ----- Step-23 Begin -----
       # 判断警告日志数组是否为空，若不为空，输出所有警告日志
       #
 
@@ -578,7 +646,7 @@ module Flr
         end
       end
 
-      # ----- Step-21 End -----
+      # ----- Step-23 End -----
 
     end
 

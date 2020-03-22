@@ -131,23 +131,71 @@ module Flr
     # illegal_text_file_array = ["lib/assets/jsons/~.json"]
     #
     def self.find_text_files(resource_dir)
-      legal_text_files = []
-      illegal_text_files = []
+      legal_text_file_array = []
+      illegal_text_file_array = []
 
       pattern_file_types =  Flr::TEXT_FILE_TYPES.join(",")
       # dir/**/*{.json.,.yaml} : 查找当前目录和其所有子目录的指定类型文件
       Dir.glob(["#{resource_dir}/**/*{#{pattern_file_types}}"]).each do |file|
         if is_legal_resource_file?(file)
-          legal_text_files.push(file)
+          legal_text_file_array.push(file)
         else
-          illegal_text_files.push(file)
+          illegal_text_file_array.push(file)
         end
       end
 
-      text_file_result_tuple = [legal_text_files, illegal_text_files]
+      text_file_result_tuple = [legal_text_file_array, illegal_text_file_array]
       return text_file_result_tuple
     end
 
+    # find_top_child_dirs(resource_dir) -> top_child_dir_array
+    #
+    # 扫描指定的资源目录，返回其所有第一级子目录
+    #
+    # === Examples
+    # top_child_dir_array = ["lib/assets/fonts/Amiri", "lib/assets/fonts/Open_Sans"]
+    #
+    def self.find_top_child_dirs(resource_dir)
+      top_child_dir_array = []
+
+      Dir.glob(["#{resource_dir}/*"]).each do |file|
+        if File.directory?(file)
+          top_child_dir_array.push(file)
+        end
+      end
+
+      return top_child_dir_array
+    end
+
+    # find_text_files(resource_dir)  ->  [legal_font_file_array, illegal_font_file_array]
+    #
+    # 扫描指定的资源目录和其所有层级的子目录，查找所有字体文件
+    # 返回字体文件结果元组 font_file_result_tuple
+    # font_file_result_tuple = [legal_font_file_array, illegal_font_file_array]
+    #
+    # 判断文件合法的标准参考 self.is_legal_resource_file? 方法
+    #
+    # === Examples
+    # legal_font_file_array = ["lib/assets/fonts/Amiri/Amiri-Regular.ttf", "lib/assets/fonts/Amiri/Amiri-Bold.ttf"]
+    # illegal_font_file_array = ["lib/assets/fonts/Amiri/~.ttf"]
+    #
+    def self.find_font_files(resource_dir)
+      legal_font_file_array = []
+      illegal_font_file_array = []
+
+      pattern_file_types =  Flr::FONT_FILE_TYPES.join(",")
+      # dir/**/*{.ttf.,.ott} : 查找当前目录和其所有子目录的指定类型文件
+      Dir.glob(["#{resource_dir}/**/*{#{pattern_file_types}}"]).each do |file|
+        if is_legal_resource_file?(file)
+          legal_font_file_array.push(file)
+        else
+          illegal_font_file_array.push(file)
+        end
+      end
+
+      font_file_result_tuple = [legal_font_file_array, illegal_font_file_array]
+      return font_file_result_tuple
+    end
 
   end
 
