@@ -69,7 +69,7 @@ module Flr
 
       begin
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
-        
+
         pubspec_file_path = FileUtil.get_pubspec_file_path
       rescue Exception => e
         puts(e.message)

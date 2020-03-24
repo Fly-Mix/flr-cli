@@ -21,7 +21,7 @@ module Flr
       if File.exist?(pubspec_file_path) == false
         message = <<-MESSAGE
 #{"[x]: #{pubspec_file_path} not found".error_style}
-#{"[*]: please make sure #{pubspec_file_path} is existed".tips_style}
+#{"[*]: please make sure pubspec.yaml is existed in #{flutter_dir}".tips_style}
         MESSAGE
 
         raise(message)
