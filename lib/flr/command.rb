@@ -113,19 +113,49 @@ module Flr
       r_dart_library_version = get_r_dart_library_version
       r_dart_library_hash = Hash["git" => Hash["url" => "https://github.com/YK-Unit/r_dart_library.git", "ref" => r_dart_library_version]]
       dependencies["r_dart_library"] = r_dart_library_hash
-
-      # 更新并保存 pubspec.yaml
       pubspec_config["dependencies"] = dependencies
-      FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
 
       puts("add flr configuration into pubspec.yaml done!")
       puts("add dependency \"r_dart_library\"(https://github.com/YK-Unit/r_dart_library) into pubspec.yaml done!")
 
       # ----- Step-2 End -----
 
+      # ----- Step-3 Begin -----
+      # 对Flutter配置进行修正，以避免执行获取依赖操作时会失败：
+      # - 检测Flutter配置中的assets选项是否是一个非空数组；若不是，则删除assets选项；
+      # - 检测Flutter配置中的fonts选项是否是一个非空数组；若不是，则删除fonts选项。
+      #
+
+      flutter_config = pubspec_config["flutter"]
+
+      flutter_assets = flutter_config["assets"]
+      should_rm_flutter_assets_Key = true
+      if flutter_assets.is_a?(Array) == true and flutter_assets.empty? == false
+        should_rm_flutter_assets_Key = false
+      end
+      if should_rm_flutter_assets_Key
+        flutter_config.delete("assets")
+      end
+
+      flutter_fonts = flutter_config["fonts"]
+      should_rm_flutter_fonts_Key = true
+      if flutter_fonts.is_a?(Array) == true and flutter_fonts.empty? == false
+        should_rm_flutter_fonts_Key = false
+      end
+      if should_rm_flutter_fonts_Key
+        flutter_config.delete("fonts")
+      end
+
+      pubspec_config["flutter"] = flutter_config
+
+      # ----- Step-3 End -----
+
+      # 保存 pubspec.yaml
+      FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
+
       puts("get dependency \"r_dart_library\" via execute \"flutter pub get\" now ...")
 
-      # ----- Step-3 Begin -----
+      # ----- Step-4 Begin -----
       # 调用 flutter 工具，为 flutter 工程获取依赖
 
       get_flutter_pub_cmd = "flutter pub get"
@@ -133,7 +163,7 @@ module Flr
 
       puts("get dependency \"r_dart_library\" done !!!")
 
-      # ----- Step-3 End -----
+      # ----- Step-4 End -----
 
       puts("[√]: init done !!!")
     end
@@ -565,7 +595,7 @@ module Flr
       #
 
       begin
-        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+        Checker.check_pubspec_file_is_existed(pubspec_file_path)
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 
