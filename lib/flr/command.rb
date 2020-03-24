@@ -61,7 +61,6 @@ module Flr
     # 对 flutter 工程进行初始化
     def self.init
       flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
-      pubspec_file_path = FileUtil.get_pubspec_file_path
 
       # ----- Step-1 Begin -----
       # 进行环境检测:
@@ -69,7 +68,9 @@ module Flr
       #
 
       begin
-        Checker.check_pubspec_file_is_existed(pubspec_file_path)
+        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+        
+        pubspec_file_path = FileUtil.get_pubspec_file_path
       rescue Exception => e
         puts(e.message)
         return
@@ -172,7 +173,6 @@ module Flr
     def self.generate
 
       flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
-      pubspec_file_path = FileUtil.get_pubspec_file_path
 
       # 警告日志数组
       warning_messages = []
@@ -186,7 +186,9 @@ module Flr
       #
 
       begin
-        Checker.check_pubspec_file_is_existed(pubspec_file_path)
+        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+
+        pubspec_file_path = FileUtil.get_pubspec_file_path
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 
@@ -584,7 +586,6 @@ module Flr
     def self.start_assert_monitor
 
       flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
-      pubspec_file_path = FileUtil.get_pubspec_file_path
 
       # ----- Step-1 Begin -----
       # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程：
@@ -595,7 +596,9 @@ module Flr
       #
 
       begin
-        Checker.check_pubspec_file_is_existed(pubspec_file_path)
+        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+
+        pubspec_file_path = FileUtil.get_pubspec_file_path
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 
