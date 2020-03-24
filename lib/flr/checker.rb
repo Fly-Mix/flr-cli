@@ -12,16 +12,14 @@ module Flr
     #
     # === Examples
     #
-    # flutter_dir = "~/path/to/flutter_project"
+    # pubspec_file_path = "~/path/to/flutter_project/pubspec.yaml"
     # Checker.check_pubspec_file_is_existed(flutter_dir)
     #
-    def self.check_pubspec_file_is_existed(flutter_dir)
-      pubspec_path = flutter_dir + "/pubspec.yaml"
-
-      if File.exist?(pubspec_path) == false
+    def self.check_pubspec_file_is_existed(pubspec_file_path)
+      if File.exist?(pubspec_file_path) == false
         message = <<-MESSAGE
-#{"[x]: #{pubspec_path} not found".error_style}
-#{"[*]: please make sure pubspec.yaml is exist in #{flutter_dir}".tips_style}
+#{"[x]: #{pubspec_file_path} not found".error_style}
+#{"[*]: please make sure #{pubspec_file_path} is existed".tips_style}
         MESSAGE
 
         raise(message)
