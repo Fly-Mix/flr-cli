@@ -102,7 +102,7 @@ module Flr
       end
     end
 
-    # find_image_files(resource_dir)  ->  [legal_image_file_array, illegal_image_file_array]
+    # find_image_files(resource_dir)  ->  image_file_result_tuple
     #
     # 扫描指定的资源目录和其第1级子目录，查找所有图片文件
     # 返回图片文件结果二元组 image_file_result_tuple
@@ -134,7 +134,7 @@ module Flr
       return image_file_result_tuple
     end
 
-    # find_text_files(resource_dir)  ->  [legal_text_file_array, illegal_text_file_array]
+    # find_text_files(resource_dir)  ->  text_file_result_tuple
     #
     # 扫描指定的资源目录和其所有层级的子目录，查找所有文本文件
     # 返回文本文件结果二元组 text_file_result_tuple
@@ -184,7 +184,7 @@ module Flr
       return top_child_dir_array
     end
 
-    # find_font_files_in_family_font_dir(resource_dir)  ->  [legal_font_file_array, illegal_font_file_array]
+    # find_font_files_in_font_family_dir(font_family_dir)  ->  font_file_result_tuple
     #
     # 扫描指定的字体家族目录和其所有层级的子目录，查找所有字体文件
     # 返回字体文件结果二元组 font_file_result_tuple
@@ -193,17 +193,17 @@ module Flr
     # 判断文件合法的标准参考 self.is_legal_resource_file? 方法
     #
     # === Examples
-    # family_font_dir = "lib/assets/fonts/Amiri"
+    # font_family_dir = "lib/assets/fonts/Amiri"
     # legal_font_file_array = ["lib/assets/fonts/Amiri/Amiri-Regular.ttf", "lib/assets/fonts/Amiri/Amiri-Bold.ttf"]
     # illegal_font_file_array = ["lib/assets/fonts/Amiri/~.ttf"]
     #
-    def self.find_font_files_in_family_font_dir(family_font_dir)
+    def self.find_font_files_in_font_family_dir(font_family_dir)
       legal_font_file_array = []
       illegal_font_file_array = []
 
       pattern_file_types =  Flr::FONT_FILE_TYPES.join(",")
       # dir/**/*{.ttf.,.ott} : 查找当前目录和其所有子目录的指定类型文件
-      Dir.glob(["#{family_font_dir}/**/*{#{pattern_file_types}}"]).each do |file|
+      Dir.glob(["#{font_family_dir}/**/*{#{pattern_file_types}}"]).each do |file|
         if is_legal_resource_file?(file)
           legal_font_file_array.push(file)
         else

@@ -204,13 +204,13 @@ class AssetResource {
       # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
       escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
 
-      assetResource_code = <<-CODE
+      code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: R.package);
       CODE
 
-      return assetResource_code
+      return code
     end
 
     # generate__R_Image_AssetResource_class(non_svg_image_asset_array, package_name) -> string

@@ -288,7 +288,6 @@ module Flr
       # ----- Step-5 Begin -----
       # 扫描assets_legal_resource_dir数组中的legal_resource_dir，输出text_asset数组和illegal_text_file数组：
       # - 创建text_asset数组、illegal_text_file数组；
-      #
       # - 遍历assets_legal_resource_dir数组，按照如下处理每个资源目录：
       #  - 扫描当前资源目录和其所有层级的子目录，查找所有text_file；
       #  - 根据legal_resource_file的标准，筛选查找结果生成legal_text_file子数组和illegal_text_file子数组；illegal_text_file子数组合并到illegal_text_file数组；
@@ -318,8 +317,7 @@ module Flr
       # ----- Step-5 End -----
 
       # ----- Step-6 Begin -----
-      # 扫描fonts_legal_resource_dir数组中的legal_resource_dir，输出font_family_config数组、illegal_font_file数组；：
-      #
+      # 扫描fonts_legal_resource_dir数组中的legal_resource_dir，输出font_family_config数组、illegal_font_file数组：
       # - 创建font_family_config数组、illegal_font_file数组；
       # - 遍历fonts_legal_resource_dir数组，按照如下处理每个资源目录：
       #  - 扫描当前资源目录，获得其第1级子目录数组，并按照字典顺序对数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
@@ -336,14 +334,14 @@ module Flr
       illegal_font_file_array = []
 
       fonts_legal_resource_dir_array.each do |resource_dir|
-        top_child_dir_array = FileUtil.find_top_child_dirs(resource_dir)
+        font_family_dir_array = FileUtil.find_top_child_dirs(resource_dir)
 
-        top_child_dir_array.sort!
+        font_family_dir_array.sort!
 
-        top_child_dir_array.each do |child_dir|
-          font_family_name = File.basename(child_dir)
+        font_family_dir_array.each do |font_family_dir|
+          font_family_name = File.basename(font_family_dir)
 
-          font_file_result_tuple = FileUtil.find_font_files_in_family_font_dir(child_dir)
+          font_file_result_tuple = FileUtil.find_font_files_in_font_family_dir(font_family_dir)
           legal_font_file_array = font_file_result_tuple[0]
           illegal_font_file_subarray = font_file_result_tuple[1]
 
@@ -353,7 +351,7 @@ module Flr
             next
           end
 
-          font_asset_config_array = AssetUtil.generate_font_asset_configs(legal_font_file_array, child_dir, package_name)
+          font_asset_config_array = AssetUtil.generate_font_asset_configs(legal_font_file_array, font_family_dir, package_name)
           font_family_config =  Hash["family" => font_family_name , "fonts" => font_asset_config_array]
           font_family_config_array.push(font_family_config)
         end
