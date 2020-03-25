@@ -78,7 +78,7 @@ module Flr
       return true
     end
 
-    # is_legal_file?(file) -> true or false
+    # is_legal_resource_file??(file) -> true or false
     #
     # 判断当前资源文件是否合法
     #
@@ -105,7 +105,7 @@ module Flr
     # find_image_files(resource_dir)  ->  [legal_image_file_array, illegal_image_file_array]
     #
     # 扫描指定的资源目录和其第1级子目录，查找所有图片文件
-    # 返回图片文件结果元组 image_file_result_tuple
+    # 返回图片文件结果二元组 image_file_result_tuple
     # image_file_result_tuple = [legal_image_file_array, illegal_image_file_array]
     #
     # 判断文件合法的标准参考 self.is_legal_resource_file? 方法
@@ -136,7 +136,7 @@ module Flr
     # find_text_files(resource_dir)  ->  [legal_text_file_array, illegal_text_file_array]
     #
     # 扫描指定的资源目录和其所有层级的子目录，查找所有文本文件
-    # 返回文本文件结果元组 text_file_result_tuple
+    # 返回文本文件结果二元组 text_file_result_tuple
     # text_file_result_tuple = [legal_text_file_array, illegal_text_file_array]
     #
     # 判断文件合法的标准参考 self.is_legal_resource_file? 方法
@@ -185,7 +185,7 @@ module Flr
     # find_text_files(resource_dir)  ->  [legal_font_file_array, illegal_font_file_array]
     #
     # 扫描指定的资源目录和其所有层级的子目录，查找所有字体文件
-    # 返回字体文件结果元组 font_file_result_tuple
+    # 返回字体文件结果二元组 font_file_result_tuple
     # font_file_result_tuple = [legal_font_file_array, illegal_font_file_array]
     #
     # 判断文件合法的标准参考 self.is_legal_resource_file? 方法

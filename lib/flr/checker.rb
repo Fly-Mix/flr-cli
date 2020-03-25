@@ -62,13 +62,13 @@ module Flr
       return true
     end
 
-    # check_flr_assets_is_legal(flr_config)  ->  resource_dir_result_triplet
+    # check_flr_assets_is_legal(flr_config)  ->  resource_dir_result_tuple
     #
     # 检测当前flr配置信息中的assets配置是否合法
-    # 若合法，返回资源目录结果元组 resource_dir_result_triplet
+    # 若合法，返回资源目录结果三元组 resource_dir_result_triplet
     # 若不合法，抛出异常
     #
-    # resource_dir_result_triplet = [legal_resource_dir_result_tuple, illegal_resource_dir_array, fonts_legal_resource_dir_array]
+    # resource_dir_result_tuple = [assets_legal_resource_dir_array, illegal_resource_dir_array, fonts_legal_resource_dir_array]
     #
     #
     # flr的assets配置是用于配置需要flr进行扫描的资源目录，如：
@@ -152,8 +152,8 @@ module Flr
         raise(message)
       end
 
-      resource_dir_result_triplet = [assets_legal_resource_dir_array, fonts_legal_resource_dir_array, illegal_resource_dir_array]
-      return resource_dir_result_triplet
+      resource_dir_result_tuple = [assets_legal_resource_dir_array, fonts_legal_resource_dir_array, illegal_resource_dir_array]
+      return resource_dir_result_tuple
     end
   end
 end

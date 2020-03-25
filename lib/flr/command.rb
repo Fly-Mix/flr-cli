@@ -196,7 +196,7 @@ module Flr
 
         flr_config = pubspec_config["flr"]
 
-        resource_dir_result_triplet = Checker.check_flr_assets_is_legal(flr_config)
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
 
       rescue Exception => e
         puts(e.message)
@@ -235,10 +235,10 @@ module Flr
       # - 合并assets_illegal_resource_dir数组和fonts_illegal_resource_dir数组为illegal_resource_dir数组‘；若illegal_resource_dir数组长度大于0，则生成“存在非法的资源目录”的警告日志，存放到警告日志数组。
 
       # 合法的资源目录数组
-      assets_legal_resource_dir_array = resource_dir_result_triplet[0]
-      fonts_legal_resource_dir_array = resource_dir_result_triplet[1]
+      assets_legal_resource_dir_array = resource_dir_result_tuple[0]
+      fonts_legal_resource_dir_array = resource_dir_result_tuple[1]
       # 非法的资源目录数组
-      illegal_resource_dir_array = resource_dir_result_triplet[2]
+      illegal_resource_dir_array = resource_dir_result_tuple[2]
 
       if illegal_resource_dir_array.length > 0
         message = "[!]: warning, found the following resource directory which is not existed: ".warning_style
@@ -605,7 +605,7 @@ module Flr
 
         flr_config = pubspec_config["flr"]
 
-        resource_dir_result_triplet = Checker.check_flr_assets_is_legal(flr_config)
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
 
       rescue Exception => e
         puts(e.message)
@@ -640,13 +640,13 @@ module Flr
       #
 
       # 合法的资源目录数组
-      assets_legal_resource_dir_array = resource_dir_result_triplet[0]
-      fonts_legal_resource_dir_array = resource_dir_result_triplet[1]
+      assets_legal_resource_dir_array = resource_dir_result_tuple[0]
+      fonts_legal_resource_dir_array = resource_dir_result_tuple[1]
 
       legal_resource_dir_array = assets_legal_resource_dir_array + fonts_legal_resource_dir_array
 
       # 非法的资源目录数组
-      illegal_resource_dir_array = resource_dir_result_triplet[2]
+      illegal_resource_dir_array = resource_dir_result_tuple[2]
 
       # ----- Step-3 End -----
 
