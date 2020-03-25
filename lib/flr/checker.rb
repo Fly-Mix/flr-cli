@@ -91,23 +91,23 @@ module Flr
     #
     def self.check_flr_assets_is_legal(flr_config)
       core_version = flr_config["core_version"]
-      assets_resource_dir_arry = flr_config["assets"]
-      fonts_resource_dir_arry = flr_config["fonts"]
+      assets_resource_dir_array = flr_config["assets"]
+      fonts_resource_dir_array = flr_config["fonts"]
 
-      if assets_resource_dir_arry.is_a?(Array) == false
-        assets_resource_dir_arry = []
+      if assets_resource_dir_array.is_a?(Array) == false
+        assets_resource_dir_array = []
       end
 
-      if fonts_resource_dir_arry.is_a?(Array) == false
-        fonts_resource_dir_arry = []
+      if fonts_resource_dir_array.is_a?(Array) == false
+        fonts_resource_dir_array = []
       end
 
       # 移除非法的 resource_dir（nil，空字符串，空格字符串）
-      assets_resource_dir_arry = assets_resource_dir_arry - [nil, "", " "]
-      fonts_resource_dir_arry = fonts_resource_dir_arry - [nil, "", " "]
+      assets_resource_dir_array = assets_resource_dir_array - [nil, "", " "]
+      fonts_resource_dir_array = fonts_resource_dir_array - [nil, "", " "]
       # 过滤重复的 resource_dir
-      assets_resource_dir_arry = assets_resource_dir_arry.uniq
-      fonts_resource_dir_arry = fonts_resource_dir_arry.uniq
+      assets_resource_dir_array = assets_resource_dir_array.uniq
+      fonts_resource_dir_array = fonts_resource_dir_array.uniq
 
 
       # 筛选合法的和非法的resource_dir
@@ -115,7 +115,7 @@ module Flr
       fonts_legal_resource_dir_array = []
       illegal_resource_dir_array = []
 
-      assets_resource_dir_arry.each do |resource_dir|
+      assets_resource_dir_array.each do |resource_dir|
         if File.exist?(resource_dir) == true
           assets_legal_resource_dir_array.push(resource_dir)
         else
@@ -123,7 +123,7 @@ module Flr
         end
       end
 
-      fonts_resource_dir_arry.each do |resource_dir|
+      fonts_resource_dir_array.each do |resource_dir|
         if File.exist?(resource_dir) == true
           fonts_legal_resource_dir_array.push(resource_dir)
         else
