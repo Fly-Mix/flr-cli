@@ -326,8 +326,10 @@ module Flr
       #    - 扫描当前子目录和其所有子目录，查找所有font_file；
       #    - 根据legal_resource_file的标准，筛选查找结果生成legal_font_file数组和illegal_font_file子数组；illegal_font_file子数组合并到illegal_font_file数组；
       #    - 据font_asset的定义，遍历legal_font_file数组，生成font_asset_config数组；
+      #    - 按照字典顺序对生成font_asset_config数组做升序排列（比较asset的值）；
       #    - 根据font_family_config的定义，为当前子目录组织font_family_name和font_asset_config数组生成font_family_config对象，添加到font_family_config子数组；font_family_config子数组合并到font_family_config数组。
-      # - 输出font_family_config数组、illegal_font_file数组。
+      # - 输出font_family_config数组、illegal_font_file数组；
+      # - 按照字典顺序对font_family_config数组做升序排列（比较family的值）
       #
 
       font_family_config_array = []
@@ -335,8 +337,6 @@ module Flr
 
       fonts_legal_resource_dir_array.each do |resource_dir|
         font_family_dir_array = FileUtil.find_top_child_dirs(resource_dir)
-
-        font_family_dir_array.sort!
 
         font_family_dir_array.each do |font_family_dir|
           font_family_name = File.basename(font_family_dir)
@@ -352,10 +352,14 @@ module Flr
           end
 
           font_asset_config_array = AssetUtil.generate_font_asset_configs(legal_font_file_array, font_family_dir, package_name)
+          font_asset_config_array.sort!{|a, b| a["asset"] <=> b["asset"]}
+
           font_family_config =  Hash["family" => font_family_name , "fonts" => font_asset_config_array]
           font_family_config_array.push(font_family_config)
         end
       end
+
+      font_family_config_array.sort!{|a, b| a["family"] <=> b["family"]}
 
       # ----- Step-6 End -----
 
