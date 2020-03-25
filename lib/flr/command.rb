@@ -343,7 +343,7 @@ module Flr
         top_child_dir_array.each do |child_dir|
           font_family_name = File.basename(child_dir)
 
-          font_file_result_tuple = FileUtil.find_font_files(child_dir)
+          font_file_result_tuple = FileUtil.find_font_files_in_family_font_dir(child_dir)
           legal_font_file_array = font_file_result_tuple[0]
           illegal_font_file_subarray = font_file_result_tuple[1]
 
