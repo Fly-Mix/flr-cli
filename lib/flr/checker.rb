@@ -37,6 +37,7 @@ module Flr
     # flr:
     #   core_version: 1.0.0
     #   assets:
+    #   fonts:
     # ```
     # 若存在，返回true
     # 若不存在，则抛出异常

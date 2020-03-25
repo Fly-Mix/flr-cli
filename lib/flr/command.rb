@@ -583,7 +583,7 @@ module Flr
     end
 
     # 启动一个资源变化监控服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
-    def self.start_assert_monitor
+    def self.start_monitor
 
       flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
 
@@ -663,7 +663,7 @@ module Flr
       puts("launch a monitoring service now ...")
       puts("launching ...")
       # stop the monitoring service if exists
-      stop_assert_monitor
+      stop_monitor
       puts("launch a monitoring service done !!!")
       puts("the monitoring service is monitoring the following resource directory:")
       legal_resource_dir_array.each do |resource_dir|
@@ -709,7 +709,7 @@ module Flr
         puts("\n")
         loop {}
       rescue Interrupt => e
-        stop_assert_monitor
+        stop_monitor
         puts("")
         puts("[√]: terminate monitor service done !!!")
       end
@@ -719,7 +719,7 @@ module Flr
     end
 
     # 停止资源变化监控服务
-    def self.stop_assert_monitor
+    def self.stop_monitor
       if @@listener.nil? == false
         @@listener.stop
         @@listener = nil
