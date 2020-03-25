@@ -94,10 +94,10 @@ module Flr
       # ```yaml
       # flr:
       #  core_version: 1.0.0
-      #  assets:
-      #  fonts:
+      #  assets: []
+      #  fonts: []
       # ```
-      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "assets" => nil, "fonts" => nil]
+      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "assets" => [], "fonts" => []]
       pubspec_config["flr"] = flr_config
 
       # 添加 r_dart_library（https://github.com/YK-Unit/r_dart_library）的依赖声明
@@ -329,7 +329,7 @@ module Flr
       #    - 按照字典顺序对生成font_asset_config数组做升序排列（比较asset的值）；
       #    - 根据font_family_config的定义，为当前子目录组织font_family_name和font_asset_config数组生成font_family_config对象，添加到font_family_config子数组；font_family_config子数组合并到font_family_config数组。
       # - 输出font_family_config数组、illegal_font_file数组；
-      # - 按照字典顺序对font_family_config数组做升序排列（比较family的值）
+      # - 按照字典顺序对font_family_config数组做升序排列（比较family的值）。
       #
 
       font_family_config_array = []
@@ -376,7 +376,7 @@ module Flr
         illegal_resource_file_array.each do |resource_file|
           message = message + "\n" + "  - #{resource_file}".warning_style
         end
-        message = message + "\n" + "[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '.', '·', '!', '@', '&', '$', '￥') to name the asset".tips_style
+        message = message + "\n" + "[*]: to fix it, you should only use letters (a-z, A-Z), numbers (0-9), and the other legal characters ('_', '+', '-', '.', '·', '!', '@', '&', '$', '￥') to name the file".tips_style
 
         warning_messages.push(message)
       end
@@ -542,7 +542,6 @@ module Flr
       puts("generate \"r.g.dart\" done !!!")
 
       # ----- Step-20 End -----
-
 
       # ----- Step-21 Begin -----
       # 调用 flutter 工具对 r.g.dart 进行格式化操作
