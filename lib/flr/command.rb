@@ -94,10 +94,11 @@ module Flr
       # ```yaml
       # flr:
       #  core_version: 1.0.0
+      #  dartfmt_line_length: 80
       #  assets: []
       #  fonts: []
       # ```
-      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "assets" => [], "fonts" => []]
+      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "dartfmt_line_length" => Flr::DARTFMT_LINE_LENGTH,  "assets" => [], "fonts" => []]
       pubspec_config["flr"] = flr_config
 
       # 添加 r_dart_library（https://github.com/YK-Unit/r_dart_library）的依赖声明
@@ -547,7 +548,16 @@ module Flr
       # 调用 flutter 工具对 r.g.dart 进行格式化操作
       #
 
-      flutter_format_cmd = "flutter format #{r_dart_path}"
+      dartfmt_line_length = flr_config["dartfmt_line_length"]
+      if dartfmt_line_length.nil? or dartfmt_line_length.is_a?(Integer) == false
+        dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+      end
+
+      if dartfmt_line_length < Flr::DARTFMT_LINE_LENGTH
+        dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+      end
+
+      flutter_format_cmd = "flutter format #{r_dart_path} -l #{dartfmt_line_length}"
       puts("execute \"#{flutter_format_cmd}\" now ...")
       system(flutter_format_cmd)
       puts("execute \"#{flutter_format_cmd}\" done !!!")

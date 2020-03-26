@@ -16,4 +16,7 @@ module Flr
   # Flr优先考虑的字体文件类型
   # 当前值为 ".*"， 意味所有文本文件类型的优先级都一样
   PRIOR_FONT_FILE_TYPE = ".*"
+
+  # dartfmt工具的默认行长
+  DARTFMT_LINE_LENGTH = 80
 end

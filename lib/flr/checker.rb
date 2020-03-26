@@ -36,6 +36,7 @@ module Flr
     # ``` yaml
     # flr:
     #   core_version: 1.0.0
+    #   dartfmt_line_length: 80
     #   assets:
     #   fonts:
     # ```
@@ -76,6 +77,7 @@ module Flr
     # ``` yaml
     # flr:
     #   core_version: 1.0.0
+    #   dartfmt_line_length: 80
     #   assets:
     #     - lib/assets/images
     #     - lib/assets/texts
@@ -92,6 +94,7 @@ module Flr
     #
     def self.check_flr_assets_is_legal(flr_config)
       core_version = flr_config["core_version"]
+      dartfmt_line_length = flr_config["dartfmt_line_length"]
       assets_resource_dir_array = flr_config["assets"]
       fonts_resource_dir_array = flr_config["fonts"]
 
@@ -140,6 +143,7 @@ module Flr
 
     #{"flr:".tips_style}
       #{"core_version: #{core_version}".tips_style}
+      #{"dartfmt_line_length: #{dartfmt_line_length}".tips_style}
       #{"# config the image and text resource directories that need to be scanned".tips_style}
       #{"assets:".tips_style}
         #{"- lib/assets/images".tips_style}
