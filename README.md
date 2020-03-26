@@ -81,6 +81,49 @@ To uninstall  Flr run `sudo gem uninstall flr`
 
 **Attention:**  all commands MUST be runned in your flutter project root directory.
 
+## Recommended Flutter Resource Structure 
+
+ `Flr ` recommends the following resource structure:
+
+```
+flutter_project_root_dir
+├── build
+│   ├── ..
+├── lib
+│   ├── assets
+│   │   ├── moduleA_images // moduleA image resources root directory
+│   │   │   ├── testA.png
+│   │   │   ├── testASVG.svg
+│   │   │   ├── 2.0x
+│   │   │   │   ├── testA.png
+│   │   │   ├── 3.0x
+│   │   │   │   ├── testA.png
+│   │   ├── moduleB_images // moduleB image resources root directory
+│   │   │   ├── testB.png
+│   │   │   ├── testBSVG.svg
+│   │   │   ├── 2.0x
+│   │   │   │   ├── testB.png
+│   │   │   ├── 3.0x
+│   │   │   │   ├── testB.png
+│   │   ├── texts // text resources root directory 
+│   │   │   │     // (You can also break it down further by module)
+│   │   │   └── test.json
+│   │   │   └── test.yaml
+│   │   ├── fonts // font resources root directory
+│   │   │   ├── #{font_family_name} // The family name of a font
+│   │   │   │   ├── #{font_family_name}-#{font_weight_or_style}.ttf
+│   │   │   ├── Amiri
+│   │   │   │   ├── Amiri-Regular.ttf
+│   │   │   │   ├── Amiri-Bold.ttf
+│   │   │   │   ├── Amiri-Italic.ttf
+│   │   │   │   ├── Amiri-BoldItalic.ttf
+│   ├── ..
+```
+
+
+
+**Big Attention,  the resource structure in the root directory of the font resource MUST follow the structure described above:** name the subdirectory with a font family name, and place the font resources of the font family in the subdirectory. Otherwise, `Flr` may not scan the font resource correctly.
+
 ## r.g.dart
 
 After you run `flr run [--auto]`, Flr will scan the asset directories configured in `pubspec.yaml`, then specify scanned assets in `pubspec.yaml`, and generate `r.g.dart` file.

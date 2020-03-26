@@ -78,6 +78,48 @@
 
 **注意：** 以上所有命令都必须在你的Flutter项目的根目录下执行。
 
+## 推荐的flutter资源目录组织结构
+
+ `Flr`推荐如下的flutter资源目录组织结构：
+
+```
+flutter_project_root_dir
+├── build
+│   ├── ..
+├── lib
+│   ├── assets
+│   │   ├── moduleA_images // 模块A的图片资源总目录
+│   │   │   ├── testA.png
+│   │   │   ├── testASVG.svg
+│   │   │   ├── 2.0x
+│   │   │   │   ├── testA.png
+│   │   │   ├── 3.0x
+│   │   │   │   ├── testA.png
+│   │   ├── moduleB_images // 模块B的图片资源总目录
+│   │   │   ├── testB.png
+│   │   │   ├── testBSVG.svg
+│   │   │   ├── 2.0x
+│   │   │   │   ├── testB.png
+│   │   │   ├── 3.0x
+│   │   │   │   ├── testB.png
+│   │   ├── texts // 文本资源总目录（你也可以按照模块做进一步拆分）
+│   │   │   └── test.json
+│   │   │   └── test.yaml
+│   │   ├── fonts // 字体资源总目录
+│   │   │   ├── #{font_family_name} // 某个字体的家族名称
+│   │   │   │   ├── #{font_family_name}-#{font_weight_or_style}.ttf
+│   │   │   ├── Amiri
+│   │   │   │   ├── Amiri-Regular.ttf
+│   │   │   │   ├── Amiri-Bold.ttf
+│   │   │   │   ├── Amiri-Italic.ttf
+│   │   │   │   ├── Amiri-BoldItalic.ttf
+│   ├── ..
+```
+
+
+
+**需要注意的是，字体资源根目录下的组织结构必须（MUST）采用上述的组织结构：**以字体家族名称命名子目录，然后字体家族的字体资源放在子目录下。否则，`Flr`可能无法正确扫描字体资源。
+
 ## r.g.dart
 
 在你运行`flr run [--auto]`命令后，`Flr`会扫描`pubspec.yaml`中配置的资源目录，并为扫描到的资源添加声明到`pubspec.yaml`，以及生成`r.g.dart`。
