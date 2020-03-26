@@ -49,12 +49,15 @@
 2. 打开`pubspec.yaml`文件，找到`Flr`的配置项，然后配置需要`Flr`扫描的资源目录路径，如：
 
    ```yaml
-    flr:
-      version: 0.2.0
-      # config the asset directories that need to be scanned
-      assets:
-      - lib/assets/images
-      - lib/assets/texts
+   flr:
+     core_version: 1.0.0
+     # config the image and text resource directories that need to be scanned
+     assets:
+       - lib/assets/images
+       - lib/assets/texts
+     # config the font resource directories that need to be scanned
+     fonts:
+       - lib/assets/fonts
    ```
 
 3. 扫描资源，声明资源以及生成`r.g.dart`：
@@ -107,6 +110,8 @@ var jsonString = await R.text.test_json();
 // test.yaml
 var yamlString = await R.text.test_yaml();
 
+// Amiri Font Style
+var amiriTextStyle = TextStyle(fontFamily: R.fontFamily.amiri);
 ```
 
 ### `_R_X` class
@@ -116,6 +121,8 @@ var yamlString = await R.text.test_yaml();
 - `_R_Image`：管理非SVG类的图片资源（ `.png`、 `.jpg`、 `.jpeg`、`.gif`、 `.webp`、`.icon`、`.bmp`、`.wbmp`）的资源ID
 - `_R_Svg`：管理SVG类图片资源的资源ID
 - `_R_Text`：管理文本资源（`.txt`、`.json`、`.yaml`、`.xml`）的资源ID
+- `_R_Text`：管理字体资源（`.ttf`、`.otf`、`.ttc`）的资源ID
+
 
 ### `R` class and `R.x` struct
 
@@ -136,6 +143,9 @@ class R {
   /// This `R.text` struct is generated, and contains static references to static text asset resources.
   static const text = _R_Text();
 }
+
+  /// This `R.fontFamily` struct is generated, and contains static references to static font resources.
+  static const fontFamily = _R_FontFamily();
 ```
 
 ## Example

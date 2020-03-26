@@ -52,12 +52,15 @@ To uninstall  Flr run `sudo gem uninstall flr`
 2. Open `pubspec.yaml` file, find the configuration item for `Flr`, and then configure the asset directory paths that needs to be scanned by `Flr`, such as:
 
    ```yaml
-    flr:
-      version: 0.2.0
-      # config the asset directories that need to be scanned
-      assets:
-      - lib/assets/images
-      - lib/assets/texts
+   flr:
+     core_version: 1.0.0
+     # config the image and text resource directories that need to be scanned
+     assets:
+       - lib/assets/images
+       - lib/assets/texts
+     # config the font resource directories that need to be scanned
+     fonts:
+       - lib/assets/fonts
    ```
 
 3. Scan assets, specify assets, and generate `r.g.dart`:
@@ -66,10 +69,10 @@ To uninstall  Flr run `sudo gem uninstall flr`
      flr run
      ```
 
-     > After run `flr run` command, `Flr` will scan the asset directories configured in `pubspec.yaml`, then specify scanned assets in `pubspec.yaml`, and generate `r.g.dart` file.
+     > After run `flr run` command, `Flr` will scan the resource directories configured in `pubspec.yaml`, then specify scanned assets in `pubspec.yaml`, and generate `r.g.dart` file.
      > 
      > **If you want `Flr` to do the above operations automatically every time a asset changes, you can run the command `Flr run --auto`.**
-     > Then `Flr` will launch a monitoring service that continuously monitors asset directories configured in `pubspec.yaml`. If the service detects any asset changes, `Flr` will automatically scan the asset directories, then specify scanned assets in pubspec.yaml, and generate "r.g.dart" file. 
+     > Then `Flr` will launch a monitoring service that continuously monitors resource directories configured in `pubspec.yaml`. If the service detects any asset changes, `Flr` will automatically scan the resource directories, then specify scanned assets in pubspec.yaml, and generate "r.g.dart" file. 
      >
      > **You can terminate this monitoring service by manually pressing `Ctrl-C`.**
 
@@ -110,6 +113,8 @@ var jsonString = await R.text.test_json();
 // test.yaml
 var yamlString = await R.text.test_yaml();
 
+// Amiri Font Style
+var amiriTextStyle = TextStyle(fontFamily: R.fontFamily.amiri);
 ```
 
 ### `_R_X` class
@@ -119,6 +124,8 @@ var yamlString = await R.text.test_yaml();
 - `_R_Image`: manage the asset IDs of non-svg type image assets ( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp` )
 - `_R_Svg`: manage the asset IDs of svg type image assets
 - `_R_Text`: manage the asset IDs of text assets ( `.txt`, `.json`, `.yaml`, `.xml` ) 
+- `_R_FontFamily`: manage the asset IDs of font assets ( `.ttf`, `.otf`, `.ttc`) 
+
 
 ### `R` class and `R.x` struct
 
@@ -138,6 +145,9 @@ class R {
 
   /// This `R.text` struct is generated, and contains static references to static text asset resources.
   static const text = _R_Text();
+  
+  /// This `R.fontFamily` struct is generated, and contains static references to static font resources.
+  static const fontFamily = _R_FontFamily();
 }
 ```
 
