@@ -119,7 +119,7 @@ var amiriTextStyle = TextStyle(fontFamily: R.fontFamily.amiri);
 
 ### `_R_X` class
 
-`r.g.dart` defines several private `_R_X` asset management classes: `R_Image`, `R_Svg`, `R_Text`. These private asset management classes are used to manage the asset IDs of the respective asset types:
+`r.g.dart` defines several private `_R_X` asset management classes: `_R_Image`, `_R_Svg`, `_R_Text`, `_R_FontFamily`. These private asset management classes are used to manage the asset IDs of the respective asset types:
 
 - `_R_Image`: manage the asset IDs of non-svg type image assets ( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp` )
 - `_R_Svg`: manage the asset IDs of svg type image assets

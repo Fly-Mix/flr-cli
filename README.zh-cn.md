@@ -116,12 +116,12 @@ var amiriTextStyle = TextStyle(fontFamily: R.fontFamily.amiri);
 
 ### `_R_X` class
 
-`r.g.dart`中定义了几个私有的`_R_X`资源管理类：`_R_Image`、`_R_svg`、`_R_Text`。这些私有的资源管理类用于管理各自资源类型的资源ID：
+`r.g.dart`中定义了几个私有的`_R_X`资源管理类：`_R_Image`、`_R_svg`、`_R_Text`、`_R_FontFamily`。这些私有的资源管理类用于管理各自资源类型的资源ID：
 
 - `_R_Image`：管理非SVG类的图片资源（ `.png`、 `.jpg`、 `.jpeg`、`.gif`、 `.webp`、`.icon`、`.bmp`、`.wbmp`）的资源ID
 - `_R_Svg`：管理SVG类图片资源的资源ID
 - `_R_Text`：管理文本资源（`.txt`、`.json`、`.yaml`、`.xml`）的资源ID
-- `_R_Text`：管理字体资源（`.ttf`、`.otf`、`.ttc`）的资源ID
+- `_R_FontFamily`：管理字体资源（`.ttf`、`.otf`、`.ttc`）的资源ID
 
 
 ### `R` class and `R.x` struct
