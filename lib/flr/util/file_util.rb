@@ -40,6 +40,7 @@ module Flr
         puts("")
 
         message = <<-MESSAGE
+
 #{"[x]: pubspec.yaml is damaged with syntax error".error_style}
 #{"[*]: please correct the pubspec.yaml file at #{pubspec_file_path}".tips_style}
         MESSAGE
