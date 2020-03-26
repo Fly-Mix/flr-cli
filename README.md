@@ -15,6 +15,7 @@ Flr (Flutter-R) CLI: A Flutter Resource Manager CLI TooL, which can help flutter
 - Support `R.x` (such as`R.image.test()`, `R.svg.test(width: 100, height: 100)`, `R.txt.test_json()`) code struct 
 - Support for processing image assets ( `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.icon`, `.bmp`, `.wbmp`, `.svg` ) 
 - Support for processing text assets ( `.txt`, `.json`, `.yaml`, `.xml` ) 
+- Support for processing font assets ( `.ttf`, `.otf`, `.ttc`) 
 - Support for processing [image asset variants](https://flutter.dev/docs/development/ui/assets-and-images#asset-variants)
 - Support for processing asset which’s filename is bad:
    - filename has illegal character (such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters (`0-9`, `A-Z`, `a-z`, `_`, `+`, `-`, `.`, `·`,  `!`,  `@`,  `&`, `$`, `￥`)
