@@ -43,7 +43,7 @@ class R {
   /// This `R.text` struct is generated, and contains static references to static text asset resources.
   static const text = _R_Text();
 
-  /// This `R.fontFamily` struct is generated, and contains static references to static font resources.
+  /// This `R.fontFamily` struct is generated, and contains static references to static font asset resources.
   static const fontFamily = _R_FontFamily();
 }
       CODE
@@ -467,7 +467,7 @@ class _R_Text {
       end
 
       code = <<-CODE
-/// This `_R_FontFamily` class is generated and contains references to static font resources.
+/// This `_R_FontFamily` class is generated and contains references to static font asset resources.
 // ignore: camel_case_types
 class _R_FontFamily {
   const _R_FontFamily();
