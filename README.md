@@ -1,7 +1,6 @@
 # Flr CLI
 
-![ruby](https://img.shields.io/badge/language-ruby-orange.svg) [![Gem Version](https://badge.fury.io/rb/flr.svg)](https://rubygems.org/gems/flr) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![Gem Name](https://badgen.net/rubygems/n/flr)![Gem Download](https://img.shields.io/gem/dt/flr)![Gem Version](https://img.shields.io/gem/v/flr)](https://rubygems.org/gems/flr)
 
 Flr (Flutter-R) CLI: A Flutter Resource Manager CLI TooL, which can help flutter developer to auto specify assets in `pubspec.yaml` and generate `r.g.dart` file after he changes the flutter project assets. With `r.g.dart`,  flutter developer can apply the asset in code by referencing it's asset ID function.
 
