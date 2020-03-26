@@ -51,6 +51,8 @@
    ```yaml
    flr:
      core_version: 1.0.0
+     # config the line length for formatting r.g.dart
+     dartfmt_line_length: 80
      # config the image and text resource directories that need to be scanned
      assets:
        - lib/assets/images
