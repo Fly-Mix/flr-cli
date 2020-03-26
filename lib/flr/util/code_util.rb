@@ -44,7 +44,7 @@ class R {
   static const text = _R_Text();
 
   /// This `R.fontFamily` struct is generated, and contains static references to static font resources.
-  static const fontFamily = _R_Font_Family();
+  static const fontFamily = _R_FontFamily();
 }
       CODE
 
@@ -441,11 +441,11 @@ class _R_Text {
       return font_family_id
     end
 
-    # generate__R_Font_Family_class(font_family_config_array, package_name) -> string
+    # generate__R_FontFamily_class(font_family_config_array, package_name) -> string
     #
-    # 根据模板，为 font_family_config_array（字体家族配置数组）生成 _R_Font_Family class 的代码
+    # 根据模板，为 font_family_config_array（字体家族配置数组）生成 _R_FontFamily class 的代码
     #
-    def self.generate__R_Font_Family_class(font_family_config_array, package_name)
+    def self.generate__R_FontFamily_class(font_family_config_array, package_name)
 
       all_g_AssetResource_property_code = ""
 
@@ -467,10 +467,10 @@ class _R_Text {
       end
 
       code = <<-CODE
-/// This `_R_Font_Family` class is generated and contains references to static font resources.
+/// This `_R_FontFamily` class is generated and contains references to static font resources.
 // ignore: camel_case_types
-class _R_Font_Family {
-  const _R_Font_Family();
+class _R_FontFamily {
+  const _R_FontFamily();
 #{all_g_AssetResource_property_code}
 }
       CODE

@@ -529,7 +529,7 @@ module Flr
       # 遍历font_family_config数组，根据下面的模板生成_R_Font_Family类，追加写入r.g.dart。
 
       r_dart_file.puts("\n")
-      g__R_Font_Family_class_code = CodeUtil.generate__R_Font_Family_class(font_family_config_array, package_name)
+      g__R_Font_Family_class_code = CodeUtil.generate__R_FontFamily_class(font_family_config_array, package_name)
       r_dart_file.puts(g__R_Font_Family_class_code)
 
       # ----- Step-19 End -----
