@@ -1,10 +1,6 @@
-## Installation & Update
-
-To install or update Flr run `sudo gem install flr`
-
-## Uninstall
-
-To uninstall  Flr run `sudo gem uninstall flr`
+## 1.0.0
+- support for processing font assets ( `.ttf`, `.otf`, `.ttc`) 
+- improve robustness
 
 ## 0.2.2
 
