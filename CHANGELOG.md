@@ -1,6 +1,6 @@
 ## 1.0.0
-- support for processing font assets ( `.ttf`, `.otf`, `.ttc`) 
-- improve robustness
+- Support for processing font assets ( `.ttf`, `.otf`, `.ttc`) 
+- Improve robustness
 
 ## 0.2.2
 
