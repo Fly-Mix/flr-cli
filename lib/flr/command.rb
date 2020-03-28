@@ -71,6 +71,9 @@ module Flr
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
 
         pubspec_file_path = FileUtil.get_pubspec_file_path
+
+        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
+
       rescue Exception => e
         puts(e.message)
         return
@@ -84,8 +87,6 @@ module Flr
       # 添加 flr_config 和 r_dart_library 的依赖声明到 pubspec.yaml
       #
 
-      # 读取 pubspec.yaml，然后添加相关配置
-      pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
       dependencies = pubspec_config["dependencies"]
 
       # 添加 flr_config 到 pubspec.yaml
