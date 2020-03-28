@@ -87,7 +87,7 @@ module Flr
       # 添加 flr_config 和 r_dart_library 的依赖声明到 pubspec.yaml
       #
 
-      dependencies = pubspec_config["dependencies"]
+      dependencies_config = pubspec_config["dependencies"]
 
       # 添加 flr_config 到 pubspec.yaml
       #
@@ -114,9 +114,9 @@ module Flr
       #    ref: 0.1.1
       # ```
       r_dart_library_version = get_r_dart_library_version
-      r_dart_library_hash = Hash["git" => Hash["url" => "https://github.com/YK-Unit/r_dart_library.git", "ref" => r_dart_library_version]]
-      dependencies["r_dart_library"] = r_dart_library_hash
-      pubspec_config["dependencies"] = dependencies
+      r_dart_library_config = Hash["git" => Hash["url" => "https://github.com/YK-Unit/r_dart_library.git", "ref" => r_dart_library_version]]
+      dependencies_config["r_dart_library"] = r_dart_library_config
+      pubspec_config["dependencies"] = dependencies_config
 
       puts("add flr configuration into pubspec.yaml done!")
       puts("add dependency \"r_dart_library\"(https://github.com/YK-Unit/r_dart_library) into pubspec.yaml done!")
