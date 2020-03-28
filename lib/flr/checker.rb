@@ -137,6 +137,16 @@ module Flr
 
       legal_resource_dir_array = assets_legal_resource_dir_array + fonts_legal_resource_dir_array
       if legal_resource_dir_array.length <= 0
+
+        if illegal_resource_dir_array.length > 0
+          message = "[!]: warning, found the following resource directory which is not existed: ".warning_style
+          illegal_resource_dir_array.each do |resource_dir|
+            message = message + "\n" + "  - #{resource_dir}".warning_style
+          end
+          puts(message)
+          puts("")
+        end
+
         message = <<-MESSAGE
 #{"[x]: have no valid resource directories configuration in pubspec.yaml".error_style}
 #{"[*]: please manually configure the resource directories to fix it, for example: ".tips_style}
