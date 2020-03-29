@@ -49,12 +49,12 @@ To uninstall  Flr run `sudo gem uninstall flr`
     >
     > You can select the correct version of `r_dart_library` based on this [dependency relationship table](https://github.com/YK-Unit/r_dart_library#dependency-relationship-table).
     
-2. Open `pubspec.yaml` file, find the configuration item for `Flr`, and then configure the resource directory that needs to be scanned by `Flr`, such as:
+2. Open `pubspec.yaml` file, find the configuration item for `Flr`, and then configure the resource directories that needs to be scanned by `Flr` and configure the line length that is used to format `r.g.dart`, such as:
 
    ```yaml
    flr:
      core_version: 1.0.0
-     # config the line length for formatting r.g.dart
+     # config the line length that is used to format r.g.dart
      dartfmt_line_length: 80
      # config the image and text resource directories that need to be scanned
      assets:

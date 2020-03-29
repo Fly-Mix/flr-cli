@@ -46,7 +46,7 @@
     >
     >你可以根据这个[依赖版本关系表](https://github.com/YK-Unit/r_dart_library#dependency-relationship-table)来选择`r_dart_library`的正确版本。
     
-2. 打开`pubspec.yaml`文件，找到`Flr`的配置项，然后配置需要`Flr`扫描的资源目录路径，如：
+2. 打开`pubspec.yaml`文件，找到`Flr`的配置项，然后配置需要`Flr`扫描的资源目录路径以及配置用于格式化`r.g.dart`的行长，如：
 
    ```yaml
    flr:
