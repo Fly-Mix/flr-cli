@@ -32,3 +32,8 @@
 
 # IDEs
 .idea/
+
+# Local Pubspec Tests
+pubspec.yaml
+pubspec.lock
+.packages

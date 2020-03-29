@@ -1,21 +1,42 @@
+
+注意：录制前，请先还原pubspec.yaml
+---------------------------------------------
+
+Flr Usage Example
+
 ---------------------------------------------
 
 1. Run `flr init`
 
 ---------------------------------------------
 
-2. Edit pubspec.yaml to configure the asset directory paths
+2. Edit pubspec.yaml
+to configure the resource directory paths
 
 ---------------------------------------------
 
-3. Run `flr run --auto`
-
-
----------------------------------------------
-
-4. Add a new asset: 163.com.yaml
+3. Run `flr run`
 
 ---------------------------------------------
 
-5. Press `Ctrl-C` to terminate the monitoring service if you want
+One More Thing:
 
+If you want Flr to auto generate when you change Flutter asssets, 
+
+you can Run `flr run --auto` to launch a monitoring service.
+
+For example:
+
+---------------------------------------------
+
+1. Run `flr run --auto`
+
+---------------------------------------------
+
+2. Add a new asset:
+163.com.yaml
+
+---------------------------------------------
+
+3. Press `Ctrl-C` 
+to terminate the monitoring service if you want

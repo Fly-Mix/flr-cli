@@ -1,6 +1,7 @@
 require 'thor'
 require 'flr/version'
 require 'flr/command'
+require 'flr/string_extensions'
 
 module Flr
 
@@ -8,7 +9,7 @@ module Flr
 
     def self.help(shell, subcommand = false, display_introduction = true)
       introduction = <<-MESSAGE
-A CLI tool for flutter developer to auto specify assets and generate R class.
+A Flutter Resource Manager CLI TooL, which can help flutter developer to auto specify assets in pubspec.yaml and generate r.g.dart file after he changes the flutter project assets.
 More details see https://github.com/Fly-Mix/flr-cli
 
       MESSAGE
@@ -61,7 +62,7 @@ More details see https://github.com/Fly-Mix/flr-cli
     LONGDESC
     option :auto, :type => :boolean
     def run_command
-      options[:auto] ? Command.start_assert_monitor : Command.generate
+      options[:auto] ? Command.start_monitor : Command.generate
     end
 
     map 'run' => :run_command
