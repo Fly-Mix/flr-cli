@@ -283,6 +283,8 @@ Flr recommends the following flutter resource structure:
         message = <<-MESSAGE
 #{"[!]: warning, the core logic version of the configured Flr tool is #{flr_core_version}, while the core logic version of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
 #{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
+#{"[*]: to get the value of \"core_version\"(CoreLogic version), just run \"flr version\"".tips_style}
+
         MESSAGE
 
         warning_messages.push(message)
