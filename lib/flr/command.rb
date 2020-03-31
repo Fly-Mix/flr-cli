@@ -33,6 +33,49 @@ module Flr
       puts(version_desc)
     end
 
+    # display recommended flutter resource structure
+    def self.display_recommended_flutter_resource_structure
+      message = <<-MESSAGE
+Flr recommends the following flutter resource structure:
+
+  flutter_project_root_dir
+  ├── build
+  │   ├── ..
+  ├── lib
+  │   ├── assets
+  │   │   ├── \#{module}-images #{"// image resources root directory of a moudle".red}
+  │   │   │   ├── \#{main_image_asset}
+  │   │   │   ├── \#{variant-dir} #{"// image resources root directory of a variant".red}
+  │   │   │   │   ├── \#{image_asset_variant}
+  │   │   │   │   
+  │   │   ├── home-images #{"// image resources root directory of home module".red}
+  │   │   │   ├── home_icon.png
+  │   │   │   ├── home_badge.svg
+  │   │   │   ├── 3.0x #{"// image resources root directory of a 3.0x-ratio-variant".red}
+  │   │   │   │   ├── home_icon.png
+  │   │   │   │   
+  │   │   ├── texts #{"// text resources root directory".red}
+  │   │   │   │     #{"// (you can also break it down further by module)".red}
+  │   │   │   └── test.json
+  │   │   │   └── test.yaml
+  │   │   │   │     
+  │   │   ├── fonts #{"// font resources root directory of all font-family".red}
+  │   │   │   ├── \#{font-family} #{"// font resources root directory of a font-family".red}
+  │   │   │   │   ├── \#{font-family}-\#{font_weight_or_style}.ttf
+  │   │   │   │     
+  │   │   │   ├── Amiri #{"// font resources root directory of Amiri font-family".red}
+  │   │   │   │   ├── Amiri-Regular.ttf
+  │   │   │   │   ├── Amiri-Bold.ttf
+  │   │   │   │   ├── Amiri-Italic.ttf
+  │   │   │   │   ├── Amiri-BoldItalic.ttf
+  │   ├── ..
+  
+
+      MESSAGE
+
+      puts(message)
+    end
+
     # get the right version of r_dart_library package based on flutter's version
     # to get more detail, see https://github.com/YK-Unit/r_dart_library#dependency-relationship-table
     def self.get_r_dart_library_version
