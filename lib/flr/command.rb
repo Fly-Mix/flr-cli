@@ -27,7 +27,7 @@ module Flr
     # Listen Class Instance
     @@listener = nil
 
-    # show the version of flr
+    # display the version of flr
     def self.version
       version_desc = "Flr version #{Flr::VERSION}\nCoreLogic version #{Flr::CORE_VERSION}"
       puts(version_desc)
