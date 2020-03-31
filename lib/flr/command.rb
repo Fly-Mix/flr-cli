@@ -70,6 +70,19 @@ Flr recommends the following flutter resource structure:
   │   │   │   │   ├── Amiri-BoldItalic.ttf
   │   ├── ..
   
+#{"[*]: Then config the resource directories that need to be scanned as follows：".tips_style}
+
+    #{"flr:".tips_style}
+      #{"core_version: #{Flr::CORE_VERSION}".tips_style}
+      #{"dartfmt_line_length: #{Flr::DARTFMT_LINE_LENGTH}".tips_style}
+      #{"# config the image and text resource directories that need to be scanned".tips_style}
+      #{"assets:".tips_style}
+        #{"- lib/assets/moduleX-images".tips_style}
+        #{"- lib/assets/home-images".tips_style}
+        #{"- lib/assets/texts".tips_style}
+      #{"# config the font resource directories that need to be scanned".tips_style}
+      #{"fonts:".tips_style}
+        #{"- lib/assets/fonts".tips_style}
 
       MESSAGE
 
