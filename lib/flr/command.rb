@@ -227,7 +227,7 @@ Flr recommends the following flutter resource structure:
       puts("[√]: init done !!!")
 
       puts("")
-      puts("[*]: if you want to know how to make a good resource structure for your flutter project, you can run \"flr recommend\" ".tips_style)
+      puts("[*]: if you want to know how to make a good resource structure for your flutter project, please run \"flr recommend\" ".tips_style)
 
     end
 
