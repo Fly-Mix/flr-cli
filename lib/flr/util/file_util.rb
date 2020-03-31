@@ -124,6 +124,7 @@ module Flr
       # dir/*{.png.,.jpg} : 查找当前目录的指定类型文件
       # dir/*/*{.png.,.jpg}: 查找当前目录的第1级子目录的指定类型文件
       # dir/**/*{.png.,.jpg}:  查找当前目录和其所有子目录的指定类型文件
+      # v1.1.0: 放开图片资源扫描目录层级限制，以支持不标准的资源组织目录结构
       Dir.glob(["#{resource_dir}/**/*{#{pattern_file_types}}"]).each do |file|
         if is_legal_resource_file?(file)
           legal_image_file_array.push(file)
