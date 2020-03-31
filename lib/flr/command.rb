@@ -212,6 +212,10 @@ Flr recommends the following flutter resource structure:
       # ----- Step-4 End -----
 
       puts("[√]: init done !!!")
+
+      puts("")
+      puts("[*]: if you want to know how to make a good resource structure for your flutter project, you can run \"flr recommend\" ".tips_style)
+
     end
 
     # 扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
