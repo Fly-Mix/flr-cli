@@ -123,7 +123,8 @@ module Flr
       pattern_file_types = Flr::IMAGE_FILE_TYPES.join(",")
       # dir/*{.png.,.jpg} : 查找当前目录的指定类型文件
       # dir/*/*{.png.,.jpg}: 查找当前目录的第1级子目录的指定类型文件
-      Dir.glob(["#{resource_dir}/*{#{pattern_file_types}}", "#{resource_dir}/*/*{#{pattern_file_types}}"]).each do |file|
+      # dir/**/*{.png.,.jpg}:  查找当前目录和其所有子目录的指定类型文件
+      Dir.glob(["#{resource_dir}/**/*{#{pattern_file_types}}"]).each do |file|
         if is_legal_resource_file?(file)
           legal_image_file_array.push(file)
         else
