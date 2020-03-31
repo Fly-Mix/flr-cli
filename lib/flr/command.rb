@@ -281,7 +281,7 @@ Flr recommends the following flutter resource structure:
 
       if flr_core_version != Flr::CORE_VERSION
         message = <<-MESSAGE
-#{"[!]: warning, the core logic version of the configured Flr tool is #{flr_core_version}, while the core logic version of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
+#{"[!]: warning, the \"core_version\"(CoreLogic version) of the configured Flr tool is #{flr_core_version}, while the \"core_version\"(CoreLogic version) of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
 #{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
 #{"[*]: to get the value of \"core_version\"(CoreLogic version), just run \"flr version\"".tips_style}
 
