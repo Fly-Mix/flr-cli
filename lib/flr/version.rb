@@ -1,6 +1,6 @@
 module Flr
   # 工具版本号
-  VERSION = "1.0.0"
+  VERSION = "1.1.0"
 
   # 核心逻辑版本号
   CORE_VERSION = "1.0.0"

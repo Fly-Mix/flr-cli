@@ -27,10 +27,66 @@ module Flr
     # Listen Class Instance
     @@listener = nil
 
-    # show the version of flr
+    # display the version of flr
     def self.version
       version_desc = "Flr version #{Flr::VERSION}\nCoreLogic version #{Flr::CORE_VERSION}"
       puts(version_desc)
+    end
+
+    # display recommended flutter resource structure
+    def self.display_recommended_flutter_resource_structure
+      message = <<-MESSAGE
+Flr recommends the following flutter resource structure:
+
+  flutter_project_root_dir
+  ├── build
+  │   ├── ..
+  ├── lib
+  │   ├── assets
+  │   │   ├── \#{module}-images #{"// image resources root directory of a moudle".red}
+  │   │   │   ├── \#{main_image_asset}
+  │   │   │   ├── \#{variant-dir} #{"// image resources root directory of a variant".red}
+  │   │   │   │   ├── \#{image_asset_variant}
+  │   │   │   │   
+  │   │   ├── home-images #{"// image resources root directory of home module".red}
+  │   │   │   ├── home_icon.png
+  │   │   │   ├── home_badge.svg
+  │   │   │   ├── 3.0x #{"// image resources root directory of a 3.0x-ratio-variant".red}
+  │   │   │   │   ├── home_icon.png
+  │   │   │   │   
+  │   │   ├── texts #{"// text resources root directory".red}
+  │   │   │   │     #{"// (you can also break it down further by module)".red}
+  │   │   │   └── test.json
+  │   │   │   └── test.yaml
+  │   │   │   │     
+  │   │   ├── fonts #{"// font resources root directory of all font-family".red}
+  │   │   │   ├── \#{font-family} #{"// font resources root directory of a font-family".red}
+  │   │   │   │   ├── \#{font-family}-\#{font_weight_or_style}.ttf
+  │   │   │   │     
+  │   │   │   ├── Amiri #{"// font resources root directory of Amiri font-family".red}
+  │   │   │   │   ├── Amiri-Regular.ttf
+  │   │   │   │   ├── Amiri-Bold.ttf
+  │   │   │   │   ├── Amiri-Italic.ttf
+  │   │   │   │   ├── Amiri-BoldItalic.ttf
+  │   ├── ..
+  
+#{"[*]: Then config the resource directories that need to be scanned as follows：".tips_style}
+
+    #{"flr:".tips_style}
+      #{"core_version: #{Flr::CORE_VERSION}".tips_style}
+      #{"dartfmt_line_length: #{Flr::DARTFMT_LINE_LENGTH}".tips_style}
+      #{"# config the image and text resource directories that need to be scanned".tips_style}
+      #{"assets:".tips_style}
+        #{"- lib/assets/moduleX-images".tips_style}
+        #{"- lib/assets/home-images".tips_style}
+        #{"- lib/assets/texts".tips_style}
+      #{"# config the font resource directories that need to be scanned".tips_style}
+      #{"fonts:".tips_style}
+        #{"- lib/assets/fonts".tips_style}
+
+      MESSAGE
+
+      puts(message)
     end
 
     # get the right version of r_dart_library package based on flutter's version
@@ -169,6 +225,10 @@ module Flr
       # ----- Step-4 End -----
 
       puts("[√]: init done !!!")
+
+      puts("")
+      puts("[*]: if you want to know how to make a good resource structure for your flutter project, please run \"flr recommend\" ".tips_style)
+
     end
 
     # 扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
@@ -221,8 +281,10 @@ module Flr
 
       if flr_core_version != Flr::CORE_VERSION
         message = <<-MESSAGE
-#{"[!]: warning, the core logic version of the configured Flr tool is #{flr_core_version}, while the core logic version of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
+#{"[!]: warning, the \"core_version\"(CoreLogic version) of the configured Flr tool is #{flr_core_version}, while the \"core_version\"(CoreLogic version) of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
 #{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
+#{"[*]: to get the value of \"core_version\"(CoreLogic version), just run \"flr version\"".tips_style}
+
         MESSAGE
 
         warning_messages.push(message)

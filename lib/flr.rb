@@ -64,8 +64,16 @@ More details see https://github.com/Fly-Mix/flr-cli
     def run_command
       options[:auto] ? Command.start_monitor : Command.generate
     end
-
     map 'run' => :run_command
+
+    desc "recommend", "Display the recommended flutter resource structure"
+    long_desc <<-LONGDESC
+      Display the good flutter resource structure which is recommended by Flr.
+
+    LONGDESC
+    def recommend
+      Command.display_recommended_flutter_resource_structure
+    end
 
   end
 end
