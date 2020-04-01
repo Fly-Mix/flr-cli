@@ -1,4 +1,10 @@
+## 1.1.0
+
+- Improve generate-capability to support nonstandard image resource structure
+- Add recommend-capability to display the recommended flutter resource structure
+
 ## 1.0.0
+
 - Support for processing font assets ( `.ttf`, `.otf`, `.ttc`) 
 - Improve robustness
 
