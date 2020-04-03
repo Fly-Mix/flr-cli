@@ -271,7 +271,10 @@ Flr recommends the following flutter resource structure:
 
       # ----- Step-2 Begin -----
       # 进行核心逻辑版本检测：
-      # 检测Flr配置中的核心逻辑版本号和当前工具的核心逻辑版本号是否一致；若不一致，则生成“核心逻辑版本不一致”的警告日志，存放到警告日志数组
+      # 检测flr_config中的core_version和当前工具的core_version是否一致；若不一致，则按照以下规则处理：
+      #  - 更新flr_config中的core_version的值为当前工具的core_version；
+      #  - 生成“核心逻辑版本不一致”的警告日志，存放到警告日志数组。
+      #
 
       flr_core_version = flr_config["core_version"]
 
@@ -280,10 +283,12 @@ Flr recommends the following flutter resource structure:
       end
 
       if flr_core_version != Flr::CORE_VERSION
+        flr_config["core_version"] = Flr::CORE_VERSION
+
         message = <<-MESSAGE
-#{"[!]: warning, the \"core_version\"(CoreLogic version) of the configured Flr tool is #{flr_core_version}, while the \"core_version\"(CoreLogic version) of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
-#{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
-#{"[*]: to get the value of \"core_version\"(CoreLogic version), just run \"flr version\"".tips_style}
+#{"[!]: warning, some team members may be using Flr tool with core_version #{flr_core_version}, while you are using Flr tool with core_version #{Flr::CORE_VERSION}".warning_style}
+#{"[*]: to fix it, you and your team members should use the Flr tool with same core_version".tips_style}
+#{"[*]: \"core_version\" is the core logic version of Flr tool, you can run \"flr version\" to get it".tips_style}
 
         MESSAGE
 
