@@ -155,7 +155,39 @@ Flr recommends the following flutter resource structure:
       #  assets: []
       #  fonts: []
       # ```
-      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "dartfmt_line_length" => Flr::DARTFMT_LINE_LENGTH,  "assets" => [], "fonts" => []]
+      #
+
+      # 添加flr_conig到pubspec.yaml：检测当前是否存在flr_config；若不存在，则添加flr_config；若存在，则按照以下步骤处理：
+      #  - 读取dartfmt_line_length选项、assets选项和fonts选项的值（这些选项值若存在，则应用于新建的flr_config；需要注意，使用前需要判断选项值是否合法：dartfmt_line_length选项值 >=80；assets选项和fonts选项的值为数组）
+      #  - 新建flr_config，然后使用旧值或者默认值设置各个选项
+      #
+
+      dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+      flr_assets = []
+      flr_fonts = []
+
+      old_flr_config = pubspec_config["flr"]
+      if old_flr_config.is_a?(Hash)
+        dartfmt_line_length = old_flr_config["dartfmt_line_length"]
+        if dartfmt_line_length.nil? or dartfmt_line_length.is_a?(Integer) == false
+          dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+        end
+        if dartfmt_line_length < Flr::DARTFMT_LINE_LENGTH
+          dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+        end
+
+        flr_assets = old_flr_config["assets"]
+        if flr_assets.nil? or flr_assets.is_a?(Array) == false
+          flr_assets = []
+        end
+
+        flr_fonts = old_flr_config["fonts"]
+        if flr_fonts.nil? or flr_fonts.is_a?(Array) == false
+          flr_fonts = []
+        end
+      end
+
+      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "dartfmt_line_length" => dartfmt_line_length,  "assets" => flr_assets, "fonts" => flr_fonts]
       pubspec_config["flr"] = flr_config
 
       # 添加 r_dart_library（https://github.com/YK-Unit/r_dart_library）的依赖声明
