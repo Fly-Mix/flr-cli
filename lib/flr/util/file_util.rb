@@ -79,6 +79,61 @@ module Flr
       return true
     end
 
+    # 判断当前文件是不是非SVG类图片资源文件
+    def self.is_non_svg_image_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::NON_SVG_IMAGE_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是SVG类图片资源文件
+    def self.is_svg_image_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::SVG_IMAGE_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是图片资源文件
+    def self.is_image_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::IMAGE_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是文本资源文件
+    def self.is_text_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::TEXT_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是字体资源文件
+    def self.is_font_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::FONT_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
     # is_legal_resource_file??(file) -> true or false
     #
     # 判断当前资源文件是否合法

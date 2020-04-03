@@ -1,6 +1,10 @@
 module Flr
+  # Flr支持的非SVG类图片文件类型
+  NON_SVG_IMAGE_FILE_TYPES = %w(.png .jpg .jpeg .gif .webp .icon .bmp .wbmp)
+  # Flr支持的SVG类图片文件类型
+  SVG_IMAGE_FILE_TYPES = %w(.svg)
   # Flr支持的图片文件类型
-  IMAGE_FILE_TYPES = %w(.png .jpg .jpeg .gif .webp .icon .bmp .wbmp .svg)
+  IMAGE_FILE_TYPES = NON_SVG_IMAGE_FILE_TYPES + SVG_IMAGE_FILE_TYPES
   # Flr支持的文本文件类型
   TEXT_FILE_TYPES = %w(.txt .json .yaml .xml)
   # Flr支持的字体文件类型
