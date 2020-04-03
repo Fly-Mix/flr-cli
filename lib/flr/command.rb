@@ -319,16 +319,18 @@ Flr recommends the following flutter resource structure:
       puts("scan assets now ...")
 
       # ----- Step-4 Begin -----
-      # 扫描assets_legal_resource_dir数组中的legal_resource_dir，输出image_asset数组和illegal_image_file数组：
+      # 扫描assets_legal_resource_dir数组中的legal_resource_dir，输出有序的image_asset数组、non_svg_image_asset数组、svg_image_asset数组、illegal_image_file数组：
       # - 创建image_asset数组、illegal_image_file数组；
       # - 遍历assets_legal_resource_dir数组，按照如下处理每个资源目录：
-      #  - 扫描当前资源目录和其第1级的子目录，查找所有image_file；
+      #  - 扫描当前资源目录和其所有层级的子目录，查找所有image_file；
       #  - 根据legal_resource_file的标准，筛选查找结果生成legal_image_file子数组和illegal_image_file子数组；illegal_image_file子数组合并到illegal_image_file数组；
       #  - 根据image_asset的定义，遍历legal_image_file子数组，生成image_asset子数；组；image_asset子数组合并到image_asset数组。
       # - 对image_asset数组做去重处理；
       # - 按照字典顺序对image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
-      # - 输出image_asset数组和illegal_image_file数组。
-      #
+      # - 按照SVG分类，从image_asset数组筛选得到有序的non_svg_image_asset数组和svg_image_asset数组：
+      #  - 按照SVG分类，从image_asset数组筛选得到non_svg_image_asset数组和svg_image_asset数组；
+      #  - 按照字典顺序对non_svg_image_asset数组和svg_image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      # - 输出有序的image_asset数组、non_svg_image_asset数组、svg_image_asset数组、illegal_image_file数组。
 
       image_asset_array = []
       illegal_image_file_array = []
@@ -346,6 +348,22 @@ Flr recommends the following flutter resource structure:
 
       image_asset_array.uniq!
       image_asset_array.sort!
+
+      non_svg_image_asset_array = []
+      svg_image_asset_array = []
+
+      image_asset_array.each do |image_asset|
+        file_extname = File.extname(image_asset).downcase
+
+        if file_extname.eql?(".svg")
+          svg_image_asset_array.push(image_asset)
+        else
+          non_svg_image_asset_array.push(image_asset)
+        end
+      end
+
+      non_svg_image_asset_array.sort!
+      svg_image_asset_array.sort!
 
       # ----- Step-4 End -----
 
@@ -475,26 +493,31 @@ Flr recommends the following flutter resource structure:
       puts("specify scanned assets in pubspec.yaml done !!!")
 
       # ----- Step-9 Begin -----
-      # 按照SVG分类，从image_asset数组筛选得到有序的non_svg_image_asset数组和svg_image_asset数组：
-      #  - 按照SVG分类，从image_asset数组筛选得到non_svg_image_asset数组和svg_image_asset数组；
-      #  - 按照字典顺序对non_svg_image_asset数组和svg_image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      # 分别遍历non_svg_image_asset数组、svg_image_asset数组、text_asset数组，
+      # 根据asset_id生成算法，分别输出non_svg_image_asset_id字典、svg_image_asset_id 字典、text_asset_id字典。
+      # 字典的key为asset，value为asset_id。
       #
+      non_svg_image_asset_id_dict = Hash[]
+      svg_image_asset_id_dict = Hash[]
+      text_asset_id_dict = Hash[]
 
-      non_svg_image_asset_array = []
-      svg_image_asset_array = []
-
-      image_asset_array.each do |image_asset|
-        file_extname = File.extname(image_asset).downcase
-
-        if file_extname.eql?(".svg")
-          svg_image_asset_array.push(image_asset)
-        else
-          non_svg_image_asset_array.push(image_asset)
-        end
+      non_svg_image_asset_array.each do |asset|
+        used_asset_id_array = non_svg_image_asset_id_dict.values
+        asset_id = CodeUtil.generate_asset_id(asset, used_asset_id_array, Flr::PRIOR_NON_SVG_IMAGE_FILE_TYPE)
+        non_svg_image_asset_id_dict[asset] = asset_id
       end
 
-      non_svg_image_asset_array.sort!
-      svg_image_asset_array.sort!
+      svg_image_asset_array.each do |asset|
+        used_asset_id_array = svg_image_asset_id_dict.values
+        asset_id = CodeUtil.generate_asset_id(asset, used_asset_id_array, Flr::PRIOR_SVG_IMAGE_FILE_TYPE)
+        svg_image_asset_id_dict[asset] = asset_id
+      end
+
+      text_asset_array.each do |asset|
+        used_asset_id_array = text_asset_id_dict.values
+        asset_id = CodeUtil.generate_asset_id(asset, used_asset_id_array, Flr::PRIOR_TEXT_FILE_TYPE)
+        text_asset_id_dict[asset] = asset_id
+      end
 
       # ----- Step-9 End -----
 
@@ -533,7 +556,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, package_name)
+      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Image_AssetResource_class_code)
 
       # ----- Step-13 End -----
@@ -543,7 +566,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, package_name)
+      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict,  package_name)
       r_dart_file.puts(g__R_Svg_AssetResource_class_code)
 
       # ----- Step-14 End -----
@@ -553,7 +576,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, package_name)
+      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Text_AssetResource_class_code)
 
       # ----- Step-15 End -----
@@ -564,7 +587,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Image_class_code = CodeUtil.generate__R_Image_class(non_svg_image_asset_array, package_name)
+      g__R_Image_class_code = CodeUtil.generate__R_Image_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Image_class_code)
 
       # ----- Step-16 End -----
@@ -574,7 +597,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Svg_class_code = CodeUtil.generate__R_Svg_class(svg_image_asset_array, package_name)
+      g__R_Svg_class_code = CodeUtil.generate__R_Svg_class(svg_image_asset_array, svg_image_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Svg_class_code)
 
       # ----- Step-17 End -----
@@ -584,7 +607,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Text_class_code = CodeUtil.generate__R_Text_class(text_asset_array, package_name)
+      g__R_Text_class_code = CodeUtil.generate__R_Text_class(text_asset_array, text_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Text_class_code)
 
       # ----- Step-18 End -----
