@@ -88,17 +88,18 @@ flutter_project_root_dir
 │   ├── ..
 ├── lib
 │   ├── assets
-│   │   ├── #{module}-images // 某个模块的图片资源总目录
-│   │   │   ├── #{main_image_asset}
-│   │   │   ├── #{variant-dir} // 某个变体版本的图片资源总目录
-│   │   │   │   ├── #{image_asset_variant}
+│   │   ├── images // 所有模块的图片资源总目录
+│   │   │   ├── #{module} // 某个模块的图片资源总目录
+│   │   │   │   ├── #{main_image_asset}
+│   │   │   │   ├── #{variant-dir} // 某个变体版本的图片资源总目录
+│   │   │   │   │   ├── #{image_asset_variant}
 │   │   │   │
-│   │   ├── home-images // home模块的图片资源总目录
-│   │   │   ├── home_icon.png
-│   │   │   ├── home_badge.svg
-│   │   │   ├── 3.0x // 3.0倍分辨率版本的图片资源总目录
+│   │   │   ├── home // home模块的图片资源总目录
+│   │   │   │   ├── home_badge.svg
 │   │   │   │   ├── home_icon.png
-│   │   │   │
+│   │   │   │   ├── 3.0x // 3.0倍分辨率版本的图片资源总目录
+│   │   │   │   │   ├── home_icon.png
+│   │   │   │		
 │   │   ├── texts // 文本资源总目录
 │   │   │   │     // （你也可以根据模块进一步细分）
 │   │   │   └── test.json
