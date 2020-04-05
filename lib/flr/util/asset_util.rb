@@ -25,8 +25,8 @@ module Flr
         dirname = File.dirname(legal_resource_file)
         parent_dir_name = File.basename(dirname)
 
-        ratio_regx = /^((0\.[0-9]+)|([1-9]+[0-9]*\.?[0-9]+))[x]$/
-        if parent_dir_name =~ ratio_regx
+        ratio_regex = /^((0\.[0-9]+)|([1-9]+[0-9]*\.?[0-9]+))[x]$/
+        if parent_dir_name =~ ratio_regex
           return true
         end
       end
