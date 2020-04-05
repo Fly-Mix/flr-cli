@@ -392,11 +392,12 @@ Flr recommends the following flutter resource structure:
       image_asset_array.each do |image_asset|
         file_extname = File.extname(image_asset).downcase
 
-        if file_extname.eql?(".svg")
+        if FileUtil.is_svg_image_resource_file?(image_asset)
           svg_image_asset_array.push(image_asset)
         else
           non_svg_image_asset_array.push(image_asset)
         end
+
       end
 
       non_svg_image_asset_array.sort!
