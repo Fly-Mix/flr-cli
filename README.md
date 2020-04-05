@@ -108,7 +108,7 @@ flutter_project_root_dir
 │   │   │   └── test.json
 │   │   │   └── test.yaml
 │   │   │   │
-│   │   ├── fonts // font resource directory of all font-family
+│   │   ├── fonts // font resource directory of all font-families
 │   │   │   ├── #{font-family} // font resource directory of a font-family
 │   │   │   │   ├── #{font-family}-#{font_weight_or_style}.ttf
 │   │   │   │

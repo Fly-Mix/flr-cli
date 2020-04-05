@@ -60,7 +60,7 @@ Flr recommends the following flutter resource structure:
   │   │   │   └── test.json
   │   │   │   └── test.yaml
   │   │   │   │
-  │   │   ├── fonts #{"// font resource directory of all font-family".red}
+  │   │   ├── fonts #{"// font resource directory of all font-families".red}
   │   │   │   ├── \#{font-family} #{"// font resource directory of a font-family".red}
   │   │   │   │   ├── \#{font-family}-\#{font_weight_or_style}.ttf
   │   │   │   │
