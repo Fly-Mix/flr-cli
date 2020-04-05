@@ -16,7 +16,7 @@ module Flr
     #   资产变体映射的的资源文件要求存放在“与 main_asset 在同一个目录下的”、“符合指定特征的”子目录中；
     #   截止目前，Flutter只支持一种变体类型：倍率变体；
     #   倍率变体只适用于非SVG类图片资源；
-    #   倍率变体目录特征可使用此正则来判断：“^((0\.[0-9]+)|([1-9]+[0-9]*\.?[0-9]+))[x]$”；
+    #   倍率变体目录特征可使用此正则来判断：“^((0\.[0-9]+)|([1-9]+[0-9]*(\.[0-9]+)?))[x]$”；
     #   倍率变体目录名称示例：“0.5x”、“1.5x”、“2.0x”、“3.0x”，“2x”、“3x”；
     #
     def self.is_asset_variant?(legal_resource_file)
@@ -25,7 +25,7 @@ module Flr
         dirname = File.dirname(legal_resource_file)
         parent_dir_name = File.basename(dirname)
 
-        ratio_regex = /^((0\.[0-9]+)|([1-9]+[0-9]*\.?[0-9]+))[x]$/
+        ratio_regex = /^((0\.[0-9]+)|([1-9]+[0-9]*(\.[0-9]+)?))[x]$/
         if parent_dir_name =~ ratio_regex
           return true
         end
