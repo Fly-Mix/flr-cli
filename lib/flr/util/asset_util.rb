@@ -17,7 +17,7 @@ module Flr
     #   截止目前，Flutter只支持一种变体类型：倍率变体；
     #   倍率变体只适用于非SVG类图片资源；
     #   倍率变体目录特征可使用此正则来判断：“^((0\.[0-9]+)|([1-9]+[0-9]*\.?[0-9]+))[x]$”；
-    #   倍率变体目录名称示例：“2.0x”、“3.0x”，“3x”；
+    #   倍率变体目录名称示例：“0.5x”、“1.5x”、“2.0x”、“3.0x”，“2x”、“3x”；
     #
     def self.is_asset_variant?(legal_resource_file)
 
@@ -60,22 +60,28 @@ module Flr
     # main_asset = "packages/flutter_r_demo/fonts/Amiri/Amiri-Regular.ttf"
     #
     def self.generate_main_asset(legal_resource_file, package_name)
+      # legal_resource_file: lib/assets/images/3.0x/test.png
+      # to get main_asset_mapping_file: lib/assets/images/test.png
       main_asset_mapping_file = legal_resource_file
-
       if is_asset_variant?(legal_resource_file)
+        # test.png
         file_basename = File.basename(legal_resource_file)
-        dirname = File.dirname(legal_resource_file)
-        main_asset_mapping_file_dirname = File.dirname(dirname)
+        # lib/assets/images/3.0x
+        file_dir = File.dirname(legal_resource_file)
+        # lib/assets/images
+        main_asset_mapping_file_dir = File.dirname(file_dir)
 
-        main_asset_mapping_file = "#{main_asset_mapping_file_dirname}/#{file_basename}"
+        main_asset_mapping_file = "#{main_asset_mapping_file_dir}/#{file_basename}"
       end
 
+      # main_asset_mapping_file: lib/assets/images/test.png
+      # to get implied_resource_file: assets/images/test.png
       implied_resource_file = main_asset_mapping_file
       if implied_resource_file.include?("lib/")
         implied_resource_file = implied_resource_file.split("lib/")[1]
       end
-      main_asset = "packages/#{package_name}/#{implied_resource_file}"
 
+      main_asset = "packages/#{package_name}/#{implied_resource_file}"
       return main_asset
     end
 
