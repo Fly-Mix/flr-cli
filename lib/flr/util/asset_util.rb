@@ -39,7 +39,7 @@ module Flr
     # 为当前资源文件生成 main_asset
     #
     # === Examples
-    # flutter_dir = "~path/to/flutter_r_demo"
+    # flutter_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     #
     # === Example-1
@@ -96,7 +96,7 @@ module Flr
     # 遍历指定资源目录下扫描找到的legal_image_file数组生成image_asset数组
     #
     # === Examples
-    # flutter_dir = "~path/to/flutter_r_demo"
+    # flutter_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     # legal_image_file_array = ["~/path/to/flutter_r_demo/lib/assets/images/test.png", "~/path/to/flutter_r_demo/lib/assets/images/3.0x/test.png"]
     # image_asset_array = ["packages/flutter_r_demo/assets/images/test.png"]
@@ -119,7 +119,7 @@ module Flr
     # 遍历指定资源目录下扫描找到的legal_text_file数组生成text_asset数组
     #
     # === Examples
-    # flutter_dir = "~path/to/flutter_r_demo"
+    # flutter_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     # legal_text_file_array = ["~path/to/flutter_r_demo/lib/assets/jsons/test.json"]
     # text_asset_array = ["packages/flutter_r_demo/assets/jsons/test.json"]
@@ -142,7 +142,7 @@ module Flr
     # 遍历指定资源目录下扫描找到的legal_font_file数组生成font_asset_config数组
     #
     # === Examples
-    # flutter_dir = "~path/to/flutter_r_demo"
+    # flutter_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     # legal_font_file_array = ["~path/to/flutter_r_demo/lib/assets/fonts/Amiri/Amiri-Regular.ttf"]
     # font_asset_config_array -> [{"asset": "packages/flutter_r_demo/assets/fonts/Amiri/Amiri-Regular.ttf"}]

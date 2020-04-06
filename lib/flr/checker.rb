@@ -88,10 +88,10 @@ module Flr
     # 判断flr的assets配置合法的标准是：assets配置的resource_dir数组中的legal_resource_dir数量大于0。
     #
     # === Examples
-    # flutter_dir = "~path/to/flutter_r_demo"
-    # assets_legal_resource_dir_array = ["~path/to/flutter_r_demo/lib/assets/images", "~path/to/flutter_r_demo/lib/assets/texts"]
-    # fonts_legal_resource_dir_array = ["~path/to/flutter_r_demo/lib/assets/fonts"]
-    # illegal_resource_dir_array = ["~path/to/flutter_r_demo/to/non-existed_folder"]
+    # flutter_dir = "~/path/to/flutter_r_demo"
+    # assets_legal_resource_dir_array = ["~/path/to/flutter_r_demo/lib/assets/images", "~/path/to/flutter_r_demo/lib/assets/texts"]
+    # fonts_legal_resource_dir_array = ["~/path/to/flutter_r_demo/lib/assets/fonts"]
+    # illegal_resource_dir_array = ["~/path/to/flutter_r_demo/to/non-existed_folder"]
     #
     def self.check_flr_assets_is_legal(flutter_dir, flr_config)
       core_version = flr_config["core_version"]
