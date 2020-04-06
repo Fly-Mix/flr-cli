@@ -286,7 +286,7 @@ Flr recommends the following flutter resource structure:
 
         flr_config = pubspec_config["flr"]
 
-        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flutter_project_root_dir, flr_config)
 
       rescue Exception => e
         puts(e.message)
@@ -375,7 +375,7 @@ Flr recommends the following flutter resource structure:
 
         illegal_image_file_array += illegal_image_file_subarray
 
-        image_asset_subarray = AssetUtil.generate_image_assets(legal_image_file_subarray, resource_dir, package_name)
+        image_asset_subarray = AssetUtil.generate_image_assets(flutter_project_root_dir, package_name, legal_image_file_subarray)
         image_asset_array += image_asset_subarray
       end
 
@@ -423,7 +423,7 @@ Flr recommends the following flutter resource structure:
 
         illegal_text_file_array += illegal_text_file_subarray
 
-        text_asset_subarray = AssetUtil.generate_text_assets(legal_text_file_subarray, resource_dir, package_name)
+        text_asset_subarray = AssetUtil.generate_text_assets(flutter_project_root_dir, package_name, legal_text_file_subarray)
         text_asset_array += text_asset_subarray
       end
 
@@ -467,7 +467,7 @@ Flr recommends the following flutter resource structure:
             next
           end
 
-          font_asset_config_array = AssetUtil.generate_font_asset_configs(legal_font_file_array, font_family_dir, package_name)
+          font_asset_config_array = AssetUtil.generate_font_asset_configs(flutter_project_root_dir, package_name, legal_font_file_array)
           font_asset_config_array.sort!{|a, b| a["asset"] <=> b["asset"]}
 
           font_family_config =  Hash["family" => font_family_name , "fonts" => font_asset_config_array]
