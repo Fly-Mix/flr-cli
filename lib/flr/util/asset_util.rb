@@ -59,31 +59,32 @@ module Flr
     # main_asset = "packages/flutter_r_demo/fonts/Amiri/Amiri-Regular.ttf"
     #
     def self.generate_main_asset(flutter_dir, package_name, legal_resource_file)
-      #to get relative_legal_resource_file: lib/assets/images/3.0x/test.png
-      flutter_dir_prefix = "#{flutter_dir}/"
-      relative_legal_resource_file = legal_resource_file
-      if relative_legal_resource_file =~ /\A#{flutter_dir_prefix}/
-        relative_legal_resource_file["#{flutter_dir_prefix}"] = ""
-      end
-
-      # to get implied_relative_resource_file: assets/images/3.0x/test.png
-      lib_prefix = "lib/"
-      implied_relative_resource_file = relative_legal_resource_file;
-      if implied_relative_resource_file =~ /\A#{lib_prefix}/
-        implied_relative_resource_file[lib_prefix] = ""
-      end
-
-      # to get main_implied_relative_resource_file: assets/images/test.png
-      main_implied_relative_resource_file = implied_relative_resource_file
-      if is_asset_variant?(implied_relative_resource_file)
+      # legal_resource_file: ~/path/to/flutter_r_demo/lib/assets/images/3.0x/test.png
+      # to get main_resource_file: ~/path/to/flutter_r_demo/lib/assets/images/test.png
+      main_resource_file = legal_resource_file
+      if is_asset_variant?(legal_resource_file)
         # test.png
-        file_basename = File.basename(implied_relative_resource_file)
-        # assets/images/3.0x
-        file_dir = File.dirname(implied_relative_resource_file)
-        # assets/images
-        main_implied_relative_resource_file_dir = File.dirname(file_dir)
-        # assets/images/test.png
-        main_implied_relative_resource_file = "#{main_implied_relative_resource_file_dir}/#{file_basename}"
+        file_basename = File.basename(legal_resource_file)
+        # ~/path/to/flutter_r_demo/lib/assets/images/3.0x
+        file_dir = File.dirname(legal_resource_file)
+        # ~/path/to/flutter_r_demo/lib/assets/images
+        main_resource_file_dir = File.dirname(file_dir)
+        # ~/path/to/flutter_r_demo/lib/assets/images/test.png
+        main_resource_file = main_resource_file_dir + "/" + file_basename
+      end
+
+      # main_resource_file:  ~/path/to/flutter_r_demo/lib/assets/images/test.png
+      # main_relative_resource_file: lib/assets/images/test.png
+      # to get main_implied_relative_resource_file: assets/images/test.png
+      flutter_dir_prefix = "#{flutter_dir}/"
+      main_relative_resource_file = main_resource_file
+      if main_relative_resource_file =~ /\A#{flutter_dir_prefix}/
+        main_relative_resource_file["#{flutter_dir_prefix}"] = ""
+      end
+      lib_prefix = "lib/"
+      main_implied_relative_resource_file = main_relative_resource_file;
+      if main_implied_relative_resource_file =~ /\A#{lib_prefix}/
+        main_implied_relative_resource_file[lib_prefix] = ""
       end
 
       main_asset = "packages/#{package_name}/#{main_implied_relative_resource_file}"
