@@ -386,8 +386,6 @@ Flr recommends the following flutter resource structure:
       svg_image_asset_array = []
 
       image_asset_array.each do |image_asset|
-        file_extname = File.extname(image_asset).downcase
-
         if FileUtil.is_svg_image_resource_file?(image_asset)
           svg_image_asset_array.push(image_asset)
         else
