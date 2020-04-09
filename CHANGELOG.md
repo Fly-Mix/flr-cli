@@ -2,6 +2,7 @@
 
 - New asset generation algorithm to support all kinds of standard or nonstandard image/text resource structure
 - New asset-id generation algorithm to support assets with the same filename but different path
+- New recommended flutter resource structure
 
 ## 1.1.0
 
