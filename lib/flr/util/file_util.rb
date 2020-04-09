@@ -79,6 +79,61 @@ module Flr
       return true
     end
 
+    # 判断当前文件是不是非SVG类图片资源文件
+    def self.is_non_svg_image_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::NON_SVG_IMAGE_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是SVG类图片资源文件
+    def self.is_svg_image_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::SVG_IMAGE_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是图片资源文件
+    def self.is_image_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::IMAGE_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是文本资源文件
+    def self.is_text_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::TEXT_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
+    # 判断当前文件是不是字体资源文件
+    def self.is_font_resource_file?(file)
+      file_extname = File.extname(file).downcase
+
+      if Flr::FONT_FILE_TYPES.include?(file_extname)
+        return true;
+      end
+
+      return false
+    end
+
     # is_legal_resource_file??(file) -> true or false
     #
     # 判断当前资源文件是否合法
@@ -87,8 +142,8 @@ module Flr
     # 其file_basename_no_extension 由字母（a-z、A-Z）、数字（0-9）、其他合法字符（'_', '+', '-', '.', '·', '!', '@', '&', '$', '￥'）组成
     #
     # === Examples
-    # good_file = "lib/assets/images/test.png"
-    # bad_file = "lib/assets/images/~.png"
+    # good_file = "~/path/to/flutter_project/lib/assets/images/test.png"
+    # bad_file = "~/path/to/flutter_project/lib/assets/images/~.png"
     # is_legal_resource_file?(good_file) -> true
     # is_legal_resource_file?(bad_file) -> false
     #
@@ -105,26 +160,25 @@ module Flr
 
     # find_image_files(resource_dir)  ->  image_file_result_tuple
     #
-    # v1.0.0: 扫描指定的资源目录和其第1级子目录，查找所有图片文件
-    # v1.1.0: 放开图片资源扫描目录层级限制，以支持不标准的资源组织目录结构
+    # 扫描指定的资源目录和其所有层级的子目录，查找所有图片文件
     # 返回图片文件结果二元组 image_file_result_tuple
     # image_file_result_tuple = [legal_image_file_array, illegal_image_file_array]
     #
     # 判断文件合法的标准参考 self.is_legal_resource_file? 方法
     #
     # === Examples
-    # resource_dir = "lib/assets/images"
-    # legal_image_file_array = ["lib/assets/images/test.png", "lib/assets/images/2.0x/test.png"]
-    # illegal_image_file_array = ["lib/assets/images/~.png"]
+    # resource_dir = "~/path/to/flutter_project/lib/assets/images"
+    # legal_image_file_array = ["~/path/to/flutter_project/lib/assets/images/test.png", "~/path/to/flutter_project/lib/assets/images/2.0x/test.png"]
+    # illegal_image_file_array = ["~/path/to/flutter_project/lib/assets/images/~.png"]
     #
     def self.find_image_files(resource_dir)
       legal_image_file_array = []
       illegal_image_file_array = []
 
       pattern_file_types = Flr::IMAGE_FILE_TYPES.join(",")
-      # dir/*{.png.,.jpg} : 查找当前目录的指定类型文件
-      # dir/*/*{.png.,.jpg}: 查找当前目录的第1级子目录的指定类型文件
-      # dir/**/*{.png.,.jpg}:  查找当前目录和其所有子目录的指定类型文件
+      # dir/*{.png,.jpg} : 查找当前目录的指定类型文件
+      # dir/*/*{.png,.jpg}: 查找当前目录的第1级子目录的指定类型文件
+      # dir/**/*{.png,.jpg}:  查找当前目录和其所有子目录的指定类型文件
       Dir.glob(["#{resource_dir}/**/*{#{pattern_file_types}}"]).each do |file|
         if is_legal_resource_file?(file)
           legal_image_file_array.push(file)
@@ -146,9 +200,9 @@ module Flr
     # 判断文件合法的标准参考 self.is_legal_resource_file? 方法
     #
     # === Examples
-    # resource_dir = "lib/assets/jsons"
-    # legal_text_file_array = ["lib/assets/jsons/city.json", "lib/assets/jsons/mock/city.json"]
-    # illegal_text_file_array = ["lib/assets/jsons/~.json"]
+    # resource_dir = "~/path/to/flutter_project/lib/assets/jsons"
+    # legal_text_file_array = ["~/path/to/flutter_project/lib/assets/jsons/city.json", "~/path/to/flutter_project/lib/assets/jsons/mock/city.json"]
+    # illegal_text_file_array = ["~/path/to/flutter_project/lib/assets/jsons/~.json"]
     #
     def self.find_text_files(resource_dir)
       legal_text_file_array = []
@@ -173,7 +227,8 @@ module Flr
     # 扫描指定的资源目录，返回其所有第一级子目录
     #
     # === Examples
-    # top_child_dir_array = ["lib/assets/fonts/Amiri", "lib/assets/fonts/Open_Sans"]
+    # resource_dir = "~/path/to/flutter_project/lib/assets/fonts"
+    # top_child_dir_array = ["~/path/to/flutter_project/lib/assets/fonts/Amiri", "~/path/to/flutter_project/lib/assets/fonts/Open_Sans"]
     #
     def self.find_top_child_dirs(resource_dir)
       top_child_dir_array = []
@@ -196,9 +251,9 @@ module Flr
     # 判断文件合法的标准参考 self.is_legal_resource_file? 方法
     #
     # === Examples
-    # font_family_dir = "lib/assets/fonts/Amiri"
-    # legal_font_file_array = ["lib/assets/fonts/Amiri/Amiri-Regular.ttf", "lib/assets/fonts/Amiri/Amiri-Bold.ttf"]
-    # illegal_font_file_array = ["lib/assets/fonts/Amiri/~.ttf"]
+    # font_family_dir = "~/path/to/flutter_project/lib/assets/fonts/Amiri"
+    # legal_font_file_array = ["~/path/to/flutter_project/lib/assets/fonts/Amiri/Amiri-Regular.ttf", "~/path/to/flutter_project/lib/assets/fonts/Amiri/Amiri-Bold.ttf"]
+    # illegal_font_file_array = ["~/path/to/flutter_project/lib/assets/fonts/Amiri/~.ttf"]
     #
     def self.find_font_files_in_font_family_dir(font_family_dir)
       legal_font_file_array = []

@@ -43,46 +43,46 @@ Flr recommends the following flutter resource structure:
   │   ├── ..
   ├── lib
   │   ├── assets
-  │   │   ├── \#{module}-images #{"// image resources root directory of a moudle".red}
-  │   │   │   ├── \#{main_image_asset}
-  │   │   │   ├── \#{variant-dir} #{"// image resources root directory of a variant".red}
-  │   │   │   │   ├── \#{image_asset_variant}
-  │   │   │   │   
-  │   │   ├── home-images #{"// image resources root directory of home module".red}
-  │   │   │   ├── home_icon.png
-  │   │   │   ├── home_badge.svg
-  │   │   │   ├── 3.0x #{"// image resources root directory of a 3.0x-ratio-variant".red}
+  │   │   ├── images #{"// image resource directory of all modules".red}
+  │   │   │   ├── \#{module} #{"// image resource directory of a module".red}
+  │   │   │   │   ├── \#{main_image_asset}
+  │   │   │   │   ├── \#{variant-dir} #{"// image resource directory of a variant".red}
+  │   │   │   │   │   ├── \#{image_asset_variant}
+  │   │   │   │
+  │   │   │   ├── home #{"// image resource directory of home module".red}
+  │   │   │   │   ├── home_badge.svg
   │   │   │   │   ├── home_icon.png
-  │   │   │   │   
-  │   │   ├── texts #{"// text resources root directory".red}
+  │   │   │   │   ├── 3.0x #{"// image resource directory of a 3.0x-ratio-variant".red}
+  │   │   │   │   │   ├── home_icon.png
+  │   │   │   │		
+  │   │   ├── texts #{"// text resource directory".red}
   │   │   │   │     #{"// (you can also break it down further by module)".red}
   │   │   │   └── test.json
   │   │   │   └── test.yaml
-  │   │   │   │     
-  │   │   ├── fonts #{"// font resources root directory of all font-family".red}
-  │   │   │   ├── \#{font-family} #{"// font resources root directory of a font-family".red}
+  │   │   │   │
+  │   │   ├── fonts #{"// font resource directory of all font-families".red}
+  │   │   │   ├── \#{font-family} #{"// font resource directory of a font-family".red}
   │   │   │   │   ├── \#{font-family}-\#{font_weight_or_style}.ttf
-  │   │   │   │     
-  │   │   │   ├── Amiri #{"// font resources root directory of Amiri font-family".red}
+  │   │   │   │
+  │   │   │   ├── Amiri #{"// font resource directory of Amiri font-family".red}
   │   │   │   │   ├── Amiri-Regular.ttf
   │   │   │   │   ├── Amiri-Bold.ttf
   │   │   │   │   ├── Amiri-Italic.ttf
   │   │   │   │   ├── Amiri-BoldItalic.ttf
   │   ├── ..
-  
+
 #{"[*]: Then config the resource directories that need to be scanned as follows：".tips_style}
 
-    #{"flr:".tips_style}
-      #{"core_version: #{Flr::CORE_VERSION}".tips_style}
-      #{"dartfmt_line_length: #{Flr::DARTFMT_LINE_LENGTH}".tips_style}
-      #{"# config the image and text resource directories that need to be scanned".tips_style}
-      #{"assets:".tips_style}
-        #{"- lib/assets/moduleX-images".tips_style}
-        #{"- lib/assets/home-images".tips_style}
-        #{"- lib/assets/texts".tips_style}
-      #{"# config the font resource directories that need to be scanned".tips_style}
-      #{"fonts:".tips_style}
-        #{"- lib/assets/fonts".tips_style}
+  #{"flr:".tips_style}
+    #{"core_version: #{Flr::CORE_VERSION}".tips_style}
+    #{"dartfmt_line_length: #{Flr::DARTFMT_LINE_LENGTH}".tips_style}
+    #{"# config the image and text resource directories that need to be scanned".tips_style}
+    #{"assets:".tips_style}
+      #{"- lib/assets/images".tips_style}
+      #{"- lib/assets/texts".tips_style}
+    #{"# config the font resource directories that need to be scanned".tips_style}
+    #{"fonts:".tips_style}
+      #{"- lib/assets/fonts".tips_style}
 
       MESSAGE
 
@@ -145,7 +145,9 @@ Flr recommends the following flutter resource structure:
 
       dependencies_config = pubspec_config["dependencies"]
 
-      # 添加 flr_config 到 pubspec.yaml
+      # 添加flr_config到pubspec.yaml：检测当前是否存在flr_config；若不存在，则添加flr_config；若存在，则按照以下步骤处理：
+      #  - 读取dartfmt_line_length选项、assets选项和fonts选项的值（这些选项值若存在，则应用于新建的flr_config；需要注意，使用前需要判断选项值是否合法：dartfmt_line_length选项值 >=80；assets选项和fonts选项的值为数组）
+      #  - 新建flr_config，然后使用旧值或者默认值设置各个选项
       #
       # flr_config: Flr的配置信息
       # ```yaml
@@ -155,7 +157,33 @@ Flr recommends the following flutter resource structure:
       #  assets: []
       #  fonts: []
       # ```
-      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "dartfmt_line_length" => Flr::DARTFMT_LINE_LENGTH,  "assets" => [], "fonts" => []]
+
+      dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+      asset_resource_dir_array = []
+      font_resource_dir_array = []
+
+      old_flr_config = pubspec_config["flr"]
+      if old_flr_config.is_a?(Hash)
+        dartfmt_line_length = old_flr_config["dartfmt_line_length"]
+        if dartfmt_line_length.nil? or dartfmt_line_length.is_a?(Integer) == false
+          dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+        end
+        if dartfmt_line_length < Flr::DARTFMT_LINE_LENGTH
+          dartfmt_line_length = Flr::DARTFMT_LINE_LENGTH
+        end
+
+        asset_resource_dir_array = old_flr_config["assets"]
+        if asset_resource_dir_array.nil? or asset_resource_dir_array.is_a?(Array) == false
+          asset_resource_dir_array = []
+        end
+
+        font_resource_dir_array = old_flr_config["fonts"]
+        if font_resource_dir_array.nil? or font_resource_dir_array.is_a?(Array) == false
+          font_resource_dir_array = []
+        end
+      end
+
+      flr_config = Hash["core_version" => "#{Flr::CORE_VERSION}", "dartfmt_line_length" => dartfmt_line_length,  "assets" => asset_resource_dir_array, "fonts" => font_resource_dir_array]
       pubspec_config["flr"] = flr_config
 
       # 添加 r_dart_library（https://github.com/YK-Unit/r_dart_library）的依赖声明
@@ -258,7 +286,7 @@ Flr recommends the following flutter resource structure:
 
         flr_config = pubspec_config["flr"]
 
-        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flutter_project_root_dir, flr_config)
 
       rescue Exception => e
         puts(e.message)
@@ -271,7 +299,10 @@ Flr recommends the following flutter resource structure:
 
       # ----- Step-2 Begin -----
       # 进行核心逻辑版本检测：
-      # 检测Flr配置中的核心逻辑版本号和当前工具的核心逻辑版本号是否一致；若不一致，则生成“核心逻辑版本不一致”的警告日志，存放到警告日志数组
+      # 检测flr_config中的core_version和当前工具的core_version是否一致；若不一致，则按照以下规则处理：
+      #  - 更新flr_config中的core_version的值为当前工具的core_version；
+      #  - 生成“核心逻辑版本不一致”的警告日志，存放到警告日志数组。
+      #
 
       flr_core_version = flr_config["core_version"]
 
@@ -280,10 +311,12 @@ Flr recommends the following flutter resource structure:
       end
 
       if flr_core_version != Flr::CORE_VERSION
+        flr_config["core_version"] = Flr::CORE_VERSION
+
         message = <<-MESSAGE
-#{"[!]: warning, the \"core_version\"(CoreLogic version) of the configured Flr tool is #{flr_core_version}, while the \"core_version\"(CoreLogic version) of the currently used Flr tool is #{Flr::CORE_VERSION}".warning_style}
-#{"[*]: to fix it, you should make sure that the core logic version of the Flr tool you are currently using is consistent with the configuration".tips_style}
-#{"[*]: to get the value of \"core_version\"(CoreLogic version), just run \"flr version\"".tips_style}
+#{"[!]: warning, some team members may be using Flr tool with core_version #{flr_core_version}, while you are using Flr tool with core_version #{Flr::CORE_VERSION}".warning_style}
+#{"[*]: to fix it, you and your team members should use the Flr tool with same core_version".tips_style}
+#{"[*]: \"core_version\" is the core logic version of Flr tool, you can run \"flr version\" to get it".tips_style}
 
         MESSAGE
 
@@ -319,16 +352,18 @@ Flr recommends the following flutter resource structure:
       puts("scan assets now ...")
 
       # ----- Step-4 Begin -----
-      # 扫描assets_legal_resource_dir数组中的legal_resource_dir，输出image_asset数组和illegal_image_file数组：
+      # 扫描assets_legal_resource_dir数组中的legal_resource_dir，输出有序的image_asset数组、non_svg_image_asset数组、svg_image_asset数组、illegal_image_file数组：
       # - 创建image_asset数组、illegal_image_file数组；
       # - 遍历assets_legal_resource_dir数组，按照如下处理每个资源目录：
-      #  - 扫描当前资源目录和其第1级的子目录，查找所有image_file；
+      #  - 扫描当前资源目录和其所有层级的子目录，查找所有image_file；
       #  - 根据legal_resource_file的标准，筛选查找结果生成legal_image_file子数组和illegal_image_file子数组；illegal_image_file子数组合并到illegal_image_file数组；
       #  - 根据image_asset的定义，遍历legal_image_file子数组，生成image_asset子数；组；image_asset子数组合并到image_asset数组。
       # - 对image_asset数组做去重处理；
       # - 按照字典顺序对image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
-      # - 输出image_asset数组和illegal_image_file数组。
-      #
+      # - 按照SVG分类，从image_asset数组筛选得到有序的non_svg_image_asset数组和svg_image_asset数组：
+      #  - 按照SVG分类，从image_asset数组筛选得到non_svg_image_asset数组和svg_image_asset数组；
+      #  - 按照字典顺序对non_svg_image_asset数组和svg_image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      # - 输出有序的image_asset数组、non_svg_image_asset数组、svg_image_asset数组、illegal_image_file数组。
 
       image_asset_array = []
       illegal_image_file_array = []
@@ -340,12 +375,27 @@ Flr recommends the following flutter resource structure:
 
         illegal_image_file_array += illegal_image_file_subarray
 
-        image_asset_subarray = AssetUtil.generate_image_assets(legal_image_file_subarray, resource_dir, package_name)
+        image_asset_subarray = AssetUtil.generate_image_assets(flutter_project_root_dir, package_name, legal_image_file_subarray)
         image_asset_array += image_asset_subarray
       end
 
       image_asset_array.uniq!
       image_asset_array.sort!
+
+      non_svg_image_asset_array = []
+      svg_image_asset_array = []
+
+      image_asset_array.each do |image_asset|
+        if FileUtil.is_svg_image_resource_file?(image_asset)
+          svg_image_asset_array.push(image_asset)
+        else
+          non_svg_image_asset_array.push(image_asset)
+        end
+
+      end
+
+      non_svg_image_asset_array.sort!
+      svg_image_asset_array.sort!
 
       # ----- Step-4 End -----
 
@@ -371,7 +421,7 @@ Flr recommends the following flutter resource structure:
 
         illegal_text_file_array += illegal_text_file_subarray
 
-        text_asset_subarray = AssetUtil.generate_text_assets(legal_text_file_subarray, resource_dir, package_name)
+        text_asset_subarray = AssetUtil.generate_text_assets(flutter_project_root_dir, package_name, legal_text_file_subarray)
         text_asset_array += text_asset_subarray
       end
 
@@ -415,7 +465,7 @@ Flr recommends the following flutter resource structure:
             next
           end
 
-          font_asset_config_array = AssetUtil.generate_font_asset_configs(legal_font_file_array, font_family_dir, package_name)
+          font_asset_config_array = AssetUtil.generate_font_asset_configs(flutter_project_root_dir, package_name, legal_font_file_array)
           font_asset_config_array.sort!{|a, b| a["asset"] <=> b["asset"]}
 
           font_family_config =  Hash["family" => font_family_name , "fonts" => font_asset_config_array]
@@ -475,26 +525,31 @@ Flr recommends the following flutter resource structure:
       puts("specify scanned assets in pubspec.yaml done !!!")
 
       # ----- Step-9 Begin -----
-      # 按照SVG分类，从image_asset数组筛选得到有序的non_svg_image_asset数组和svg_image_asset数组：
-      #  - 按照SVG分类，从image_asset数组筛选得到non_svg_image_asset数组和svg_image_asset数组；
-      #  - 按照字典顺序对non_svg_image_asset数组和svg_image_asset数组做升序排列（一般使用开发语言提供的默认的sort算法即可）；
+      # 分别遍历non_svg_image_asset数组、svg_image_asset数组、text_asset数组，
+      # 根据asset_id生成算法，分别输出non_svg_image_asset_id字典、svg_image_asset_id 字典、text_asset_id字典。
+      # 字典的key为asset，value为asset_id。
       #
+      non_svg_image_asset_id_dict = Hash[]
+      svg_image_asset_id_dict = Hash[]
+      text_asset_id_dict = Hash[]
 
-      non_svg_image_asset_array = []
-      svg_image_asset_array = []
-
-      image_asset_array.each do |image_asset|
-        file_extname = File.extname(image_asset).downcase
-
-        if file_extname.eql?(".svg")
-          svg_image_asset_array.push(image_asset)
-        else
-          non_svg_image_asset_array.push(image_asset)
-        end
+      non_svg_image_asset_array.each do |asset|
+        used_asset_id_array = non_svg_image_asset_id_dict.values
+        asset_id = CodeUtil.generate_asset_id(asset, used_asset_id_array, Flr::PRIOR_NON_SVG_IMAGE_FILE_TYPE)
+        non_svg_image_asset_id_dict[asset] = asset_id
       end
 
-      non_svg_image_asset_array.sort!
-      svg_image_asset_array.sort!
+      svg_image_asset_array.each do |asset|
+        used_asset_id_array = svg_image_asset_id_dict.values
+        asset_id = CodeUtil.generate_asset_id(asset, used_asset_id_array, Flr::PRIOR_SVG_IMAGE_FILE_TYPE)
+        svg_image_asset_id_dict[asset] = asset_id
+      end
+
+      text_asset_array.each do |asset|
+        used_asset_id_array = text_asset_id_dict.values
+        asset_id = CodeUtil.generate_asset_id(asset, used_asset_id_array, Flr::PRIOR_TEXT_FILE_TYPE)
+        text_asset_id_dict[asset] = asset_id
+      end
 
       # ----- Step-9 End -----
 
@@ -533,7 +588,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, package_name)
+      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Image_AssetResource_class_code)
 
       # ----- Step-13 End -----
@@ -543,7 +598,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, package_name)
+      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict,  package_name)
       r_dart_file.puts(g__R_Svg_AssetResource_class_code)
 
       # ----- Step-14 End -----
@@ -553,7 +608,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, package_name)
+      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Text_AssetResource_class_code)
 
       # ----- Step-15 End -----
@@ -564,7 +619,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Image_class_code = CodeUtil.generate__R_Image_class(non_svg_image_asset_array, package_name)
+      g__R_Image_class_code = CodeUtil.generate__R_Image_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Image_class_code)
 
       # ----- Step-16 End -----
@@ -574,7 +629,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Svg_class_code = CodeUtil.generate__R_Svg_class(svg_image_asset_array, package_name)
+      g__R_Svg_class_code = CodeUtil.generate__R_Svg_class(svg_image_asset_array, svg_image_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Svg_class_code)
 
       # ----- Step-17 End -----
@@ -584,7 +639,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Text_class_code = CodeUtil.generate__R_Text_class(text_asset_array, package_name)
+      g__R_Text_class_code = CodeUtil.generate__R_Text_class(text_asset_array, text_asset_id_dict, package_name)
       r_dart_file.puts(g__R_Text_class_code)
 
       # ----- Step-18 End -----
@@ -679,7 +734,7 @@ Flr recommends the following flutter resource structure:
 
         flr_config = pubspec_config["flr"]
 
-        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flutter_project_root_dir, flr_config)
 
       rescue Exception => e
         puts(e.message)

@@ -12,7 +12,7 @@ module Flr
     #
     # === Examples
     #
-    # flutter_dir = "~/path/to/flutter_project/pubspec.yaml"
+    # flutter_dir = "~path/to/flutter_r_demo"
     # Checker.check_pubspec_file_is_existed(flutter_dir)
     #
     def self.check_pubspec_file_is_existed(flutter_dir)
@@ -63,7 +63,7 @@ module Flr
       return true
     end
 
-    # check_flr_assets_is_legal(flr_config)  ->  resource_dir_result_tuple
+    # check_flr_assets_is_legal(flutter_dir, flr_config)  ->  resource_dir_result_tuple
     #
     # 检测当前flr配置信息中的assets配置是否合法
     # 若合法，返回资源目录结果三元组 resource_dir_result_triplet
@@ -88,11 +88,12 @@ module Flr
     # 判断flr的assets配置合法的标准是：assets配置的resource_dir数组中的legal_resource_dir数量大于0。
     #
     # === Examples
-    # assets_legal_resource_dir_array = ["lib/assets/images", "lib/assets/texts"]
-    # fonts_legal_resource_dir_array = ["lib/assets/fonts"]
-    # illegal_resource_dir_array = ["wrong/path/to/non-existed_folder"]
+    # flutter_dir = "~/path/to/flutter_r_demo"
+    # assets_legal_resource_dir_array = ["~/path/to/flutter_r_demo/lib/assets/images", "~/path/to/flutter_r_demo/lib/assets/texts"]
+    # fonts_legal_resource_dir_array = ["~/path/to/flutter_r_demo/lib/assets/fonts"]
+    # illegal_resource_dir_array = ["~/path/to/flutter_r_demo/to/non-existed_folder"]
     #
-    def self.check_flr_assets_is_legal(flr_config)
+    def self.check_flr_assets_is_legal(flutter_dir, flr_config)
       core_version = flr_config["core_version"]
       dartfmt_line_length = flr_config["dartfmt_line_length"]
       assets_resource_dir_array = flr_config["assets"]
@@ -119,7 +120,8 @@ module Flr
       fonts_legal_resource_dir_array = []
       illegal_resource_dir_array = []
 
-      assets_resource_dir_array.each do |resource_dir|
+      assets_resource_dir_array.each do |relative_resource_dir|
+        resource_dir = flutter_dir + "/" + relative_resource_dir
         if File.exist?(resource_dir) == true
           assets_legal_resource_dir_array.push(resource_dir)
         else
@@ -127,7 +129,8 @@ module Flr
         end
       end
 
-      fonts_resource_dir_array.each do |resource_dir|
+      fonts_resource_dir_array.each do |relative_resource_dir|
+        resource_dir = flutter_dir + "/" + relative_resource_dir
         if File.exist?(resource_dir) == true
           fonts_legal_resource_dir_array.push(resource_dir)
         else

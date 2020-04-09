@@ -21,6 +21,7 @@ Flr (Flutter-R) CLI: A Flutter Resource Manager CLI TooL, which can help flutter
    - filename has illegal character (such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters (`0-9`, `A-Z`, `a-z`, `_`, `+`, `-`, `.`, `·`,  `!`,  `@`,  `&`, `$`, `￥`)
    - filename begins with a number or character `_`  or character`$`
    
+- Support for processing assets with the same filename but different path
 
 ## Install & Update Flr CLI
 
@@ -91,32 +92,34 @@ flutter_project_root_dir
 │   ├── ..
 ├── lib
 │   ├── assets
-│   │   ├── #{module}-images // image resources root directory of a moudle
-│   │   │   ├── #{main_image_asset}
-│   │   │   ├── #{variant-dir} // image resources root directory of a variant
-│   │   │   │   ├── #{image_asset_variant}
+│   │   ├── images // image resource directory of all modules
+│   │   │   ├── #{module} // image resource directory of a module
+│   │   │   │   ├── #{main_image_asset}
+│   │   │   │   ├── #{variant-dir} // image resource directory of a variant
+│   │   │   │   │   ├── #{image_asset_variant}
 │   │   │   │
-│   │   ├── home-images // image resources root directory of home module
-│   │   │   ├── home_icon.png
-│   │   │   ├── home_badge.svg
-│   │   │   ├── 3.0x // image resources root directory of a 3.0x-ratio-variant
+│   │   │   ├── home // image resource directory of home module
+│   │   │   │   ├── home_badge.svg
 │   │   │   │   ├── home_icon.png
-│   │   │   │
-│   │   ├── texts // text resources root directory
+│   │   │   │   ├── 3.0x // image resource directory of a 3.0x-ratio-variant
+│   │   │   │   │   ├── home_icon.png
+│   │   │   │		
+│   │   ├── texts // text resource directory
 │   │   │   │     // (you can also break it down further by module)
 │   │   │   └── test.json
 │   │   │   └── test.yaml
 │   │   │   │
-│   │   ├── fonts // font resources root directory of all font-family
-│   │   │   ├── #{font-family} // font resources root directory of a font-family
+│   │   ├── fonts // font resource directory of all font-families
+│   │   │   ├── #{font-family} // font resource directory of a font-family
 │   │   │   │   ├── #{font-family}-#{font_weight_or_style}.ttf
 │   │   │   │
-│   │   │   ├── Amiri // font resources root directory of Amiri font-family
+│   │   │   ├── Amiri // font resource directory of Amiri font-family
 │   │   │   │   ├── Amiri-Regular.ttf
 │   │   │   │   ├── Amiri-Bold.ttf
 │   │   │   │   ├── Amiri-Italic.ttf
 │   │   │   │   ├── Amiri-BoldItalic.ttf
 │   ├── ..
+
 ```
 
 
