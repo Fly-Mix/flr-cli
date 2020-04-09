@@ -734,7 +734,7 @@ Flr recommends the following flutter resource structure:
 
         flr_config = pubspec_config["flr"]
 
-        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flr_config)
+        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flutter_project_root_dir, flr_config)
 
       rescue Exception => e
         puts(e.message)
