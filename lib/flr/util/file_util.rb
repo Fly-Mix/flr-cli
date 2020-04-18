@@ -15,6 +15,43 @@ module Flr
       return flutter_project_root_dir
     end
 
+    # is_package_project_type?(flutter_project_dir) -> true or false
+    #
+    # 当前flutter工程的工程类型是不是package类型
+    #
+    # flutter工程共有4种工程类型：
+    # - app：Flutter App工程，用于开发纯Flutter的App
+    # - module：Flutter Component工程，用于开发Flutter组件以嵌入iOS和Android原生工程
+    # - package：General Dart Package工程，用于开发一个供应用层开发者使用的包
+    # - plugin：Plugin Package工程（属于特殊的Dart Package工程），用于开发一个调用特定平台API的包
+    #
+    # flutter工程的工程类型可从flutter工程目录的 .metadata 文件中读取获得
+    #
+    def self.is_package_project_type?(flutter_project_dir)
+      metadata_file_path = flutter_project_dir + "/.metadata"
+      begin
+        metadata_file = File.open(metadata_file_path, 'r')
+        metadata_config = YAML.load(metadata_file)
+        project_type = metadata_config["project_type"]
+        if project_type.nil?
+          project_type = "unknown"
+        end
+        project_type = project_type.downcase
+
+        if project_type == "package" || project_type == "plugin"
+          return true
+        end
+
+      rescue YAML::SyntaxError => e
+        puts("YAML Syntax Error: #{e}".error_style)
+        puts("")
+      ensure
+        metadata_file.close
+      end
+
+      return false
+    end
+
     # get_pubspec_file_path(flutter_project_dir) -> String
     #
     # 获取当前flutter工程的pubspec.yaml文件的路径
