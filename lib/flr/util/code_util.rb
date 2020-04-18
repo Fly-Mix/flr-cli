@@ -291,7 +291,7 @@ class AssetResource {
 
       non_svg_image_asset_array.each do |image_asset|
         all_g_AssetResource_property_code += "\n"
-        g_AssetResource_property_code = generate_AssetResource_property(image_asset, non_svg_image_asset_id_dict, package_name, Flr::PRIOR_NON_SVG_IMAGE_FILE_TYPE)
+        g_AssetResource_property_code = generate_AssetResource_property(image_asset, non_svg_image_asset_id_dict, package_name, is_package_project_type, Flr::PRIOR_NON_SVG_IMAGE_FILE_TYPE)
         all_g_AssetResource_property_code += g_AssetResource_property_code
       end
 
@@ -316,7 +316,7 @@ class _R_Image_AssetResource {
 
       svg_image_asset_array.each do |image_asset|
         all_g_AssetResource_property_code += "\n"
-        g_AssetResource_property_code = generate_AssetResource_property(image_asset, svg_image_asset_id_dict, package_name, Flr::PRIOR_SVG_IMAGE_FILE_TYPE)
+        g_AssetResource_property_code = generate_AssetResource_property(image_asset, svg_image_asset_id_dict, package_name, is_package_project_type, Flr::PRIOR_SVG_IMAGE_FILE_TYPE)
         all_g_AssetResource_property_code += g_AssetResource_property_code
       end
 
@@ -341,7 +341,7 @@ class _R_Svg_AssetResource {
 
       text_asset_array.each do |text_asset|
         all_g_AssetResource_property_code += "\n"
-        g_AssetResource_property_code = generate_AssetResource_property(text_asset, text_asset_id_dict, package_name, Flr::PRIOR_TEXT_FILE_TYPE)
+        g_AssetResource_property_code = generate_AssetResource_property(text_asset, text_asset_id_dict, package_name, is_package_project_type, Flr::PRIOR_TEXT_FILE_TYPE)
         all_g_AssetResource_property_code += g_AssetResource_property_code
       end
 
