@@ -29,6 +29,11 @@ module Flr
     #
     def self.is_package_project_type?(flutter_project_dir)
       metadata_file_path = flutter_project_dir + "/.metadata"
+      
+      if File.exist?(metadata_file_path) == false
+        return false
+      end
+
       begin
         metadata_file = File.open(metadata_file_path, 'r')
         metadata_config = YAML.load(metadata_file)
