@@ -234,7 +234,7 @@ class AssetResource {
 
     end
 
-    # generate_AssetResource_property(asset, asset_id_dict, package_name, prior_asset_type) -> string
+    # generate_AssetResource_property(asset, asset_id_dict, package_name, is_package_project_type, prior_asset_type) -> string
     #
     # 为当前 asset 生成 AssetResource property 的代码
     #
@@ -281,11 +281,11 @@ class AssetResource {
       end
     end
 
-    # generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name) -> string
+    # generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name, is_package_project_type) -> string
     #
     # 根据模板，为 non_svg_image_asset_array（非svg类的图片资产数组）生成 _R_Image_AssetResource class 的代码
     #
-    def self.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
+    def self.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name, is_package_project_type)
 
       all_g_AssetResource_property_code = ""
 
@@ -306,11 +306,11 @@ class _R_Image_AssetResource {
       return code
     end
 
-    # generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name) -> string
+    # generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name, is_package_project_type) -> string
     #
     # 根据模板，为 svg_image_asset_array（svg类的图片资产数组）生成 _R_Svg_AssetResource class 的代码
     #
-    def self.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name)
+    def self.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name, is_package_project_type)
 
       all_g_AssetResource_property_code = ""
 
@@ -331,11 +331,11 @@ class _R_Svg_AssetResource {
       return code
     end
 
-    # generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name) -> string
+    # generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name, is_package_project_typ) -> string
     #
     # 根据模板，为 text_asset_array（文本资产数组）生成 _R_Text_AssetResource class 的代码
     #
-    def self.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name)
+    def self.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name, is_package_project_type)
 
       all_g_AssetResource_property_code = ""
 

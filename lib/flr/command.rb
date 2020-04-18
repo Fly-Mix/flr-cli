@@ -589,7 +589,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
+      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name, is_package_project_type)
       r_dart_file.puts(g__R_Image_AssetResource_class_code)
 
       # ----- Step-13 End -----
@@ -599,7 +599,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict,  package_name)
+      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict,  package_name, is_package_project_type)
       r_dart_file.puts(g__R_Svg_AssetResource_class_code)
 
       # ----- Step-14 End -----
@@ -609,7 +609,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name)
+      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name, is_package_project_type)
       r_dart_file.puts(g__R_Text_AssetResource_class_code)
 
       # ----- Step-15 End -----
