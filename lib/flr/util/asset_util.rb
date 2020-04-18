@@ -58,6 +58,14 @@ module Flr
     # legal_resource_file = "~/path/to/flutter_r_demo/lib/assets/fonts/Amiri/Amiri-Regular.ttf"
     # main_asset = "packages/flutter_r_demo/fonts/Amiri/Amiri-Regular.ttf"
     #
+    # === Example-4
+    # legal_resource_file = "~/path/to/flutter_r_demo/assets/images/test.png"
+    # main_asset = "assets/images/test.png"
+    #
+    # === Example-5
+    # legal_resource_file = "~/path/to/flutter_r_demo/assets/images/3.0x/test.png"
+    # main_asset = "assets/images/test.png"
+    #
     def self.generate_main_asset(flutter_project_dir, package_name, legal_resource_file)
       # legal_resource_file: ~/path/to/flutter_r_demo/lib/assets/images/3.0x/test.png
       # to get main_resource_file: ~/path/to/flutter_r_demo/lib/assets/images/test.png
@@ -74,21 +82,32 @@ module Flr
       end
 
       # main_resource_file:  ~/path/to/flutter_r_demo/lib/assets/images/test.png
-      # main_relative_resource_file: lib/assets/images/test.png
-      # to get main_implied_relative_resource_file: assets/images/test.png
+      # to get main_relative_resource_file: lib/assets/images/test.png
       flutter_project_dir_prefix = "#{flutter_project_dir}/"
       main_relative_resource_file = main_resource_file
       if main_relative_resource_file =~ /\A#{flutter_project_dir_prefix}/
         main_relative_resource_file["#{flutter_project_dir_prefix}"] = ""
       end
-      lib_prefix = "lib/"
-      main_implied_relative_resource_file = main_relative_resource_file;
-      if main_implied_relative_resource_file =~ /\A#{lib_prefix}/
-        main_implied_relative_resource_file[lib_prefix] = ""
-      end
 
-      main_asset = "packages/#{package_name}/#{main_implied_relative_resource_file}"
-      return main_asset
+      # 判断 main_relative_resource_file 是不是 implied_relative_resource_file 类型
+      # 判断方法是：main_relative_resource_file 的前缀若是 "lib/" ，则其是 implied_relative_resource_file 类型；
+      #
+      # implied_relative_resource_file 生成 main_asset 的算法是： main_asset = "packages/#{package_name}/#{main_implied_relative_resource_file}"
+      # 非 implied_relative_resource_file 生成 main_asset 的算法是： main_asset = "#{main_relative_resource_file}"
+      #
+      lib_prefix = "lib/"
+      if main_relative_resource_file =~ /\A#{lib_prefix}/
+        # main_relative_resource_file: lib/assets/images/test.png
+        # to get main_implied_relative_resource_file: assets/images/test.png
+        main_implied_relative_resource_file = main_relative_resource_file
+        main_implied_relative_resource_file[lib_prefix] = ""
+
+        main_asset = "packages/#{package_name}/#{main_implied_relative_resource_file}"
+        return main_asset
+      else
+        main_asset = "#{main_relative_resource_file}"
+        return main_asset
+      end
     end
 
     # generate_image_assets(flutter_project_dir, package_name, legal_image_file_array) -> image_asset_array
