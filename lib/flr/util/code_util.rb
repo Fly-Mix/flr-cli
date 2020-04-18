@@ -238,23 +238,47 @@ class AssetResource {
     #
     # 为当前 asset 生成 AssetResource property 的代码
     #
-    def self.generate_AssetResource_property(asset, asset_id_dict, package_name, prior_asset_type = ".*")
+    def self.generate_AssetResource_property(asset, asset_id_dict, package_name, is_package_project_type, prior_asset_type = ".*")
 
       asset_id = asset_id_dict[asset]
       asset_comment = generate_asset_comment(asset, package_name)
 
       asset_name = asset.dup
-      asset_name["packages/#{package_name}/"] = ""
-      # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
-      escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
+      packages_prefix = "packages/#{package_name}/"
+      if asset_name =~ /\A#{packages_prefix}/
+        asset_name["packages/#{package_name}/"] = ""
+        # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
+        escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
 
-      code = <<-CODE
+        code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: R.package);
-      CODE
+        CODE
 
-      return code
+        return code
+      else
+        # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
+        escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
+
+        if is_package_project_type
+          code = <<-CODE
+  /// #{asset_comment}
+  // ignore: non_constant_identifier_names
+  final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: R.package);
+          CODE
+
+          return code
+        else
+          code = <<-CODE
+  /// #{asset_comment}
+  // ignore: non_constant_identifier_names
+  final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: null);
+          CODE
+
+          return code
+        end
+      end
     end
 
     # generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name) -> string
