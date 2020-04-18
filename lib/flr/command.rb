@@ -263,7 +263,6 @@ Flr recommends the following flutter resource structure:
     def self.generate
 
       flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
-      is_package_project_type = FileUtil.is_package_project_type?(flutter_project_root_dir)
 
       # 警告日志数组
       warning_messages = []
@@ -294,6 +293,7 @@ Flr recommends the following flutter resource structure:
         return
       end
 
+      is_package_project_type = FileUtil.is_package_project_type?(flutter_project_root_dir)
       package_name = pubspec_config["name"]
 
       # ----- Step-1 End -----
