@@ -210,18 +210,28 @@ class AssetResource {
     # 为当前asset生成注释
     #
     # === Examples
-    # asset = "packages/flutter_r_demo/assets/images/test.png"
     # package_name = "flutter_r_demo"
+    #
+    # === Example-1
+    # asset = "packages/flutter_r_demo/assets/images/test.png"
+    # asset_comment = "asset: lib/assets/images/test.png"
+    #
+    # === Example-2
+    # asset = "assets/images/test.png"
     # asset_comment = "asset: assets/images/test.png"
     #
     def self.generate_asset_comment (asset, package_name)
-
       asset_name = asset.dup
-      asset_name["packages/#{package_name}/"] = ""
+      packages_prefix = "packages/#{package_name}/"
+      if asset_name =~ /\A#{packages_prefix}/
+        asset_name["packages/#{package_name}/"] = ""
+        asset_comment = "asset: lib/#{asset_name}"
+        return asset_comment
+      else
+        asset_comment = "asset: #{asset_name}"
+        return asset_comment
+      end
 
-      asset_comment = "asset: #{asset_name}"
-
-      return asset_comment
     end
 
     # generate_AssetResource_property(asset, asset_id_dict, package_name, prior_asset_type) -> string
