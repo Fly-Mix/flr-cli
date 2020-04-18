@@ -34,12 +34,12 @@ module Flr
       return false
     end
 
-    # generate_main_asset(flutter_dir, package_name, legal_resource_file) -> main_asset
+    # generate_main_asset(flutter_project_dir, package_name, legal_resource_file) -> main_asset
     #
     # 为当前资源文件生成 main_asset
     #
     # === Examples
-    # flutter_dir = "~/path/to/flutter_r_demo"
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     #
     # === Example-1
@@ -58,7 +58,7 @@ module Flr
     # legal_resource_file = "~/path/to/flutter_r_demo/lib/assets/fonts/Amiri/Amiri-Regular.ttf"
     # main_asset = "packages/flutter_r_demo/fonts/Amiri/Amiri-Regular.ttf"
     #
-    def self.generate_main_asset(flutter_dir, package_name, legal_resource_file)
+    def self.generate_main_asset(flutter_project_dir, package_name, legal_resource_file)
       # legal_resource_file: ~/path/to/flutter_r_demo/lib/assets/images/3.0x/test.png
       # to get main_resource_file: ~/path/to/flutter_r_demo/lib/assets/images/test.png
       main_resource_file = legal_resource_file
@@ -76,10 +76,10 @@ module Flr
       # main_resource_file:  ~/path/to/flutter_r_demo/lib/assets/images/test.png
       # main_relative_resource_file: lib/assets/images/test.png
       # to get main_implied_relative_resource_file: assets/images/test.png
-      flutter_dir_prefix = "#{flutter_dir}/"
+      flutter_project_dir_prefix = "#{flutter_project_dir}/"
       main_relative_resource_file = main_resource_file
-      if main_relative_resource_file =~ /\A#{flutter_dir_prefix}/
-        main_relative_resource_file["#{flutter_dir_prefix}"] = ""
+      if main_relative_resource_file =~ /\A#{flutter_project_dir_prefix}/
+        main_relative_resource_file["#{flutter_project_dir_prefix}"] = ""
       end
       lib_prefix = "lib/"
       main_implied_relative_resource_file = main_relative_resource_file;
@@ -91,22 +91,22 @@ module Flr
       return main_asset
     end
 
-    # generate_image_assets(flutter_dir, package_name, legal_image_file_array) -> image_asset_array
+    # generate_image_assets(flutter_project_dir, package_name, legal_image_file_array) -> image_asset_array
     #
     # 遍历指定资源目录下扫描找到的legal_image_file数组生成image_asset数组
     #
     # === Examples
-    # flutter_dir = "~/path/to/flutter_r_demo"
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     # legal_image_file_array = ["~/path/to/flutter_r_demo/lib/assets/images/test.png", "~/path/to/flutter_r_demo/lib/assets/images/3.0x/test.png"]
     # image_asset_array = ["packages/flutter_r_demo/assets/images/test.png"]
     #
-    def self.generate_image_assets(flutter_dir, package_name, legal_image_file_array)
+    def self.generate_image_assets(flutter_project_dir, package_name, legal_image_file_array)
 
       image_asset_array = []
 
       legal_image_file_array.each do |legal_image_file|
-        image_asset = generate_main_asset(flutter_dir, package_name, legal_image_file)
+        image_asset = generate_main_asset(flutter_project_dir, package_name, legal_image_file)
         image_asset_array.push(image_asset)
       end
 
@@ -114,22 +114,22 @@ module Flr
       return image_asset_array
     end
 
-    # generate_text_assets(flutter_dir, package_name, legal_text_file_array) -> text_asset_array
+    # generate_text_assets(flutter_project_dir, package_name, legal_text_file_array) -> text_asset_array
     #
     # 遍历指定资源目录下扫描找到的legal_text_file数组生成text_asset数组
     #
     # === Examples
-    # flutter_dir = "~/path/to/flutter_r_demo"
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     # legal_text_file_array = ["~path/to/flutter_r_demo/lib/assets/jsons/test.json"]
     # text_asset_array = ["packages/flutter_r_demo/assets/jsons/test.json"]
     #
-    def self.generate_text_assets(flutter_dir, package_name, legal_text_file_array)
+    def self.generate_text_assets(flutter_project_dir, package_name, legal_text_file_array)
 
       text_asset_array = []
 
       legal_text_file_array.each do |legal_text_file|
-        text_asset = generate_main_asset(flutter_dir, package_name, legal_text_file)
+        text_asset = generate_main_asset(flutter_project_dir, package_name, legal_text_file)
         text_asset_array.push(text_asset)
       end
 
@@ -137,22 +137,22 @@ module Flr
       return text_asset_array
     end
 
-    # generate_font_asset_configs(flutter_dir, package_name, legal_font_file_array) -> font_asset_config_array
+    # generate_font_asset_configs(flutter_project_dir, package_name, legal_font_file_array) -> font_asset_config_array
     #
     # 遍历指定资源目录下扫描找到的legal_font_file数组生成font_asset_config数组
     #
     # === Examples
-    # flutter_dir = "~/path/to/flutter_r_demo"
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
     # package_name = "flutter_r_demo"
     # legal_font_file_array = ["~path/to/flutter_r_demo/lib/assets/fonts/Amiri/Amiri-Regular.ttf"]
     # font_asset_config_array -> [{"asset": "packages/flutter_r_demo/assets/fonts/Amiri/Amiri-Regular.ttf"}]
     #
-    def self.generate_font_asset_configs(flutter_dir, package_name, legal_font_file_array)
+    def self.generate_font_asset_configs(flutter_project_dir, package_name, legal_font_file_array)
 
       font_asset_config_array = []
 
       legal_font_file_array.each do |legal_font_file|
-        font_asset = generate_main_asset(flutter_dir, package_name, legal_font_file)
+        font_asset = generate_main_asset(flutter_project_dir, package_name, legal_font_file)
         font_asset_config = Hash["asset" => font_asset]
         font_asset_config_array.push(font_asset_config)
       end
