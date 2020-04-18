@@ -126,7 +126,7 @@ Flr recommends the following flutter resource structure:
       begin
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
 
-        pubspec_file_path = FileUtil.get_pubspec_file_path
+        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 
@@ -278,7 +278,7 @@ Flr recommends the following flutter resource structure:
       begin
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
 
-        pubspec_file_path = FileUtil.get_pubspec_file_path
+        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 
@@ -726,7 +726,7 @@ Flr recommends the following flutter resource structure:
       begin
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
 
-        pubspec_file_path = FileUtil.get_pubspec_file_path
+        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 

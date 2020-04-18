@@ -15,13 +15,16 @@ module Flr
       return flutter_project_root_dir
     end
 
-    # get_pubspec_file_path -> String
+    # get_pubspec_file_path(flutter_project_dir) -> String
     #
     # 获取当前flutter工程的pubspec.yaml文件的路径
     #
-    def self.get_pubspec_file_path
-      flutter_project_root_dir = self.get_cur_flutter_project_root_dir
-      file_path = flutter_project_root_dir + "/pubspec.yaml"
+    # === Examples
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
+    # pubspec_file_path = "~/path/to/flutter_r_demo/pubspec.yaml"
+    #
+    def self.get_pubspec_file_path(flutter_project_dir)
+      file_path = flutter_project_dir + "/pubspec.yaml"
       return file_path
     end
 
