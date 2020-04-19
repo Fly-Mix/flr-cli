@@ -122,7 +122,7 @@ module Flr
         message = <<-MESSAGE
 #{"[!]: warning, metadata file is missed, flr can not make sure to get a right project type of this flutter project".warning_style}
 #{"[!]: then flr maybe generate buggy r.g.dart".warning_style}
-#{"[*]: to fix it, you can manually create a metadata file: #{metadata_file_path}".tips_style}
+#{"[*]: to fix it, you can manually copy the metadata file of a flutter project with same project type to #{metadata_file_path}".tips_style}
 
         MESSAGE
         puts(message)
