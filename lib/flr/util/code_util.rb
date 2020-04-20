@@ -221,13 +221,17 @@ class AssetResource {
     # asset_comment = "asset: assets/images/test.png"
     #
     def self.generate_asset_comment (asset, package_name)
-      asset_name = asset.dup
       packages_prefix = "packages/#{package_name}/"
-      if asset_name =~ /\A#{packages_prefix}/
-        asset_name["packages/#{package_name}/"] = ""
+
+      if asset =~ /\A#{packages_prefix}/
+        asset_name = asset.dup
+        asset_name[packages_prefix] = ""
+
         asset_comment = "asset: lib/#{asset_name}"
         return asset_comment
       else
+        asset_name = asset.dup
+
         asset_comment = "asset: #{asset_name}"
         return asset_comment
       end
