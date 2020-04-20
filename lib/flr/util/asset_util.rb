@@ -89,23 +89,25 @@ module Flr
         main_relative_resource_file["#{flutter_project_dir_prefix}"] = ""
       end
 
-      # 判断 main_relative_resource_file 是不是 implied_relative_resource_file 类型
-      # 判断方法是：main_relative_resource_file 的前缀若是 "lib/" ，则其是 implied_relative_resource_file 类型；
+      # 判断 main_relative_resource_file 是不是 implied_resource_file 类型
+      # implied_resource_file 的定义是：放置在 "lib/" 目录内 resource_file
+      # 具体实现是：main_relative_resource_file 的前缀若是 "lib/" ，则其是 implied_resource_file 类型；
       #
-      # implied_relative_resource_file 生成 main_asset 的算法是： main_asset = "packages/#{package_name}/#{main_implied_relative_resource_file}"
-      # 非 implied_relative_resource_file 生成 main_asset 的算法是： main_asset = "#{main_relative_resource_file}"
+      # implied_relative_resource_file 生成 main_asset 的算法是： main_asset = "packages/#{package_name}/#{asset_name}"
+      # non-implied_relative_resource_file 生成 main_asset 的算法是： main_asset = "#{asset_name}"
       #
       lib_prefix = "lib/"
       if main_relative_resource_file =~ /\A#{lib_prefix}/
         # main_relative_resource_file: lib/assets/images/test.png
-        # to get main_implied_relative_resource_file: assets/images/test.png
-        main_implied_relative_resource_file = main_relative_resource_file
-        main_implied_relative_resource_file[lib_prefix] = ""
+        # to get asset_name: assets/images/test.png
+        asset_name = main_relative_resource_file
+        asset_name[lib_prefix] = ""
 
-        main_asset = "packages/#{package_name}/#{main_implied_relative_resource_file}"
+        main_asset = "packages/#{package_name}/#{asset_name}"
         return main_asset
       else
-        main_asset = "#{main_relative_resource_file}"
+        asset_name = main_relative_resource_file
+        main_asset = "#{asset_name}"
         return main_asset
       end
     end
