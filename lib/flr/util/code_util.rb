@@ -224,12 +224,16 @@ class AssetResource {
       packages_prefix = "packages/#{package_name}/"
 
       if asset =~ /\A#{packages_prefix}/
+        # asset: packages/flutter_r_demo/assets/images/test.png
+        # to get assetName: assets/images/test.png
         asset_name = asset.dup
         asset_name[packages_prefix] = ""
 
         asset_comment = "asset: lib/#{asset_name}"
         return asset_comment
       else
+        # asset: assets/images/test.png
+        # to get assetName: assets/images/test.png
         asset_name = asset.dup
 
         asset_comment = "asset: #{asset_name}"
@@ -243,17 +247,39 @@ class AssetResource {
     # 为当前 asset 生成 AssetResource property 的代码
     #
     def self.generate_AssetResource_property(asset, asset_id_dict, package_name, is_package_project_type, prior_asset_type = ".*")
-
       asset_id = asset_id_dict[asset]
       asset_comment = generate_asset_comment(asset, package_name)
 
-      asset_name = asset.dup
-      packages_prefix = "packages/#{package_name}/"
-      if asset_name =~ /\A#{packages_prefix}/
-        asset_name["packages/#{package_name}/"] = ""
-        # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
-        escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
+      asset_name = ""
+      needPackage = false
 
+      packages_prefix = "packages/#{package_name}/"
+      if asset =~ /\A#{packages_prefix}/
+        # asset: packages/flutter_r_demo/assets/images/test.png
+        # to get asset_name: assets/images/test.png
+        asset_name = asset.dup
+        asset_name[packages_prefix] = ""
+
+        needPackage = true
+      else
+        # asset: assets/images/test.png
+        # to get asset_name: assets/images/test.png
+        asset_name = asset.dup
+
+        if is_package_project_type
+          needPackage = true
+        else
+          needPackage = false
+        end
+
+      end
+
+      # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
+      # asset_name: assets/images/test$.png
+      # to get escaped_asset_name: assets/images/test\$.png
+      escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
+
+      if needPackage
         code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
@@ -262,26 +288,13 @@ class AssetResource {
 
         return code
       else
-        # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
-        escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
-
-        if is_package_project_type
-          code = <<-CODE
-  /// #{asset_comment}
-  // ignore: non_constant_identifier_names
-  final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: R.package);
-          CODE
-
-          return code
-        else
-          code = <<-CODE
+        code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: null);
-          CODE
+        CODE
 
-          return code
-        end
+        return code
       end
     end
 
