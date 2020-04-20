@@ -106,8 +106,11 @@ module Flr
         main_asset = "packages/#{package_name}/#{asset_name}"
         return main_asset
       else
+        # main_relative_resource_file: assets/images/test.png
+        # to get asset_name: assets/images/test.png
         asset_name = main_relative_resource_file
-        main_asset = "#{asset_name}"
+
+        main_asset = asset_name
         return main_asset
       end
     end
