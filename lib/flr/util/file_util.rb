@@ -84,7 +84,7 @@ module Flr
 
     # is_package_project_type?(flutter_project_dir) -> true or false
     #
-    # 当前flutter工程的工程类型是不是Package工程类型
+    # 判断当前flutter工程的工程类型是不是Package工程类型
     #
     # flutter工程共有4种工程类型：
     # - app：Flutter App工程，用于开发纯Flutter的App
@@ -130,8 +130,7 @@ module Flr
         begin
           pubspec_file_path = get_pubspec_file_path(flutter_project_dir)
           pubspec_config = load_pubspec_config_from_file(pubspec_file_path)
-          author = pubspec_config["author"]
-          if author.nil? == false
+          if pubspec_config.has_key?("author")
             return true
           end
         rescue Exception => e
