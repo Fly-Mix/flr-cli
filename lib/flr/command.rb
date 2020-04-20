@@ -36,7 +36,9 @@ module Flr
     # display recommended flutter resource structure
     def self.display_recommended_flutter_resource_structure
       message = <<-MESSAGE
-Flr recommends the following flutter resource structure:
+Flr recommends the following flutter resource structure schemes:
+
+#{"------------------------------ scheme 1 ------------------------------".bold.bg_red}
 
   flutter_project_root_dir
   ├── build
@@ -84,6 +86,54 @@ Flr recommends the following flutter resource structure:
     #{"fonts:".tips_style}
       #{"- lib/assets/fonts".tips_style}
 
+#{"------------------------------ scheme 2 ------------------------------".bold.bg_red}
+
+  flutter_project_root_dir
+  ├── build
+  │   ├── ..
+  ├── lib
+  │   ├── ..
+  ├── assets
+  │   ├── images #{"// image resource directory of all modules".red}
+  │   │   ├── \#{module} #{"// image resource directory of a module".red}
+  │   │   │   ├── \#{main_image_asset}
+  │   │   │   ├── \#{variant-dir} #{"// image resource directory of a variant".red}
+  │   │   │   │   ├── \#{image_asset_variant}
+  │   │   │
+  │   │   ├── home #{"// image resource directory of home module".red}
+  │   │   │   ├── home_badge.svg
+  │   │   │   ├── home_icon.png
+  │   │   │   ├── 3.0x #{"// image resource directory of a 3.0x-ratio-variant".red}
+  │   │   │   │   ├── home_icon.png
+  │   │   │		
+  │   ├── texts #{"// text resource directory".red}
+  │   │   │     #{"// (you can also break it down further by module)".red}
+  │   │   └── test.json
+  │   │   └── test.yaml
+  │   │   │
+  │   ├── fonts #{"// font resource directory of all font-families".red}
+  │   │   ├── \#{font-family} #{"// font resource directory of a font-family".red}
+  │   │   │   ├── \#{font-family}-\#{font_weight_or_style}.ttf
+  │   │   │
+  │   │   ├── Amiri #{"// font resource directory of Amiri font-family".red}
+  │   │   │   ├── Amiri-Regular.ttf
+  │   │   │   ├── Amiri-Bold.ttf
+  │   │   │   ├── Amiri-Italic.ttf
+  │   │   │   ├── Amiri-BoldItalic.ttf
+  │   ├── ..
+
+#{"[*]: Then config the resource directories that need to be scanned as follows：".tips_style}
+
+  #{"flr:".tips_style}
+    #{"core_version: #{Flr::CORE_VERSION}".tips_style}
+    #{"dartfmt_line_length: #{Flr::DARTFMT_LINE_LENGTH}".tips_style}
+    #{"# config the image and text resource directories that need to be scanned".tips_style}
+    #{"assets:".tips_style}
+      #{"- assets/images".tips_style}
+      #{"- assets/texts".tips_style}
+    #{"# config the font resource directories that need to be scanned".tips_style}
+    #{"fonts:".tips_style}
+      #{"- assets/fonts".tips_style}
       MESSAGE
 
       puts(message)
