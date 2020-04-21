@@ -84,7 +84,7 @@ To uninstall  Flr run `sudo gem uninstall flr`
 
 ## Recommended Flutter Resource Structure 
 
- `Flr ` the following flutter resource structure schemes:
+`Flr` the following flutter resource structure schemes:
 
 - scheme 1:
 
