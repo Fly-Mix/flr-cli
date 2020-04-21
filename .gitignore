@@ -7,6 +7,7 @@
 .rbenv-version
 .rbx/
 /concatenated.*
+build/
 
 # Yardoc
 /.yardoc

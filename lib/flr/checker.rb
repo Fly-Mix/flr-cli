@@ -4,7 +4,7 @@ module Flr
   # 条件检测器，提供检测各种条件是否合法的方法
   class Checker
 
-    # check_pubspec_file_is_existed(flutter_dir)  ->  true
+    # check_pubspec_file_is_existed(flutter_project_dir)  ->  true
     #
     # 检测当前flutter工程目录是否存在pubspec.yaml文件
     # 若存在，返回true
@@ -12,16 +12,16 @@ module Flr
     #
     # === Examples
     #
-    # flutter_dir = "~path/to/flutter_r_demo"
-    # Checker.check_pubspec_file_is_existed(flutter_dir)
+    # flutter_project_dir = "~path/to/flutter_r_demo"
+    # Checker.check_pubspec_file_is_existed(flutter_project_dir)
     #
-    def self.check_pubspec_file_is_existed(flutter_dir)
-      pubspec_file_path = flutter_dir + "/pubspec.yaml"
+    def self.check_pubspec_file_is_existed(flutter_project_dir)
+      pubspec_file_path = flutter_project_dir + "/pubspec.yaml"
 
       if File.exist?(pubspec_file_path) == false
         message = <<-MESSAGE
 #{"[x]: #{pubspec_file_path} not found".error_style}
-#{"[*]: please make sure pubspec.yaml is existed in #{flutter_dir}".tips_style}
+#{"[*]: please make sure pubspec.yaml is existed in #{flutter_project_dir}".tips_style}
         MESSAGE
 
         raise(message)
@@ -63,7 +63,7 @@ module Flr
       return true
     end
 
-    # check_flr_assets_is_legal(flutter_dir, flr_config)  ->  resource_dir_result_tuple
+    # check_flr_assets_is_legal(flutter_project_dir, flr_config)  ->  resource_dir_result_tuple
     #
     # 检测当前flr配置信息中的assets配置是否合法
     # 若合法，返回资源目录结果三元组 resource_dir_result_triplet
@@ -88,12 +88,12 @@ module Flr
     # 判断flr的assets配置合法的标准是：assets配置的resource_dir数组中的legal_resource_dir数量大于0。
     #
     # === Examples
-    # flutter_dir = "~/path/to/flutter_r_demo"
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
     # assets_legal_resource_dir_array = ["~/path/to/flutter_r_demo/lib/assets/images", "~/path/to/flutter_r_demo/lib/assets/texts"]
     # fonts_legal_resource_dir_array = ["~/path/to/flutter_r_demo/lib/assets/fonts"]
     # illegal_resource_dir_array = ["~/path/to/flutter_r_demo/to/non-existed_folder"]
     #
-    def self.check_flr_assets_is_legal(flutter_dir, flr_config)
+    def self.check_flr_assets_is_legal(flutter_project_dir, flr_config)
       core_version = flr_config["core_version"]
       dartfmt_line_length = flr_config["dartfmt_line_length"]
       assets_resource_dir_array = flr_config["assets"]
@@ -121,7 +121,7 @@ module Flr
       illegal_resource_dir_array = []
 
       assets_resource_dir_array.each do |relative_resource_dir|
-        resource_dir = flutter_dir + "/" + relative_resource_dir
+        resource_dir = flutter_project_dir + "/" + relative_resource_dir
         if File.exist?(resource_dir) == true
           assets_legal_resource_dir_array.push(resource_dir)
         else
@@ -130,7 +130,7 @@ module Flr
       end
 
       fonts_resource_dir_array.each do |relative_resource_dir|
-        resource_dir = flutter_dir + "/" + relative_resource_dir
+        resource_dir = flutter_project_dir + "/" + relative_resource_dir
         if File.exist?(resource_dir) == true
           fonts_legal_resource_dir_array.push(resource_dir)
         else

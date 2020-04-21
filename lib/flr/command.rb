@@ -36,7 +36,9 @@ module Flr
     # display recommended flutter resource structure
     def self.display_recommended_flutter_resource_structure
       message = <<-MESSAGE
-Flr recommends the following flutter resource structure:
+Flr recommends the following flutter resource structure schemes:
+
+#{"------------------------------ scheme 1 ------------------------------".bold.bg_red}
 
   flutter_project_root_dir
   ├── build
@@ -84,6 +86,54 @@ Flr recommends the following flutter resource structure:
     #{"fonts:".tips_style}
       #{"- lib/assets/fonts".tips_style}
 
+#{"------------------------------ scheme 2 ------------------------------".bold.bg_red}
+
+  flutter_project_root_dir
+  ├── build
+  │   ├── ..
+  ├── lib
+  │   ├── ..
+  ├── assets
+  │   ├── images #{"// image resource directory of all modules".red}
+  │   │   ├── \#{module} #{"// image resource directory of a module".red}
+  │   │   │   ├── \#{main_image_asset}
+  │   │   │   ├── \#{variant-dir} #{"// image resource directory of a variant".red}
+  │   │   │   │   ├── \#{image_asset_variant}
+  │   │   │
+  │   │   ├── home #{"// image resource directory of home module".red}
+  │   │   │   ├── home_badge.svg
+  │   │   │   ├── home_icon.png
+  │   │   │   ├── 3.0x #{"// image resource directory of a 3.0x-ratio-variant".red}
+  │   │   │   │   ├── home_icon.png
+  │   │   │		
+  │   ├── texts #{"// text resource directory".red}
+  │   │   │     #{"// (you can also break it down further by module)".red}
+  │   │   └── test.json
+  │   │   └── test.yaml
+  │   │   │
+  │   ├── fonts #{"// font resource directory of all font-families".red}
+  │   │   ├── \#{font-family} #{"// font resource directory of a font-family".red}
+  │   │   │   ├── \#{font-family}-\#{font_weight_or_style}.ttf
+  │   │   │
+  │   │   ├── Amiri #{"// font resource directory of Amiri font-family".red}
+  │   │   │   ├── Amiri-Regular.ttf
+  │   │   │   ├── Amiri-Bold.ttf
+  │   │   │   ├── Amiri-Italic.ttf
+  │   │   │   ├── Amiri-BoldItalic.ttf
+  │   ├── ..
+
+#{"[*]: Then config the resource directories that need to be scanned as follows：".tips_style}
+
+  #{"flr:".tips_style}
+    #{"core_version: #{Flr::CORE_VERSION}".tips_style}
+    #{"dartfmt_line_length: #{Flr::DARTFMT_LINE_LENGTH}".tips_style}
+    #{"# config the image and text resource directories that need to be scanned".tips_style}
+    #{"assets:".tips_style}
+      #{"- assets/images".tips_style}
+      #{"- assets/texts".tips_style}
+    #{"# config the font resource directories that need to be scanned".tips_style}
+    #{"fonts:".tips_style}
+      #{"- assets/fonts".tips_style}
       MESSAGE
 
       puts(message)
@@ -126,7 +176,7 @@ Flr recommends the following flutter resource structure:
       begin
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
 
-        pubspec_file_path = FileUtil.get_pubspec_file_path
+        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 
@@ -278,7 +328,7 @@ Flr recommends the following flutter resource structure:
       begin
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
 
-        pubspec_file_path = FileUtil.get_pubspec_file_path
+        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 
@@ -293,6 +343,7 @@ Flr recommends the following flutter resource structure:
         return
       end
 
+      is_package_project_type = FileUtil.is_package_project_type?(flutter_project_root_dir)
       package_name = pubspec_config["name"]
 
       # ----- Step-1 End -----
@@ -588,7 +639,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
+      g__R_Image_AssetResource_class_code = CodeUtil.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name, is_package_project_type)
       r_dart_file.puts(g__R_Image_AssetResource_class_code)
 
       # ----- Step-13 End -----
@@ -598,7 +649,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict,  package_name)
+      g__R_Svg_AssetResource_class_code = CodeUtil.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict,  package_name, is_package_project_type)
       r_dart_file.puts(g__R_Svg_AssetResource_class_code)
 
       # ----- Step-14 End -----
@@ -608,7 +659,7 @@ Flr recommends the following flutter resource structure:
       #
 
       r_dart_file.puts("\n")
-      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name)
+      g__R_Text_AssetResource_class_code = CodeUtil.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name, is_package_project_type)
       r_dart_file.puts(g__R_Text_AssetResource_class_code)
 
       # ----- Step-15 End -----
@@ -726,7 +777,7 @@ Flr recommends the following flutter resource structure:
       begin
         Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
 
-        pubspec_file_path = FileUtil.get_pubspec_file_path
+        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
 
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
 

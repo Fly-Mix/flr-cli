@@ -15,13 +15,16 @@ module Flr
       return flutter_project_root_dir
     end
 
-    # get_pubspec_file_path -> String
+    # get_pubspec_file_path(flutter_project_dir) -> String
     #
     # 获取当前flutter工程的pubspec.yaml文件的路径
     #
-    def self.get_pubspec_file_path
-      flutter_project_root_dir = self.get_cur_flutter_project_root_dir
-      file_path = flutter_project_root_dir + "/pubspec.yaml"
+    # === Examples
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
+    # pubspec_file_path = "~/path/to/flutter_r_demo/pubspec.yaml"
+    #
+    def self.get_pubspec_file_path(flutter_project_dir)
+      file_path = flutter_project_dir + "/pubspec.yaml"
       return file_path
     end
 
@@ -77,6 +80,65 @@ module Flr
       pubspec_file.write(yaml_content)
       pubspec_file.close
       return true
+    end
+
+    # is_package_project_type?(flutter_project_dir) -> true or false
+    #
+    # 判断当前flutter工程的工程类型是不是Package工程类型
+    #
+    # flutter工程共有4种工程类型：
+    # - app：Flutter App工程，用于开发纯Flutter的App
+    # - module：Flutter Component工程，用于开发Flutter组件以嵌入iOS和Android原生工程
+    # - package：General Dart Package工程，用于开发一个供应用层开发者使用的包
+    # - plugin：Plugin Package工程（属于特殊的Dart Package工程），用于开发一个调用特定平台API的包
+    #
+    # flutter工程的工程类型可从flutter工程目录的 .metadata 文件中读取获得
+    # 如果不存在 .metadata 文件，则判断 pubspec.yaml 是否存在 author 配置，若存在，说明是一个 Package工程
+    #
+    def self.is_package_project_type?(flutter_project_dir)
+      metadata_file_path = flutter_project_dir + "/.metadata"
+
+      if File.exist?(metadata_file_path)
+        begin
+          metadata_file = File.open(metadata_file_path, 'r')
+          metadata_config = YAML.load(metadata_file)
+          project_type = metadata_config["project_type"]
+          if project_type.nil?
+            project_type = "unknown"
+          end
+          project_type = project_type.downcase
+
+          if project_type == "package" || project_type == "plugin"
+            return true
+          end
+
+        rescue YAML::SyntaxError => e
+          puts("YAML Syntax Error: #{e}".error_style)
+          puts("")
+        ensure
+          metadata_file.close
+        end
+      else
+        message = <<-MESSAGE
+#{"[!]: warning, metadata file is missed, flr can not make sure to get a right project type of this flutter project".warning_style}
+#{"[!]: then flr maybe generate buggy r.g.dart".warning_style}
+#{"[*]: to fix it, you can manually copy the metadata file of a flutter project with same project type to #{metadata_file_path}".tips_style}
+
+        MESSAGE
+        puts(message)
+
+        begin
+          pubspec_file_path = get_pubspec_file_path(flutter_project_dir)
+          pubspec_config = load_pubspec_config_from_file(pubspec_file_path)
+          if pubspec_config.has_key?("author")
+            return true
+          end
+        rescue Exception => e
+          puts(e.message)
+        end
+      end
+
+      return false
     end
 
     # 判断当前文件是不是非SVG类图片资源文件

@@ -210,54 +210,105 @@ class AssetResource {
     # 为当前asset生成注释
     #
     # === Examples
-    # asset = "packages/flutter_r_demo/assets/images/test.png"
     # package_name = "flutter_r_demo"
+    #
+    # === Example-1
+    # asset = "packages/flutter_r_demo/assets/images/test.png"
+    # asset_comment = "asset: lib/assets/images/test.png"
+    #
+    # === Example-2
+    # asset = "assets/images/test.png"
     # asset_comment = "asset: assets/images/test.png"
     #
     def self.generate_asset_comment (asset, package_name)
+      packages_prefix = "packages/#{package_name}/"
 
-      asset_name = asset.dup
-      asset_name["packages/#{package_name}/"] = ""
+      if asset =~ /\A#{packages_prefix}/
+        # asset: packages/flutter_r_demo/assets/images/test.png
+        # to get assetName: assets/images/test.png
+        asset_name = asset.dup
+        asset_name[packages_prefix] = ""
 
-      asset_comment = "asset: #{asset_name}"
+        asset_comment = "asset: lib/#{asset_name}"
+        return asset_comment
+      else
+        # asset: assets/images/test.png
+        # to get assetName: assets/images/test.png
+        asset_name = asset.dup
 
-      return asset_comment
+        asset_comment = "asset: #{asset_name}"
+        return asset_comment
+      end
+
     end
 
-    # generate_AssetResource_property(asset, asset_id_dict, package_name, prior_asset_type) -> string
+    # generate_AssetResource_property(asset, asset_id_dict, package_name, is_package_project_type, prior_asset_type) -> string
     #
     # 为当前 asset 生成 AssetResource property 的代码
     #
-    def self.generate_AssetResource_property(asset, asset_id_dict, package_name, prior_asset_type = ".*")
-
+    def self.generate_AssetResource_property(asset, asset_id_dict, package_name, is_package_project_type, prior_asset_type = ".*")
       asset_id = asset_id_dict[asset]
       asset_comment = generate_asset_comment(asset, package_name)
 
-      asset_name = asset.dup
-      asset_name["packages/#{package_name}/"] = ""
+      asset_name = ""
+      needPackage = false
+
+      packages_prefix = "packages/#{package_name}/"
+      if asset =~ /\A#{packages_prefix}/
+        # asset: packages/flutter_r_demo/assets/images/test.png
+        # to get asset_name: assets/images/test.png
+        asset_name = asset.dup
+        asset_name[packages_prefix] = ""
+
+        needPackage = true
+      else
+        # asset: assets/images/test.png
+        # to get asset_name: assets/images/test.png
+        asset_name = asset.dup
+
+        if is_package_project_type
+          needPackage = true
+        else
+          needPackage = false
+        end
+
+      end
+
       # 对字符串中的 '$' 进行转义处理：'$' -> '\$'
+      # asset_name: assets/images/test$.png
+      # to get escaped_asset_name: assets/images/test\$.png
       escaped_asset_name = asset_name.gsub(/[$]/, "\\$")
 
-      code = <<-CODE
+      if needPackage
+        code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: R.package);
-      CODE
+        CODE
 
-      return code
+        return code
+      else
+        code = <<-CODE
+  /// #{asset_comment}
+  // ignore: non_constant_identifier_names
+  final #{asset_id} = const AssetResource("#{escaped_asset_name}", packageName: null);
+        CODE
+
+        return code
+      end
     end
 
-    # generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name) -> string
+    # generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name, is_package_project_type) -> string
     #
     # 根据模板，为 non_svg_image_asset_array（非svg类的图片资产数组）生成 _R_Image_AssetResource class 的代码
     #
-    def self.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name)
+    def self.generate__R_Image_AssetResource_class(non_svg_image_asset_array, non_svg_image_asset_id_dict, package_name, is_package_project_type)
 
       all_g_AssetResource_property_code = ""
 
       non_svg_image_asset_array.each do |image_asset|
         all_g_AssetResource_property_code += "\n"
-        g_AssetResource_property_code = generate_AssetResource_property(image_asset, non_svg_image_asset_id_dict, package_name, Flr::PRIOR_NON_SVG_IMAGE_FILE_TYPE)
+        g_AssetResource_property_code = generate_AssetResource_property(image_asset, non_svg_image_asset_id_dict, package_name, is_package_project_type, Flr::PRIOR_NON_SVG_IMAGE_FILE_TYPE)
         all_g_AssetResource_property_code += g_AssetResource_property_code
       end
 
@@ -272,17 +323,17 @@ class _R_Image_AssetResource {
       return code
     end
 
-    # generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name) -> string
+    # generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name, is_package_project_type) -> string
     #
     # 根据模板，为 svg_image_asset_array（svg类的图片资产数组）生成 _R_Svg_AssetResource class 的代码
     #
-    def self.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name)
+    def self.generate__R_Svg_AssetResource_class(svg_image_asset_array, svg_image_asset_id_dict, package_name, is_package_project_type)
 
       all_g_AssetResource_property_code = ""
 
       svg_image_asset_array.each do |image_asset|
         all_g_AssetResource_property_code += "\n"
-        g_AssetResource_property_code = generate_AssetResource_property(image_asset, svg_image_asset_id_dict, package_name, Flr::PRIOR_SVG_IMAGE_FILE_TYPE)
+        g_AssetResource_property_code = generate_AssetResource_property(image_asset, svg_image_asset_id_dict, package_name, is_package_project_type, Flr::PRIOR_SVG_IMAGE_FILE_TYPE)
         all_g_AssetResource_property_code += g_AssetResource_property_code
       end
 
@@ -297,17 +348,17 @@ class _R_Svg_AssetResource {
       return code
     end
 
-    # generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name) -> string
+    # generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name, is_package_project_typ) -> string
     #
     # 根据模板，为 text_asset_array（文本资产数组）生成 _R_Text_AssetResource class 的代码
     #
-    def self.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name)
+    def self.generate__R_Text_AssetResource_class(text_asset_array, text_asset_id_dict, package_name, is_package_project_type)
 
       all_g_AssetResource_property_code = ""
 
       text_asset_array.each do |text_asset|
         all_g_AssetResource_property_code += "\n"
-        g_AssetResource_property_code = generate_AssetResource_property(text_asset, text_asset_id_dict, package_name, Flr::PRIOR_TEXT_FILE_TYPE)
+        g_AssetResource_property_code = generate_AssetResource_property(text_asset, text_asset_id_dict, package_name, is_package_project_type, Flr::PRIOR_TEXT_FILE_TYPE)
         all_g_AssetResource_property_code += g_AssetResource_property_code
       end
 
