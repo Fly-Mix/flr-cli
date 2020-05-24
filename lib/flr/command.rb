@@ -552,11 +552,18 @@ Flr recommends the following flutter resource structure schemes:
 
       # ----- Step-8 Begin -----
       # 为扫描得到的legal_resource_file添加资源声明到pubspec.yaml：
-      # - 合并image_asset数组和text_asset数组为asset数组（image_asset数组元素在前）;
+      # - 合并image_asset数组和text_asset数组为new_asset_array（image_asset数组元素在前）；
+      # - 读取pubspec.yaml中flutter-assets配置，获得old_asset_array，然后和new_asset_array合并为asset数组；
       # - 修改pubspec.yaml中flutter-assets配置的值为asset数组；
       # - 修改pubspec.yaml中flutter-fonts配置的值为font_family_config数组。
 
-      asset_array = image_asset_array + text_asset_array
+      new_asset_array = image_asset_array + text_asset_array
+      old_asset_array = pubspec_config["flutter"]["assets"]
+      if old_asset_array.nil? or old_asset_array.is_a?(Array) == false
+        old_asset_array = []
+      end
+
+      asset_array = AssetUtil.mergeFlutterAssets(flutter_project_root_dir, package_name, new_asset_array, old_asset_array)
       if asset_array.length > 0
         pubspec_config["flutter"]["assets"] = asset_array
       else
