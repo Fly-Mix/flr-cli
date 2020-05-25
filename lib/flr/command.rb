@@ -853,74 +853,108 @@ Flr recommends the following flutter resource structure schemes:
 
     end
 
-    # 启动一个资源变化监控服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
+    # 启动一个资源变化监控服务，若检测到flutter主工程和其子工程有资源变化，就自动执行generate_all操作；
+    # 手动输入`Ctrl-C`，可终止当前服务
     def self.start_monitor
 
-      flutter_project_root_dir = FileUtil.get_flutter_main_project_root_dir
+      flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # ----- Step-1 Begin -----
-      # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程：
-      # - 检测当前flutter工程根目录是否存在pubspec.yaml
-      # - 检测当前pubspec.yaml中是否存在Flr的配置
-      # - 检测当前flr_config中的resource_dir配置是否合法：
-      #   判断合法的标准是：assets配置或者fonts配置了至少1个legal_resource_dir
+      # 对flutter主工程进行环境检测:
+      #  - 检测当前flutter主工程根目录是否存在 pubspec.yaml
       #
 
       begin
-        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
-
-        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
-
-        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
-
-        Checker.check_flr_config_is_existed(pubspec_config)
-
-        flr_config = pubspec_config["flr"]
-
-        resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flutter_project_root_dir, flr_config)
-
+        Checker.check_pubspec_file_is_existed(flutter_main_project_root_dir)
       rescue Exception => e
         puts(e.message)
         return
       end
 
-      package_name = pubspec_config["name"]
-
       # ----- Step-1 End -----
 
-      # ----- Step-2 Begin -----
-      # 执行一次 flr generate 操作
-      #
 
-      now_str = Time.now.to_s
-      puts("--------------------------- #{now_str} ---------------------------")
-      puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" now ...")
-      puts("\n")
-      generate(flutter_project_root_dir)
-      puts("\n")
-      puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" done !!!")
-      puts("---------------------------------------------------------------------------------")
-      puts("\n")
+      # ----- Step-2 Begin -----
+      # 对flutter工程进行合法资源目录检测:
+      # - 获取主工程的所有子工程根目录，生成工程根目录数组flutter_project_root_dir_array
+      # - 遍历flutter_project_root_dir_array，获取每个工程的legal_resource_dir数组：
+      #   - 从flr_config中的assets配置获取assets_legal_resource_dir数组；
+      #   - 从flr_config中的fonts配置获取fonts_legal_resource_dir数组；
+      #   - 合并assets_legal_resource_dir数组和fonts_legal_resource_dir数组到legal_resource_dir数组。
+      # - 检测legal_resource_dir数组是否为空，为空则结束运行。
+      #
+      puts("")
+      puts("get the valid resource directories of all projects now ...")
+
+      flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
+      flutter_sub_project_root_dir_array = FileUtil.get_flutter_sub_project_root_dirs(flutter_main_project_root_dir)
+
+      flutter_project_root_dir_array = []
+      flutter_project_root_dir_array.push(flutter_main_project_root_dir)
+      flutter_project_root_dir_array += flutter_sub_project_root_dir_array
+
+      # 合法的资源目录数组
+      legal_resource_dir_array = []
+      # 非法的资源目录数组
+      illegal_resource_dir_array = []
+
+      flutter_project_root_dir_array.each do |flutter_project_root_dir|
+        begin
+          puts("")
+          puts("--------------------------- get info of specified project ----------------------------")
+          puts("get the valid resource directories from #{flutter_project_root_dir} now...")
+
+          Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+
+          pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
+
+          pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
+
+          Checker.check_flr_config_is_existed(pubspec_config)
+
+          flr_config = pubspec_config["flr"]
+
+          resource_dir_result_tuple = Checker.check_flr_assets_is_legal(flutter_project_root_dir, flr_config)
+
+          assets_legal_resource_dir_array = resource_dir_result_tuple[0]
+          fonts_legal_resource_dir_array = resource_dir_result_tuple[1]
+          legal_resource_dir_array += (assets_legal_resource_dir_array + fonts_legal_resource_dir_array)
+
+          illegal_resource_dir_array += resource_dir_result_tuple[2]
+          puts("get the valid resource directories from #{flutter_project_root_dir} done !!!")
+          puts("--------------------------------------------------------------------------------------")
+        rescue Exception => e
+          puts(e.message)
+          puts("[x]: #{flutter_project_root_dir} has no valid resource directories.".error_style)
+          puts("--------------------------------------------------------------------------------------")
+        end
+      end
+
+      if legal_resource_dir_array.length <= 0
+        puts("")
+        puts("[x]: have no valid resource directories to be monitored.".warning_style)
+        return
+      end
+
+      puts("")
+      puts("get the valid resource directories of all projects done !!!")
 
       # ----- Step-2 End -----
 
+
       # ----- Step-3 Begin -----
-      # 获取legal_resource_dir数组：
-      # - 从flr_config中的assets配置获取assets_legal_resource_dir数组；
-      # - 从flr_config中的fonts配置获取fonts_legal_resource_dir数组；
-      # - 合并assets_legal_resource_dir数组和fonts_legal_resource_dir数组为legal_resource_dir数组。
+      # 执行一次 generate_all 操作
       #
 
-      # 合法的资源目录数组
-      assets_legal_resource_dir_array = resource_dir_result_tuple[0]
-      fonts_legal_resource_dir_array = resource_dir_result_tuple[1]
-
-      legal_resource_dir_array = assets_legal_resource_dir_array + fonts_legal_resource_dir_array
-
-      # 非法的资源目录数组
-      illegal_resource_dir_array = resource_dir_result_tuple[2]
+      puts("")
+      puts("now generate for all projects once before launching the monitoring service ...")
+      puts("")
+      generateAll
+      puts("")
+      puts("did generate for all projects, now is going to launching the monitoring service ...")
 
       # ----- Step-3 End -----
+
 
       # ----- Step-4 Begin -----
       # 启动资源监控服务
@@ -928,8 +962,9 @@ Flr recommends the following flutter resource structure schemes:
       #  - 若服务检测到资源变化（资源目录下的发生增/删/改文件），则执行一次 flr generate 操作
       #
 
+      puts("")
       now_str = Time.now.to_s
-      puts("--------------------------- #{now_str} ---------------------------")
+      puts("----------------------------- #{now_str} -----------------------------")
       puts("launch a monitoring service now ...")
       puts("launching ...")
       # stop the monitoring service if exists
@@ -946,7 +981,7 @@ Flr recommends the following flutter resource structure schemes:
           puts("  - #{resource_dir}".warning_style)
         end
       end
-      puts("---------------------------------------------------------------------------------")
+      puts("--------------------------------------------------------------------------------------")
       puts("\n")
 
       # Allow array of directories as input #92
@@ -954,16 +989,16 @@ Flr recommends the following flutter resource structure schemes:
       @@listener = Listen.to(*legal_resource_dir_array, ignore: [/\.DS_Store/], latency: 0.5, wait_for_delay: 5, relative: true) do |modified, added, removed|
         # for example: 2013-03-30 03:13:14 +0900
         now_str = Time.now.to_s
-        puts("--------------------------- #{now_str} ---------------------------")
+        puts("----------------------------- #{now_str} -----------------------------")
         puts("modified resource files: #{modified}")
         puts("added resource files: #{added}")
         puts("removed resource files: #{removed}")
-        puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" now ...")
+        puts("generate for all projects now ...")
         puts("\n")
-        generate(flutter_project_root_dir)
+        generateAll
         puts("\n")
-        puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" done !!!")
-        puts("---------------------------------------------------------------------------------")
+        puts("generate for all projects done !!!")
+        puts("--------------------------------------------------------------------------------------")
         puts("\n")
         puts("[*]: the monitoring service is monitoring the asset changes, and then auto scan assets, specifies assets and generates \"r.g.dart\" ...".tips_style)
         puts("[*]: you can press \"Ctrl-C\" to terminate it".tips_style)
