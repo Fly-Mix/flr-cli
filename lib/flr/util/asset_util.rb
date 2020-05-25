@@ -365,7 +365,7 @@ module Flr
         if is_package_asset?(asset)
           if is_specified_package_asset?(package_name, asset) == false
             legal_old_asset_array.push(asset)
-            return
+            next
           end
         end
 
