@@ -164,22 +164,16 @@ Flr recommends the following flutter resource structure schemes:
       return r_dart_library_version
     end
 
-    # 对 flutter 工程进行初始化
-    def self.init
-      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
+    def self.initAll
+      flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # ----- Step-1 Begin -----
-      # 进行环境检测:
-      #  - 检测当前 flutter 工程根目录是否存在 pubspec.yaml
+      # 对flutter主工程进行环境检测:
+      #  - 检测当前flutter主工程根目录是否存在 pubspec.yaml
       #
 
       begin
-        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
-
-        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
-
-        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
-
+        Checker.check_pubspec_file_is_existed(flutter_main_project_root_dir)
       rescue Exception => e
         puts(e.message)
         return
@@ -187,7 +181,65 @@ Flr recommends the following flutter resource structure schemes:
 
       # ----- Step-1 End -----
 
+      puts("init all flutter projects now...")
+
+      # ----- Step-2 Begin -----
+      # 初始化flutter主工程及其所有子工程
+      # - 获取flutter主工程根目录下所有的子工程目录
+      # - 初始化主工程
+      # - 初始化所有子工程
+      #
+      flutter_sub_project_root_dir_array = FileUtil.get_flutter_sub_project_root_dirs(flutter_main_project_root_dir)
+
+      puts("")
+      init(flutter_main_project_root_dir)
+
+      flutter_sub_project_root_dir_array.each do |flutter_project_root_dir|
+        puts("")
+        init(flutter_project_root_dir)
+      end
+
+      # ----- Step-2 End -----
+
+      # ----- Step-3 Begin -----
+      # 调用 flutter 工具，为主工程和所有子工程获取依赖
+      #
+      puts("")
+      puts("get dependencies for all flutter projects via execute \"flutter pub get\" now ...")
+
+      get_flutter_pub_cmd = "flutter pub get"
+      system(get_flutter_pub_cmd)
+
+      puts("[√]: get dependencies for all flutter projects done !!!")
+
+      # ----- Step-3 End -----
+      puts("")
+      puts("[√]: init all flutter projects done !!!")
+
+      puts("")
+      puts("[*]: if you want to know how to make a good resource structure for your flutter project, please run \"flr recommend\" ".tips_style)
+    end
+
+    # 对指定 flutter 工程进行初始化
+    def self.init(flutter_project_root_dir)
+
       puts("init #{flutter_project_root_dir} now...")
+
+      # ----- Step-1 Begin -----
+      # 进行环境检测:
+      #  - 检测 pubspec.yaml 是否存在
+      #  - 检测 pubspec.yaml 是否合法
+      #
+      begin
+        Checker.check_pubspec_file_is_existed(flutter_project_root_dir)
+        pubspec_file_path = FileUtil.get_pubspec_file_path(flutter_project_root_dir)
+        pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
+      rescue Exception => e
+        puts(e.message)
+        return
+      end
+
+      # ----- Step-1 End -----
 
       # ----- Step-2 Begin -----
       # 添加 flr_config 和 r_dart_library 的依赖声明到 pubspec.yaml
@@ -290,29 +342,14 @@ Flr recommends the following flutter resource structure schemes:
       # 保存 pubspec.yaml
       FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
 
-      puts("get dependency \"r_dart_library\" via execute \"flutter pub get\" now ...")
-
-      # ----- Step-4 Begin -----
-      # 调用 flutter 工具，为 flutter 工程获取依赖
-
-      get_flutter_pub_cmd = "flutter pub get"
-      system(get_flutter_pub_cmd)
-
-      puts("get dependency \"r_dart_library\" done !!!")
-
-      # ----- Step-4 End -----
-
-      puts("[√]: init done !!!")
-
-      puts("")
-      puts("[*]: if you want to know how to make a good resource structure for your flutter project, please run \"flr recommend\" ".tips_style)
+      puts("[√]: init #{flutter_project_root_dir} done !!!")
 
     end
 
     # 扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
     def self.generate
 
-      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
+      flutter_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # 警告日志数组
       warning_messages = []
@@ -771,7 +808,7 @@ Flr recommends the following flutter resource structure schemes:
     # 启动一个资源变化监控服务，若检测到有资源变化，就自动执行generate操作；手动输入`Ctrl-C`，可终止当前服务
     def self.start_monitor
 
-      flutter_project_root_dir = FileUtil.get_cur_flutter_project_root_dir
+      flutter_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # ----- Step-1 Begin -----
       # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程：

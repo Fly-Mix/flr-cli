@@ -42,7 +42,7 @@ More details see https://github.com/Fly-Mix/flr-cli
 
     LONGDESC
     def init
-      Command.init
+      Command.initAll
     end
 
     desc "run [--auto]", "Scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\""
