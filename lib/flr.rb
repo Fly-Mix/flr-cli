@@ -62,7 +62,7 @@ More details see https://github.com/Fly-Mix/flr-cli
     LONGDESC
     option :auto, :type => :boolean
     def run_command
-      options[:auto] ? Command.start_monitor : Command.generate
+      options[:auto] ? Command.start_monitor : Command.generateAll
     end
     map 'run' => :run_command
 

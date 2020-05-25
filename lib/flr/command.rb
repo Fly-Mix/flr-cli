@@ -346,10 +346,62 @@ Flr recommends the following flutter resource structure schemes:
 
     end
 
-    # 扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
-    def self.generate
+    def self.generateAll
+      flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
-      flutter_project_root_dir = FileUtil.get_flutter_main_project_root_dir
+      # ----- Step-1 Begin -----
+      # 对flutter主工程进行环境检测:
+      #  - 检测当前flutter主工程根目录是否存在 pubspec.yaml
+      #
+      begin
+        Checker.check_pubspec_file_is_existed(flutter_main_project_root_dir)
+      rescue Exception => e
+        puts(e.message)
+        return
+      end
+
+      # ----- Step-1 End -----
+
+      puts("generate for all flutter projects now...")
+
+      # ----- Step-2 Begin -----
+      # 对flutter主工程及其所有子工程执行generate操作
+      # - 获取flutter主工程根目录下所有的子工程目录
+      # - 对主工程执行generate操作
+      # - 对所有子工程执行generate操作
+      #
+      flutter_sub_project_root_dir_array = FileUtil.get_flutter_sub_project_root_dirs(flutter_main_project_root_dir)
+
+      puts("")
+      generate(flutter_main_project_root_dir)
+
+      flutter_sub_project_root_dir_array.each do |flutter_project_root_dir|
+        puts("")
+        generate(flutter_project_root_dir)
+      end
+
+      # ----- Step-2 End -----
+
+      # ----- Step-3 Begin -----
+      # 调用 flutter 工具，为主工程和所有子工程获取依赖
+      #
+      puts("")
+      puts("get dependencies for all flutter projects via execute \"flutter pub get\" now ...")
+
+      get_flutter_pub_cmd = "flutter pub get"
+      system(get_flutter_pub_cmd)
+
+      puts("[√]: get dependencies for all flutter projects done !!!")
+
+      # ----- Step-3 End -----
+      puts("")
+      puts("[√]: generate for all flutter projects done !!!")
+    end
+
+    # 为指定 flutter 工程扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
+    def self.generate(flutter_project_root_dir)
+      puts("--------------------------- generate for specified project ---------------------------")
+      puts("generate for #{flutter_project_root_dir} now...")
 
       # 警告日志数组
       warning_messages = []
@@ -377,6 +429,8 @@ Flr recommends the following flutter resource structure schemes:
 
       rescue Exception => e
         puts(e.message)
+        puts("[x]: generate for #{flutter_project_root_dir} failed .".error_style)
+        puts("--------------------------------------------------------------------------------------")
         return
       end
 
@@ -778,19 +832,6 @@ Flr recommends the following flutter resource structure schemes:
       # ----- Step-21 End -----
 
       # ----- Step-22 Begin -----
-      # 调用flutter工具，为flutter工程获取依赖
-      #
-
-      get_flutter_pub_cmd = "flutter pub get"
-      puts("execute \"#{get_flutter_pub_cmd}\" now ...")
-      system(get_flutter_pub_cmd)
-      puts("execute \"#{get_flutter_pub_cmd}\" done !!!")
-
-      # ----- Step-22 End -----
-
-      puts("[√]: generate done !!!")
-
-      # ----- Step-23 Begin -----
       # 判断警告日志数组是否为空，若不为空，输出所有警告日志
       #
 
@@ -801,7 +842,10 @@ Flr recommends the following flutter resource structure schemes:
         end
       end
 
-      # ----- Step-23 End -----
+      # ----- Step-22 End -----
+
+      puts("[√]: generate for #{flutter_project_root_dir} done !!!")
+      puts("--------------------------------------------------------------------------------------")
 
     end
 
@@ -848,7 +892,7 @@ Flr recommends the following flutter resource structure schemes:
       puts("--------------------------- #{now_str} ---------------------------")
       puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" now ...")
       puts("\n")
-      generate
+      generate(flutter_project_root_dir)
       puts("\n")
       puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" done !!!")
       puts("---------------------------------------------------------------------------------")
@@ -912,7 +956,7 @@ Flr recommends the following flutter resource structure schemes:
         puts("removed resource files: #{removed}")
         puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" now ...")
         puts("\n")
-        generate
+        generate(flutter_project_root_dir)
         puts("\n")
         puts("scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\" done !!!")
         puts("---------------------------------------------------------------------------------")
