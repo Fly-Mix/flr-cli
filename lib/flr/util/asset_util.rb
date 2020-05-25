@@ -49,10 +49,8 @@ module Flr
     # @return true
     #
     def self.is_image_asset?(asset)
-      file_extname = File.extname(asset).downcase
-
-      if Flr::IMAGE_FILE_TYPES.include?(file_extname)
-        return true;
+      if FileUtil.is_image_resource_file?(asset)
+        return true
       end
 
       return false
