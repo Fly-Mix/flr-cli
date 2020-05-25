@@ -168,7 +168,7 @@ Flr recommends the following flutter resource structure schemes:
       flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # ----- Step-1 Begin -----
-      # 对flutter主工程进行环境检测:
+      # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程
       #  - 检测当前flutter主工程根目录是否存在 pubspec.yaml
       #
 
@@ -184,7 +184,7 @@ Flr recommends the following flutter resource structure schemes:
       puts("init all flutter projects now...")
 
       # ----- Step-2 Begin -----
-      # 初始化flutter主工程及其所有子工程
+      # 获取主工程和其所有子工程，对它们进行init_one操作
       # - 获取flutter主工程根目录下所有的子工程目录
       # - 初始化主工程
       # - 初始化所有子工程
@@ -192,11 +192,11 @@ Flr recommends the following flutter resource structure schemes:
       flutter_sub_project_root_dir_array = FileUtil.get_flutter_sub_project_root_dirs(flutter_main_project_root_dir)
 
       puts("")
-      init(flutter_main_project_root_dir)
+      init_one(flutter_main_project_root_dir)
 
       flutter_sub_project_root_dir_array.each do |flutter_project_root_dir|
         puts("")
-        init(flutter_project_root_dir)
+        init_one(flutter_project_root_dir)
       end
 
       # ----- Step-2 End -----
@@ -221,13 +221,13 @@ Flr recommends the following flutter resource structure schemes:
     end
 
     # 对指定 flutter 工程进行初始化
-    def self.init(flutter_project_root_dir)
+    def self.init_one(flutter_project_root_dir)
       puts("------------------------------- init specified project -------------------------------")
 
       puts("init #{flutter_project_root_dir} now...")
 
       # ----- Step-1 Begin -----
-      # 进行环境检测:
+      # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程
       #  - 检测 pubspec.yaml 是否存在
       #  - 检测 pubspec.yaml 是否合法
       #
@@ -354,7 +354,7 @@ Flr recommends the following flutter resource structure schemes:
       flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # ----- Step-1 Begin -----
-      # 对flutter主工程进行环境检测:
+      # 进行环境检测；若发现不合法的环境，则抛出异常，终止当前进程。
       #  - 检测当前flutter主工程根目录是否存在 pubspec.yaml
       #
       begin
@@ -369,19 +369,19 @@ Flr recommends the following flutter resource structure schemes:
       puts("generate for all flutter projects now...")
 
       # ----- Step-2 Begin -----
-      # 对flutter主工程及其所有子工程执行generate操作
+      # 获取主工程和其所有子工程，对它们进行generate_one操作
       # - 获取flutter主工程根目录下所有的子工程目录
-      # - 对主工程执行generate操作
-      # - 对所有子工程执行generate操作
+      # - 对主工程执行generate_one操作
+      # - 对所有子工程执行generate_one操作
       #
       flutter_sub_project_root_dir_array = FileUtil.get_flutter_sub_project_root_dirs(flutter_main_project_root_dir)
 
       puts("")
-      generate(flutter_main_project_root_dir)
+      generate_one(flutter_main_project_root_dir)
 
       flutter_sub_project_root_dir_array.each do |flutter_project_root_dir|
         puts("")
-        generate(flutter_project_root_dir)
+        generate_one(flutter_project_root_dir)
       end
 
       # ----- Step-2 End -----
@@ -403,7 +403,7 @@ Flr recommends the following flutter resource structure schemes:
     end
 
     # 为指定 flutter 工程扫描资源目录，自动为资源添加声明到 pubspec.yaml 和生成 r.g.dart
-    def self.generate(flutter_project_root_dir)
+    def self.generate_one(flutter_project_root_dir)
       puts("--------------------------- generate for specified project ---------------------------")
       puts("generate for #{flutter_project_root_dir} now...")
 
