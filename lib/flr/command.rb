@@ -222,6 +222,7 @@ Flr recommends the following flutter resource structure schemes:
 
     # 对指定 flutter 工程进行初始化
     def self.init(flutter_project_root_dir)
+      puts("------------------------------- init specified project -------------------------------")
 
       puts("init #{flutter_project_root_dir} now...")
 
@@ -236,6 +237,8 @@ Flr recommends the following flutter resource structure schemes:
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
       rescue Exception => e
         puts(e.message)
+        puts("[x]: init #{flutter_project_root_dir} failed .".error_style)
+        puts("--------------------------------------------------------------------------------------")
         return
       end
 
@@ -343,6 +346,7 @@ Flr recommends the following flutter resource structure schemes:
       FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
 
       puts("[√]: init #{flutter_project_root_dir} done !!!")
+      puts("--------------------------------------------------------------------------------------")
 
     end
 
