@@ -42,7 +42,7 @@ More details see https://github.com/Fly-Mix/flr-cli
 
     LONGDESC
     def init
-      Command.initAll
+      Command.init_all
     end
 
     desc "run [--auto]", "Scan assets, specify scanned assets in pubspec.yaml, generate \"r.g.dart\""
@@ -62,7 +62,7 @@ More details see https://github.com/Fly-Mix/flr-cli
     LONGDESC
     option :auto, :type => :boolean
     def run_command
-      options[:auto] ? Command.start_monitor : Command.generateAll
+      options[:auto] ? Command.start_monitor : Command.generate_all
     end
     map 'run' => :run_command
 

@@ -164,7 +164,7 @@ Flr recommends the following flutter resource structure schemes:
       return r_dart_library_version
     end
 
-    def self.initAll
+    def self.init_all
       flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # ----- Step-1 Begin -----
@@ -350,7 +350,7 @@ Flr recommends the following flutter resource structure schemes:
 
     end
 
-    def self.generateAll
+    def self.generate_all
       flutter_main_project_root_dir = FileUtil.get_flutter_main_project_root_dir
 
       # ----- Step-1 Begin -----
@@ -949,7 +949,7 @@ Flr recommends the following flutter resource structure schemes:
       puts("")
       puts("now generate for all projects once before launching the monitoring service ...")
       puts("")
-      generateAll
+      generate_all
       puts("")
       puts("did generate for all projects, now is going to launching the monitoring service ...")
 
@@ -995,7 +995,7 @@ Flr recommends the following flutter resource structure schemes:
         puts("removed resource files: #{removed}")
         puts("generate for all projects now ...")
         puts("\n")
-        generateAll
+        generate_all
         puts("\n")
         puts("generate for all projects done !!!")
         puts("--------------------------------------------------------------------------------------")
