@@ -237,7 +237,7 @@ Flr recommends the following flutter resource structure schemes:
         pubspec_config = FileUtil.load_pubspec_config_from_file(pubspec_file_path)
       rescue Exception => e
         puts(e.message)
-        puts("[x]: init #{flutter_project_root_dir} failed .".error_style)
+        puts("[x]: init #{flutter_project_root_dir} failed.".error_style)
         puts("--------------------------------------------------------------------------------------")
         return
       end
@@ -433,7 +433,7 @@ Flr recommends the following flutter resource structure schemes:
 
       rescue Exception => e
         puts(e.message)
-        puts("[x]: generate for #{flutter_project_root_dir} failed .".error_style)
+        puts("[x]: generate for #{flutter_project_root_dir} failed.".error_style)
         puts("--------------------------------------------------------------------------------------")
         return
       end
