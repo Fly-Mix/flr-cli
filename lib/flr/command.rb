@@ -319,6 +319,9 @@ Flr recommends the following flutter resource structure schemes:
       #
 
       flutter_config = pubspec_config["flutter"]
+      if flutter_config.nil?
+        flutter_config = {}
+      end
 
       flutter_assets = flutter_config["assets"]
       should_rm_flutter_assets_Key = true
@@ -652,25 +655,31 @@ Flr recommends the following flutter resource structure schemes:
       # - 修改pubspec.yaml中flutter-assets配置的值为asset数组；
       # - 修改pubspec.yaml中flutter-fonts配置的值为font_family_config数组。
 
+      flutter_config = pubspec_config["flutter"]
+      if flutter_config.nil?
+        flutter_config = {}
+      end
+
       new_asset_array = image_asset_array + text_asset_array
-      old_asset_array = pubspec_config["flutter"]["assets"]
+      old_asset_array = flutter_config["assets"]
       if old_asset_array.nil? or old_asset_array.is_a?(Array) == false
         old_asset_array = []
       end
 
       asset_array = AssetUtil.mergeFlutterAssets(flutter_project_root_dir, package_name, new_asset_array, old_asset_array)
       if asset_array.length > 0
-        pubspec_config["flutter"]["assets"] = asset_array
+        flutter_config["assets"] = asset_array
       else
-        pubspec_config["flutter"].delete("assets")
+        flutter_config.delete("assets")
       end
 
       if font_family_config_array.length > 0
-        pubspec_config["flutter"]["fonts"] = font_family_config_array
+        flutter_config["fonts"] = font_family_config_array
       else
-        pubspec_config["flutter"].delete("fonts")
+        flutter_config.delete("fonts")
       end
 
+      pubspec_config["flutter"] = flutter_config
       FileUtil.dump_pubspec_config_to_file(pubspec_config, pubspec_file_path)
 
       # ----- Step-8 End -----
