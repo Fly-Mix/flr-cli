@@ -934,14 +934,14 @@ Flr recommends the following flutter resource structure schemes:
           puts("--------------------------------------------------------------------------------------")
         rescue Exception => e
           puts(e.message)
-          puts("[x]: #{flutter_project_root_dir} has no valid resource directories.".error_style)
+          puts("[x]: #{flutter_project_root_dir} has no valid resource directories".error_style)
           puts("--------------------------------------------------------------------------------------")
         end
       end
 
       if legal_resource_dir_array.length <= 0
         puts("")
-        puts("[x]: have no valid resource directories to be monitored.".warning_style)
+        puts("[x]: have no valid resource directories to be monitored".error_style)
         return
       end
 
