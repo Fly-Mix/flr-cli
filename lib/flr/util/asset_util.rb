@@ -34,6 +34,162 @@ module Flr
       return false
     end
 
+    # is_image_asset?(asset) -> true or false
+    #
+    # 判断当前资产是不是图片类资产
+    #
+    # === Examples
+    #
+    # === Example-1
+    # asset = "packages/flutter_r_demo/assets/images/test.png"
+    # @return true
+    #
+    # === Example-2
+    # asset = "assets/images/test.png"
+    # @return true
+    #
+    def self.is_image_asset?(asset)
+      if FileUtil.is_image_resource_file?(asset)
+        return true
+      end
+
+      return false
+    end
+
+    # is_package_asset?(asset) -> true or false
+    #
+    # 判断当前资产是不是package类资产
+    #
+    # === Examples
+    #
+    # === Example-1
+    # asset = "packages/flutter_r_demo/assets/images/test.png"
+    # @return true
+    #
+    # === Example-2
+    # asset = "assets/images/test.png"
+    # @return false
+    #
+    def self.is_package_asset?(asset)
+      package_prefix = "packages/"
+      if asset =~ /\A#{package_prefix}/
+        return true
+      end
+
+      return false
+    end
+
+    # is_specified_package_asset?(package_name, asset) -> true or false
+    #
+    # 判断当前资产是不是指定的package的资产
+    #
+    # === Examples
+    # package_name = "flutter_r_demo"
+    #
+    # === Example-1
+    # asset = "packages/flutter_r_demo/assets/images/test.png"
+    # @return true
+    #
+    # === Example-2
+    # asset = "packages/hello_demo/assets/images/test.png"
+    # @return false
+    #
+    def self.is_specified_package_asset?(package_name, asset)
+      specified_package_prefix = "packages/" + package_name + "/"
+      if asset =~ /\A#{specified_package_prefix}/
+        return true
+      end
+
+      return false
+    end
+
+    # get_main_resource_file(flutter_project_dir, package_name, asset) -> main_resource_file
+    #
+    # 获取指定flutter工程的asset对应的主资源文件
+    # 注意：主资源文件不一定存在，比如图片资产可能只存在变体资源文件
+    #
+    # === Examples
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
+    # package_name = "flutter_r_demo"
+    #
+    # === Example-1
+    # asset = "packages/flutter_r_demo/assets/images/test.png"
+    # main_resource_file = "~/path/to/flutter_r_demo/lib/assets/images/test.png"
+    #
+    # === Example-2
+    # asset = "assets/images/test.png"
+    # main_resource_file = "~/path/to/flutter_r_demo/assets/images/test.png"
+    #
+    def self.get_main_resource_file(flutter_project_dir, package_name, asset)
+      if is_specified_package_asset?(package_name, asset)
+        specified_package_prefix = "packages/" + package_name + "/"
+
+        # asset: packages/flutter_r_demo/assets/images/test.png
+        # to get implied_relative_resource_file: lib/assets/images/test.png
+        implied_relative_resource_file = asset.dup
+        implied_relative_resource_file[specified_package_prefix] = ""
+        implied_relative_resource_file = "lib/" + implied_relative_resource_file
+
+        # main_resource_file:  ~/path/to/flutter_r_demo/lib/assets/images/test.png
+        main_resource_file = flutter_project_dir + "/" + implied_relative_resource_file
+        return main_resource_file
+      else
+        # asset: assets/images/test.png
+        # main_resource_file:  ~/path/to/flutter_r_demo/assets/images/test.png
+        main_resource_file = flutter_project_dir + "/" + asset
+        return main_resource_file
+      end
+    end
+
+    # is_asset_existed?(flutter_project_dir, package_name, asset) -> true or false
+    #
+    # 判断指定flutter工程的asset是不是存在；存在的判断标准是：asset需要存在对应的资源文件
+    #
+    # === Examples
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
+    # package_name = "flutter_r_demo"
+    #
+    # === Example-1
+    # asset = "packages/flutter_r_demo/assets/images/test.png"
+    # @return true
+    #
+    # === Example-2
+    # asset = "packages/flutter_r_demo/404/not-existed.png"
+    # @return false
+    #
+    def self.is_asset_existed?(flutter_project_dir, package_name, asset)
+      # 处理指定flutter工程的asset
+      # 1. 获取asset对应的main_resource_file
+      # 2. 若main_resource_file是非SVG类图片资源文件，判断asset是否存在的标准是：主资源文件或者至少一个变体资源文件存在
+      # 3. 若main_resource_file是SVG类图片资源文件或者其他资源文件，判断asset是否存在的标准是：主资源文件存在
+      #
+      main_resource_file = get_main_resource_file(flutter_project_dir, package_name, asset)
+      if FileUtil.is_non_svg_image_resource_file?(main_resource_file)
+        if File.exist?(main_resource_file)
+          return true
+        end
+
+        file_name = File.basename(main_resource_file)
+        file_dir = File.dirname(main_resource_file)
+        did_find_variant_resource_file = false
+        Dir.glob(["#{file_dir}/*/#{file_name}"]).each do |file|
+          if is_asset_variant?(file)
+            did_find_variant_resource_file = true
+          end
+        end
+
+        if did_find_variant_resource_file
+          return true
+        end
+      else
+        if File.exist?(main_resource_file)
+          return true
+        end
+      end
+
+      return false
+    end
+
     # generate_main_asset(flutter_project_dir, package_name, legal_resource_file) -> main_asset
     #
     # 为当前资源文件生成 main_asset
@@ -183,6 +339,48 @@ module Flr
 
       font_asset_config_array.uniq!{|config| config["asset"]}
       return font_asset_config_array
+    end
+
+    # mergeFlutterAssets(new_asset_array, old_asset_array) -> merged_asset_array
+    #
+    # 合并新旧2个asset数组：
+    # - old_asset_array - new_asset_array = diff_asset_array，获取old_asset_array与new_asset_array的差异集合
+    # - 遍历diff_asset_array，筛选合法的asset得到legal_old_asset_array；合法的asset标准是：非图片资源 + 存在对应的资源文件
+    # - 按照字典序对legal_old_asset_array进行排序，并追加到new_asset_array
+    # - 返回合并结果merged_asset_array
+    #
+    # === Examples
+    # flutter_project_dir = "~/path/to/flutter_r_demo"
+    # package_name = "flutter_r_demo"
+    # new_asset_array = ["packages/flutter_r_demo/assets/images/test.png", "packages/flutter_r_demo/assets/jsons/test.json"]
+    # old_asset_array = ["packages/flutter_r_demo/assets/htmls/test.html"]
+    # merged_asset_array = ["packages/flutter_r_demo/assets/images/test.png", "packages/flutter_r_demo/assets/jsons/test.json", "packages/flutter_r_demo/assets/htmls/test.html"]
+    def self.mergeFlutterAssets(flutter_project_dir, package_name, new_asset_array, old_asset_array)
+      legal_old_asset_array = []
+
+      diff_asset_array = old_asset_array - new_asset_array;
+      diff_asset_array.each do |asset|
+        # 若是第三方package的资源，则合并到new_asset_array
+        # 引用第三方package的资源的推荐做法是：通过引用第三方package的R类来访问
+        if is_package_asset?(asset)
+          if is_specified_package_asset?(package_name, asset) == false
+            legal_old_asset_array.push(asset)
+            next
+          end
+        end
+
+        # 处理指定flutter工程的asset
+        # 1. 判断asset是否存在
+        # 2. 若asset存在，则合并到new_asset_array
+        #
+        if is_asset_existed?(flutter_project_dir, package_name, asset)
+          legal_old_asset_array.push(asset)
+        end
+      end
+
+      legal_old_asset_array.sort!
+      merged_asset_array = new_asset_array + legal_old_asset_array
+      return merged_asset_array
     end
 
   end

@@ -8,11 +8,24 @@ module Flr
 
     # get_cur_flutter_project_root_dir -> String
     #
-    # 获取当前flutter工程的根目录
+    # 获取flutter主工程的根目录
     #
-    def self.get_cur_flutter_project_root_dir
+    def self.get_flutter_main_project_root_dir
       flutter_project_root_dir = "#{Pathname.pwd}"
       return flutter_project_root_dir
+    end
+
+    # get_flutter_sub_project_root_dirs -> [sub_project_root_dir]
+    #
+    # 获取flutter主工程的所有子工程的根目录
+    #
+    def self.get_flutter_sub_project_root_dirs(flutter_main_project_root_dir)
+      flutter_sub_project_root_dir_array = []
+      Dir.glob(["#{flutter_main_project_root_dir}/*/pubspec.yaml"]).each do |file|
+        flutter_project_root_dir = File.dirname(file)
+        flutter_sub_project_root_dir_array.push(flutter_project_root_dir)
+      end
+      return flutter_sub_project_root_dir_array
     end
 
     # get_pubspec_file_path(flutter_project_dir) -> String
