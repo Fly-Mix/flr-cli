@@ -21,7 +21,7 @@ Flr (Flutter-R) CLI: A Flutter Resource Manager CLI TooL, which can help flutter
    - filename has illegal character (such as  `blank`,  `~`, `@`, `#` ) which is outside the range of  valid characters (`0-9`, `A-Z`, `a-z`, `_`, `+`, `-`, `.`, `·`,  `!`,  `@`,  `&`, `$`, `￥`)
    - filename begins with a number or character `_`  or character`$`
 - Support for processing assets with the same filename but different path
-- Support for processing multi projects(the main project and its sub projects in one workspace)
+- Support for processing multi projects (the main project and its sub projects in one workspace)
 - Support for auto merging old asset specifications when specifying new assets
 
 ## Install & Update Flr CLI
