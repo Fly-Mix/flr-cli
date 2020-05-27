@@ -1,6 +1,6 @@
 ## 3.1.0
 
-- Support for processing(init/generate/monitor) multi projects(the main project and its sub projects in one workspace)
+- Support for processing (init/generate/monitor) multi projects (the main project and its sub projects in one workspace)
 
 - Support for auto merging old asset specifications when specifying new assets
 
