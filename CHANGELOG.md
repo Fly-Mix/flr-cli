@@ -1,6 +1,6 @@
 ## 3.2.0
 
-- Support for nullsafety which powerd by dart-2.12
+- Support for nullsafety-feature of Dart 2.12
 
 ## 3.1.0
 
