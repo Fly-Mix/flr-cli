@@ -96,6 +96,58 @@ class R {
 /// - fileBasename：example.png
 /// - fileBasenameNoExtension：example
 /// - fileExtname：.png
+      CODE
+
+      if should_support_nullsafety
+        code += <<-CODE
+class AssetResource {
+  /// Creates an object to hold the asset resource’s metadata.
+  const AssetResource(this.assetName, {this.packageName});
+
+  /// The name of the main asset from the set of asset resources to choose from.
+  final String assetName;
+
+  /// The name of the package from which the asset resource is included.
+  final String? packageName;
+
+  /// The name used to generate the key to obtain the asset resource. For local assets
+  /// this is [assetName], and for assets from packages the [assetName] is
+  /// prefixed 'packages/<package_name>/'.
+  String get keyName => packageName == null ? assetName : "packages/$packageName/$assetName";
+
+  /// The file basename of the asset resource.
+  String get fileBasename {
+    final basename = path.basename(assetName);
+    return basename;
+  }
+
+  /// The no extension file basename of the asset resource.
+  String get fileBasenameNoExtension {
+    final basenameWithoutExtension = path.basenameWithoutExtension(assetName);
+    return basenameWithoutExtension;
+  }
+
+  /// The file extension name of the asset resource.
+  String get fileExtname {
+    final extension = path.extension(assetName);
+    return extension;
+  }
+
+  /// The directory path name of the asset resource.
+  String get fileDirname {
+    var dirname = assetName;
+    if (packageName != null) {
+      final packageStr = "packages/$packageName/";
+      dirname = dirname.replaceAll(packageStr, "");
+    }
+    final filenameStr = "$fileBasename/";
+    dirname = dirname.replaceAll(filenameStr, "");
+    return dirname;
+  }
+}
+        CODE
+      else
+        code += <<-CODE
 class AssetResource {
   /// Creates an object to hold the asset resource’s metadata.
   const AssetResource(this.assetName, {this.packageName}) : assert(assetName != null);
@@ -141,7 +193,8 @@ class AssetResource {
     return dirname;
   }
 }
-      CODE
+        CODE
+      end
 
       return code
     end
