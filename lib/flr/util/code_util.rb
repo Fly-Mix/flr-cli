@@ -509,14 +509,25 @@ class _R_Image {
         asset_id = svg_image_asset_id_dict[image_asset]
         asset_comment = generate_asset_comment(image_asset, package_name)
 
-        g_Asset_method_code = <<-CODE
+        if should_support_nullsafety
+          g_Asset_method_code = <<-CODE
+  /// #{asset_comment}
+  // ignore: non_constant_identifier_names
+  AssetSvg #{asset_id}({required double width, required double height}) {
+    final imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
+    return imageProvider;
+  }
+          CODE
+        else
+          g_Asset_method_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   AssetSvg #{asset_id}({@required double width, @required double height}) {
     final imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
     return imageProvider;
   }
-        CODE
+          CODE
+        end
 
         all_g_Asset_method_code += g_Asset_method_code
       end
