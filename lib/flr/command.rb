@@ -161,7 +161,7 @@ Flr recommends the following flutter resource structure schemes:
       dart_version_str.strip!
 
       puts("the flutter development environment is:")
-      puts("  - Flutter SDK Version: #{flutter_version_without_hotfix_str}")
+      puts("  - Flutter SDK Version: #{flutter_version_with_hotfix_str}")
       puts("  - Dart SDK Version: #{dart_version_str}")
 
       if Version.new(flutter_version_with_hotfix_str) >= Version.new("1.10.15")
