@@ -1,9 +1,9 @@
 module Flr
   # 工具版本号
-  VERSION = "3.1.0"
+  VERSION = "3.2.0"
 
   # 核心逻辑版本号
-  CORE_VERSION = "3.1.0"
+  CORE_VERSION = "3.2.0"
 
   class Version < Array
     def initialize str

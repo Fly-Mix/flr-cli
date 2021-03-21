@@ -154,11 +154,21 @@ Flr recommends the following flutter resource structure schemes:
         return r_dart_library_version
       end
 
-      version_with_hotfix_str = flutter_version_result.split(" ")[1]
-      version_without_hotfix_str = version_with_hotfix_str.split("+")[0]
+      flutter_version_with_hotfix_str = flutter_version_result.split(" ")[1]
+      flutter_version_without_hotfix_str = flutter_version_with_hotfix_str.split("+")[0]
 
-      if Version.new(version_with_hotfix_str) >= Version.new("1.10.15")
+      dart_version_str = flutter_version_result.split("Dart")[1]
+      dart_version_str.strip!
+
+      puts("the flutter development environment is:")
+      puts("  - Flutter SDK Version: #{flutter_version_with_hotfix_str}")
+      puts("  - Dart SDK Version: #{dart_version_str}")
+
+      if Version.new(flutter_version_with_hotfix_str) >= Version.new("1.10.15")
         r_dart_library_version = "0.2.1"
+        if Version.new(dart_version_str) >= Version.new("2.12.0")
+          r_dart_library_version = "0.4.0-nullsafety.0"
+        end
       end
 
       return r_dart_library_version
@@ -297,14 +307,10 @@ Flr recommends the following flutter resource structure schemes:
       #
       # r_dart_library的依赖声明：
       # ```yaml
-      # r_dart_library:
-      #  git:
-      #    url: "https://github.com/YK-Unit/r_dart_library.git"
-      #    ref: 0.1.1
+      # r_dart_library: 0.1.1
       # ```
       r_dart_library_version = get_r_dart_library_version
-      r_dart_library_config = Hash["git" => Hash["url" => "https://github.com/YK-Unit/r_dart_library.git", "ref" => r_dart_library_version]]
-      dependencies_config["r_dart_library"] = r_dart_library_config
+      dependencies_config["r_dart_library"] = r_dart_library_version
       pubspec_config["dependencies"] = dependencies_config
 
       puts("add flr configuration into pubspec.yaml done!")

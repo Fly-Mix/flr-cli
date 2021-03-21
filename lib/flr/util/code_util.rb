@@ -5,6 +5,36 @@ module Flr
   # 代码生成相关的工具类方法
   class CodeUtil
 
+    @@should_support_nullsafety = nil
+
+    def self.should_support_nullsafety
+      if @@should_support_nullsafety != nil
+        return @@should_support_nullsafety
+      end
+
+      # $ flutter --version
+      # Flutter 1.12.13+hotfix.5 • channel stable • https://github.com/flutter/flutter.git
+      # Framework • revision 27321ebbad (5 weeks ago) • 2019-12-10 18:15:01 -0800
+      # Engine • revision 2994f7e1e6
+      # Tools • Dart 2.7.0
+      flutter_version_result = `flutter --version`
+      if (flutter_version_result.nil? == true || flutter_version_result.empty? == true)
+        @@should_support_nullsafety = false
+        return @@should_support_nullsafety
+      end
+
+      dart_version_str = flutter_version_result.split("Dart")[1]
+      dart_version_str.strip!
+
+      if Version.new(dart_version_str) >= Version.new("2.12.0")
+        @@should_support_nullsafety = true
+        return @@should_support_nullsafety
+      end
+
+      @@should_support_nullsafety = false
+      return @@should_support_nullsafety
+    end
+
     # generate_R_class(package_name) -> string
     #
     # 根据模板生成 R class 的代码
@@ -66,6 +96,58 @@ class R {
 /// - fileBasename：example.png
 /// - fileBasenameNoExtension：example
 /// - fileExtname：.png
+      CODE
+
+      if should_support_nullsafety
+        code += <<-CODE
+class AssetResource {
+  /// Creates an object to hold the asset resource’s metadata.
+  const AssetResource(this.assetName, {this.packageName});
+
+  /// The name of the main asset from the set of asset resources to choose from.
+  final String assetName;
+
+  /// The name of the package from which the asset resource is included.
+  final String? packageName;
+
+  /// The name used to generate the key to obtain the asset resource. For local assets
+  /// this is [assetName], and for assets from packages the [assetName] is
+  /// prefixed 'packages/<package_name>/'.
+  String get keyName => packageName == null ? assetName : "packages/$packageName/$assetName";
+
+  /// The file basename of the asset resource.
+  String get fileBasename {
+    final basename = path.basename(assetName);
+    return basename;
+  }
+
+  /// The no extension file basename of the asset resource.
+  String get fileBasenameNoExtension {
+    final basenameWithoutExtension = path.basenameWithoutExtension(assetName);
+    return basenameWithoutExtension;
+  }
+
+  /// The file extension name of the asset resource.
+  String get fileExtname {
+    final extension = path.extension(assetName);
+    return extension;
+  }
+
+  /// The directory path name of the asset resource.
+  String get fileDirname {
+    var dirname = assetName;
+    if (packageName != null) {
+      final packageStr = "packages/$packageName/";
+      dirname = dirname.replaceAll(packageStr, "");
+    }
+    final filenameStr = "$fileBasename/";
+    dirname = dirname.replaceAll(filenameStr, "");
+    return dirname;
+  }
+}
+        CODE
+      else
+        code += <<-CODE
 class AssetResource {
   /// Creates an object to hold the asset resource’s metadata.
   const AssetResource(this.assetName, {this.packageName}) : assert(assetName != null);
@@ -111,7 +193,8 @@ class AssetResource {
     return dirname;
   }
 }
-      CODE
+        CODE
+      end
 
       return code
     end
@@ -426,14 +509,25 @@ class _R_Image {
         asset_id = svg_image_asset_id_dict[image_asset]
         asset_comment = generate_asset_comment(image_asset, package_name)
 
-        g_Asset_method_code = <<-CODE
+        if should_support_nullsafety
+          g_Asset_method_code = <<-CODE
+  /// #{asset_comment}
+  // ignore: non_constant_identifier_names
+  AssetSvg #{asset_id}({required double width, required double height}) {
+    final imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
+    return imageProvider;
+  }
+          CODE
+        else
+          g_Asset_method_code = <<-CODE
   /// #{asset_comment}
   // ignore: non_constant_identifier_names
   AssetSvg #{asset_id}({@required double width, @required double height}) {
     final imageProvider = AssetSvg(asset.#{asset_id}.keyName, width: width, height: height);
     return imageProvider;
   }
-        CODE
+          CODE
+        end
 
         all_g_Asset_method_code += g_Asset_method_code
       end
