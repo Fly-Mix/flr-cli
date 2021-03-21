@@ -1,3 +1,7 @@
+## 3.2.0
+
+- Support for nullsafety which powerd by dart-2.12
+
 ## 3.1.0
 
 - Support for processing (init/generate/monitor) multi projects (the main project and its sub projects in one workspace)
