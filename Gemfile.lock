@@ -16,7 +16,7 @@ GEM
     rb-fsevent (0.10.3)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    thor (1.0.1)
+    thor (1.4.0)
 
 PLATFORMS
   ruby
